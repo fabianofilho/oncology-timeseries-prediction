@@ -1,0 +1,57 @@
+{
+  "criterio": {
+    "alpha": 0.05,
+    "min_horizontes": 3,
+    "metrica_bootstrap": "smape"
+  },
+  "pares": [
+    {
+      "par": "sarima_menos_prophet",
+      "diferenca": -0.186,
+      "ic95": "[-0.290, -0.091]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "1/6",
+      "confirmado": false
+    },
+    {
+      "par": "sarima_menos_linear_trend",
+      "diferenca": -1.243,
+      "ic95": "[-1.420, -1.069]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "6/6",
+      "confirmado": true
+    },
+    {
+      "par": "sarima_menos_seasonal_naive",
+      "diferenca": -1.711,
+      "ic95": "[-1.979, -1.448]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "6/6",
+      "confirmado": true
+    },
+    {
+      "par": "prophet_menos_linear_trend",
+      "diferenca": -1.056,
+      "ic95": "[-1.261, -0.844]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "6/6",
+      "confirmado": true
+    },
+    {
+      "par": "prophet_menos_seasonal_naive",
+      "diferenca": -1.525,
+      "ic95": "[-1.811, -1.225]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "6/6",
+      "confirmado": true
+    },
+    {
+      "par": "linear_trend_menos_seasonal_naive",
+      "diferenca": -0.468,
+      "ic95": "[-0.744, -0.208]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    }
+  ]
+}

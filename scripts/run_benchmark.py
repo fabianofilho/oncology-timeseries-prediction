@@ -12,8 +12,10 @@ from onco_timeseries.evaluate import mae, rmse, rolling_origin_splits, smape
 from onco_timeseries.exog import build_exog_frames
 from onco_timeseries.models import (
     CatBoostForecaster,
+    LinearTrendForecaster,
     ProphetForecaster,
     SarimaForecaster,
+    SeasonalNaiveForecaster,
     TimesFMForecaster,
     XGBoostForecaster,
 )
@@ -40,8 +42,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--models",
-        default="sarima,prophet,timesfm",
-        help="Lista separada por vírgula (opções: sarima, prophet, timesfm, xgboost, catboost)",
+        default="seasonal_naive,linear_trend,sarima,prophet",
+        help=(
+            "Lista separada por vírgula (opções: seasonal_naive, linear_trend, sarima, "
+            "prophet, timesfm, xgboost, catboost)"
+        ),
     )
     parser.add_argument("--output-prefix", default="results/benchmark", help="Prefixo de saída")
     parser.add_argument(
@@ -85,12 +90,18 @@ def load_exog(csv_path: str, date_col: str, cols: list[str], freq: str) -> pd.Da
 
 def build_models(model_names: list[str]):
     selected = {m.strip().lower() for m in model_names if m.strip()}
-    valid = {"sarima", "prophet", "timesfm", "xgboost", "catboost"}
+    valid = {"seasonal_naive", "linear_trend", "sarima", "prophet", "timesfm", "xgboost", "catboost"}
     invalid = selected - valid
     if invalid:
         raise ValueError(f"Modelos inválidos: {sorted(invalid)}")
 
     models = []
+
+    if "seasonal_naive" in selected:
+        models.append(SeasonalNaiveForecaster())
+
+    if "linear_trend" in selected:
+        models.append(LinearTrendForecaster())
 
     if "sarima" in selected:
         models.append(SarimaForecaster())

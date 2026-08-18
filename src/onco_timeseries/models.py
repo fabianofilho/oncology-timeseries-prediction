@@ -23,6 +23,67 @@ class Forecaster(ABC):
         raise NotImplementedError
 
 
+class SeasonalNaiveForecaster(Forecaster):
+    """Repete o valor observado no mesmo mês do ano anterior.
+
+    É o piso da comparação. Um modelo que não bate isso não aprendeu nada que a
+    sazonalidade sozinha já não diga.
+    """
+
+    name = "seasonal_naive"
+
+    def __init__(self, season_length: int = 12):
+        self.season_length = season_length
+
+    def forecast(
+        self,
+        train: pd.Series,
+        horizon: int,
+        exog_train: pd.DataFrame | None = None,
+        exog_future: pd.DataFrame | None = None,
+    ) -> np.ndarray:
+        m = self.season_length
+        if len(train) < m:
+            # Sem um ciclo completo, cai para o último valor observado.
+            return np.full(horizon, float(train.iloc[-1]))
+
+        last_season = np.asarray(train.iloc[-m:], dtype=float)
+        idx = np.arange(horizon) % m
+        return last_season[idx]
+
+
+class LinearTrendForecaster(Forecaster):
+    """Reta ajustada por mínimos quadrados sobre a janela de treino.
+
+    Existe porque mortalidade por câncer é dominada por tendência secular. Se um
+    modelo complexo não bate uma reta, o achado é sobre a série, não sobre o modelo.
+    """
+
+    name = "linear_trend"
+
+    def __init__(self, window: int | None = None):
+        self.window = window
+
+    def forecast(
+        self,
+        train: pd.Series,
+        horizon: int,
+        exog_train: pd.DataFrame | None = None,
+        exog_future: pd.DataFrame | None = None,
+    ) -> np.ndarray:
+        y = np.asarray(train, dtype=float)
+        if self.window is not None and len(y) > self.window:
+            y = y[-self.window :]
+
+        if len(y) < 2:
+            return np.full(horizon, float(y[-1]))
+
+        x = np.arange(len(y), dtype=float)
+        slope, intercept = np.polyfit(x, y, 1)
+        x_future = np.arange(len(y), len(y) + horizon, dtype=float)
+        return intercept + slope * x_future
+
+
 class SarimaForecaster(Forecaster):
     name = "sarima"
     supports_exog = True
