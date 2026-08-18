@@ -208,12 +208,47 @@ def extract_sim_year(uf: str, year: int, max_retries: int, retry_wait: int) -> p
     raise RuntimeError(f"Todos os tiers falharam para SIM {uf}-{year}")
 
 
-def extract_sim(uf: str, years: list[int], max_retries: int, retry_wait: int) -> pd.DataFrame:
+# Colunas mantidas do SIM. O arquivo bruto tem quase 100 colunas, quase todas do
+# tipo object, e guardar todas elas nao serve a nada aqui.
+KEEP_COLS = ["CAUSABAS", "DTOBITO", "SEXO", "IDADE", "CODMUNRES", "RACACOR"]
+
+
+def filter_year_frame(df: pd.DataFrame, cid_prefix: str) -> pd.DataFrame:
+    """Aplica o filtro de CID e reduz as colunas ainda dentro do ano.
+
+    Concatenar os anos inteiros antes de filtrar estoura a memoria: 14 anos de SIM
+    em SP sao 4,3 milhoes de linhas por 98 colunas object, e o .copy() seguinte pede
+    mais 3,1 GiB. Filtrando por ano, o pico fica no tamanho de um ano so.
+    """
+    if "CAUSABAS" not in df.columns:
+        raise ValueError("Coluna CAUSABAS não encontrada no dataset SIM baixado.")
+
+    cid = df["CAUSABAS"].astype(str).str.upper().str.strip()
+    keep = [c for c in KEEP_COLS if c in df.columns]
+    out = df.loc[cid.str.startswith(cid_prefix.upper()), keep].copy()
+    out["CAUSABAS"] = out["CAUSABAS"].astype(str).str.upper().str.strip()
+    return out
+
+
+def extract_sim(
+    uf: str,
+    years: list[int],
+    max_retries: int,
+    retry_wait: int,
+    cid_prefix: str,
+) -> pd.DataFrame:
     frames = []
     for year in years:
         df = extract_sim_year(uf, year, max_retries, retry_wait)
-        frames.append(df)
-        print(f"[INFO] {uf}-{year}: {len(df)} linhas")
+        n_raw = len(df)
+        filtered = filter_year_frame(df, cid_prefix)
+        del df
+        frames.append(filtered)
+        pct = 100.0 * len(filtered) / n_raw if n_raw else 0.0
+        print(
+            f"[INFO] {uf}-{year}: {n_raw} linhas brutas, "
+            f"{len(filtered)} com CID {cid_prefix.upper()} ({pct:.1f}%)"
+        )
     return pd.concat(frames, ignore_index=True)
 
 
@@ -289,6 +324,7 @@ def main() -> None:
             years=years,
             max_retries=args.max_retries,
             retry_wait=args.retry_wait,
+            cid_prefix=args.cid_prefix,
         )
         filtered_df, series_df, cid_col, date_col = build_outputs(
             df,
