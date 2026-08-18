@@ -123,4 +123,8 @@ oncology-timeseries-prediction/
 
 ## Projeto no Linear
 
-Labdaps, projeto Oncology Prediction Timeseries (OPT).
+[Oncology Prediction Timeseries (OPT)](https://linear.app/labdaps/project/oncology-prediction-timeseries-opt-dd6e9c8f37c7), time Labdaps.
+
+O board tem o pipeline em seis issues, da definição de desfecho (LAB-114) ao relatório
+comparativo entre os três projetos da linha (LAB-120). A ordem de dependência está
+declarada lá, não aqui.
