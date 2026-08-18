@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+.venv311/
+venv/
+env/
+.DS_Store
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+ruff_cache/
+.mplconfig/
+.secrets/
+CLAUDE.md
+
+# Ignore datasets and other heavy files; keep only placeholders.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Keep benchmark outputs versioned.
+!results/*.csv
+!results/*.json
+
+# Saida da compilacao do manuscrito. O PDF e regeravel de paper/ com
+# `cd paper && tectonic -X compile manuscript.tex --outdir ../build`; as tabelas e
+# figuras de paper/ ficam versionadas porque sao a entrada dele.
+build/
