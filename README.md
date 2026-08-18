@@ -24,10 +24,47 @@ Modelos a comparar:
 
 ## Estado atual
 
-Série extraída e validada. Nenhum modelo treinado ainda, e portanto nenhum número de
-desempenho aparece aqui. O benchmark e o módulo de incerteza vieram do projeto
-cardiovascular, onde já rodaram sobre dado real, mas ainda não foram executados sobre a
-série oncológica.
+Série extraída e validada, baseline rodado com incerteza medida. TimesFM e boosting ainda
+não entraram.
+
+O desenho segue a decisão registrada no Linear: treino restrito a 2010-2019, e 2020-2023
+usado apenas como teste de mudança de regime.
+
+### Dentro do regime, 2010-2019
+
+Rolling origin, 55 janelas, 330 previsões por modelo, mesmas janelas para os quatro.
+
+| Modelo | sMAPE | IC95% | MAE |
+|---|---:|---|---:|
+| SARIMA | 1,515 | [1,381, 1,652] | 68,6 |
+| Prophet | 1,701 | [1,537, 1,868] | 76,7 |
+| Tendência linear | 2,757 | [2,543, 2,985] | 124,5 |
+| Ingênuo sazonal | 3,226 | [2,903, 3,556] | 143,4 |
+
+Pelo critério pré-declarado, 4 dos 6 pares são confirmados. **SARIMA sobre Prophet não é
+um deles**: o IC95% da diferença exclui zero, mas o Diebold-Mariano fica abaixo de 0,05 em
+apenas 1 dos 6 horizontes, então a vantagem não se sustenta ao longo do horizonte. O que
+está confirmado é que SARIMA e Prophet batem os dois baselines triviais.
+
+### Fora do regime, 2020-2023
+
+Origem única, treino congelado em dezembro de 2019, horizonte de 48 meses.
+
+| Modelo | sMAPE | Viés médio (óbitos/mês) |
+|---|---:|---:|
+| Ingênuo sazonal | 4,28 | +6 |
+| Tendência linear | 5,09 | +221 |
+| SARIMA | 6,40 | +313 |
+| Prophet | 7,62 | +375 |
+
+A ordem inverte por completo. Todos os modelos superestimam, e quanto mais um modelo
+extrapola a tendência pré-2020, mais ele erra quando o crescimento para.
+
+Duas ressalvas: as duas tabelas têm desenhos diferentes (horizonte 6 com 55 origens contra
+horizonte 48 com uma origem) e não se comparam número a número. Na fatia comparável, os
+primeiros 6 meses de 2020, os quatro ficam entre 7,3 e 8,2 de sMAPE, praticamente
+empatados. E origem única não tem incerteza: n = 1, então a inversão é o que se observou
+nesta realização, não um resultado com intervalo.
 
 ## Dados
 
