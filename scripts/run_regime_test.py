@@ -16,10 +16,13 @@ import pandas as pd
 from onco_timeseries.data import load_and_aggregate_series
 from onco_timeseries.evaluate import mae, rmse, smape
 from onco_timeseries.models import (
+    CatBoostForecaster,
     LinearTrendForecaster,
     ProphetForecaster,
     SarimaForecaster,
     SeasonalNaiveForecaster,
+    TimesFMForecaster,
+    XGBoostForecaster,
 )
 
 MODELOS = {
@@ -27,6 +30,9 @@ MODELOS = {
     "linear_trend": LinearTrendForecaster,
     "sarima": SarimaForecaster,
     "prophet": ProphetForecaster,
+    "timesfm": TimesFMForecaster,
+    "xgboost": XGBoostForecaster,
+    "catboost": CatBoostForecaster,
 }
 
 
@@ -34,7 +40,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Teste de mudanca de regime")
     parser.add_argument("--input-csv", required=True)
     parser.add_argument("--train-end", default="2019-12-01")
-    parser.add_argument("--models", default="seasonal_naive,linear_trend,sarima,prophet")
+    parser.add_argument("--models", default="seasonal_naive,linear_trend,sarima,prophet,timesfm,xgboost,catboost")
     parser.add_argument("--output-prefix", default="results/regime_test")
     return parser.parse_args()
 
