@@ -24,21 +24,54 @@ Modelos a comparar:
 
 ## Estado atual
 
-Scaffold. Nenhum resultado medido ainda. O pipeline de extração, o benchmark e o módulo de
-incerteza vieram do projeto cardiovascular, onde já rodaram sobre dado real, mas ainda não
-foram executados sobre a série oncológica. Enquanto não houver `results/` versionado, este
-README não afirma desempenho de modelo nenhum.
+Série extraída e validada. Nenhum modelo treinado ainda, e portanto nenhum número de
+desempenho aparece aqui. O benchmark e o módulo de incerteza vieram do projeto
+cardiovascular, onde já rodaram sobre dado real, mas ainda não foram executados sobre a
+série oncológica.
 
 ## Dados
 
 - **Fonte**: SIM/DataSUS, registros reais de óbito (`DO<UF><ANO>.dbc`)
 - **Filtro**: causa básica com CID-10 prefixo `C`, ver [docs/cid10_neoplasias_sim.md](docs/cid10_neoplasias_sim.md)
-- **Recorte inicial**: estado de São Paulo, 2010 a 2023, série mensal
+- **Recorte**: estado de São Paulo, janeiro/2010 a dezembro/2023 (168 meses)
 - **Extração**: `scripts/extract_sim_real.py`
-- **Validação**: `scripts/validate_real_dataset.py`
+- **Validação**: `scripts/validate_real_dataset.py`, 9 de 9 checagens aprovadas em
+  `results/data_reality_report_2010-2023.json`
 
-O microdado não é versionado. Só a série agregada, sem identificação, entra em
-`results/series/`.
+### Resumo dos dados
+
+| Indicador | Valor |
+|---|---:|
+| Registros brutos do SIM | 4.317.224 |
+| Óbitos por neoplasia maligna (CID C) | 741.313 |
+| Fração do total de óbitos | 17,2% |
+| Pontos na série mensal | 168 |
+| Média mensal | 4.413 |
+| Mínimo mensal | 3.513 (fev/2010) |
+| Máximo mensal | 5.296 (mai/2022) |
+| Óbitos em 2010 | 45.263 |
+| Óbitos em 2023 | 60.827 |
+| Códigos CID distintos | 447 |
+
+Distribuição por sítio: pulmão (C33-C34) 12,5%, colorretal (C18-C21) 10,6%, mama (C50) 8,0%
+e próstata (C61) 5,8%, somando 36,9% dos óbitos. Sem localização especificada (C80): 3,1%.
+
+O total de 4.317.224 registros brutos bate exatamente com o extraído pelo projeto
+cardiovascular a partir dos mesmos arquivos, o que valida o caminho de download e
+decodificação. A conferência contra o Atlas do INCA continua pendente.
+
+A série agregada está versionada em `results/series/serie_onco_SP_sim_real_2010-2023.csv`.
+O microdado não é versionado.
+
+### Ruptura de 2020
+
+A tendência de 2010 a 2019 é quase perfeitamente linear: +1.352 óbitos por ano, R² = 0,992.
+Projetada para diante, ela erra 2020 por -6,6% e ainda erra 2023 por -2,7%. 2020 foi o único
+ano de queda absoluta da série, -5,6% sobre 2019. A série não retornou ao patamar anterior.
+
+Qual tratamento dar a esse período é decisão aberta, registrada na LAB-114 do Linear. O
+default do `Makefile` usa a série inteira sem tratamento, e essa escolha precisa estar
+declarada em qualquer resultado publicado.
 
 ## Diferença em relação ao projeto cardiovascular
 
