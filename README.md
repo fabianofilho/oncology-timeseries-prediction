@@ -24,27 +24,52 @@ Modelos a comparar:
 
 ## Estado atual
 
-Série extraída e validada, baseline rodado com incerteza medida. TimesFM e boosting ainda
-não entraram.
-
-O desenho segue a decisão registrada no Linear: treino restrito a 2010-2019, e 2020-2023
-usado apenas como teste de mudança de regime.
+Sete modelos rodados sobre a série real, com incerteza medida e critério pré-declarado
+aplicado. O desenho segue a decisão registrada no Linear: treino restrito a 2010-2019, e
+2020-2023 usado apenas como teste de mudança de regime.
 
 ### Dentro do regime, 2010-2019
 
-Rolling origin, 55 janelas, 330 previsões por modelo, mesmas janelas para os quatro.
+Rolling origin, 55 janelas, 330 previsões por modelo, mesmas janelas para os sete.
 
 | Modelo | sMAPE | IC95% | MAE |
 |---|---:|---|---:|
 | SARIMA | 1,515 | [1,381, 1,652] | 68,6 |
+| TimesFM | 1,668 | [1,504, 1,845] | 75,2 |
 | Prophet | 1,701 | [1,537, 1,868] | 76,7 |
 | Tendência linear | 2,757 | [2,543, 2,985] | 124,5 |
+| CatBoost | 3,029 | [2,774, 3,296] | 136,0 |
+| XGBoost | 3,113 | [2,855, 3,386] | 139,4 |
 | Ingênuo sazonal | 3,226 | [2,903, 3,556] | 143,4 |
 
-Pelo critério pré-declarado, 4 dos 6 pares são confirmados. **SARIMA sobre Prophet não é
-um deles**: o IC95% da diferença exclui zero, mas o Diebold-Mariano fica abaixo de 0,05 em
-apenas 1 dos 6 horizontes, então a vantagem não se sustenta ao longo do horizonte. O que
-está confirmado é que SARIMA e Prophet batem os dois baselines triviais.
+### Nenhum modelo é o melhor, e isso é o resultado
+
+O critério pré-declarado confirma 12 dos 21 pares, e os 9 que sobram desenham dois grupos:
+
+- **Grupo de cima**: SARIMA, TimesFM e Prophet. Nenhum par entre eles é confirmado. SARIMA
+  tem o menor sMAPE pontual e ainda assim é indistinguível dos outros dois.
+- **Grupo de baixo**: tendência linear, CatBoost, XGBoost e ingênuo sazonal. Nenhum par
+  entre eles é confirmado.
+- **Entre os grupos**: os 12 pares são confirmados, todos com DM abaixo de 0,05 em 6 de 6
+  horizontes.
+
+O achado é o degrau entre modelar e não modelar a série, não um ranking de sete posições.
+Veredito completo em `results/criterion_verdict_2010_2019_full.json`.
+
+### Por que o boosting ficou no grupo de baixo
+
+| Modelo | Previsões acima do máximo do treino | Viés médio |
+|---|---:|---:|
+| CatBoost | 0 de 330 | -89,8 |
+| XGBoost | 0 de 330 | -90,4 |
+| Prophet | 63 de 330 | -15,3 |
+| SARIMA | 59 de 330 | -21,5 |
+| TimesFM | 51 de 330 | -28,5 |
+
+26,7% das observações de teste estão acima do máximo da janela de treino. A previsão de uma
+árvore é uma média de folhas ajustadas no treino, então é limitada ao intervalo já
+observado. Não é falha de tuning, é limite estrutural, e a saída seria modelar a diferença
+em vez do nível.
 
 ### Fora do regime, 2020-2023
 
@@ -53,62 +78,22 @@ Origem única, treino congelado em dezembro de 2019, horizonte de 48 meses.
 | Modelo | sMAPE | Viés médio (óbitos/mês) |
 |---|---:|---:|
 | Ingênuo sazonal | 4,28 | +6 |
+| XGBoost | 4,77 | +131 |
 | Tendência linear | 5,09 | +221 |
+| CatBoost | 5,26 | +197 |
+| TimesFM | 5,55 | +268 |
 | SARIMA | 6,40 | +313 |
 | Prophet | 7,62 | +375 |
 
-A ordem inverte por completo. Todos os modelos superestimam, e quanto mais um modelo
-extrapola a tendência pré-2020, mais ele erra quando o crescimento para.
+A ordem praticamente inverte, e a explicação é única: todos superestimam, e quanto mais o
+modelo extrapola a tendência pré-2020, mais ele erra quando o crescimento para. A mesma
+incapacidade de extrapolar que prejudicou o boosting dentro do regime é o que o protege
+fora dele.
 
-Duas ressalvas: as duas tabelas têm desenhos diferentes (horizonte 6 com 55 origens contra
-horizonte 48 com uma origem) e não se comparam número a número. Na fatia comparável, os
-primeiros 6 meses de 2020, os quatro ficam entre 7,3 e 8,2 de sMAPE, praticamente
-empatados. E origem única não tem incerteza: n = 1, então a inversão é o que se observou
-nesta realização, não um resultado com intervalo.
-
-## Dados
-
-- **Fonte**: SIM/DataSUS, registros reais de óbito (`DO<UF><ANO>.dbc`)
-- **Filtro**: causa básica com CID-10 prefixo `C`, ver [docs/cid10_neoplasias_sim.md](docs/cid10_neoplasias_sim.md)
-- **Recorte**: estado de São Paulo, janeiro/2010 a dezembro/2023 (168 meses)
-- **Extração**: `scripts/extract_sim_real.py`
-- **Validação**: `scripts/validate_real_dataset.py`, 9 de 9 checagens aprovadas em
-  `results/data_reality_report_2010-2023.json`
-
-### Resumo dos dados
-
-| Indicador | Valor |
-|---|---:|
-| Registros brutos do SIM | 4.317.224 |
-| Óbitos por neoplasia maligna (CID C) | 741.313 |
-| Fração do total de óbitos | 17,2% |
-| Pontos na série mensal | 168 |
-| Média mensal | 4.413 |
-| Mínimo mensal | 3.513 (fev/2010) |
-| Máximo mensal | 5.296 (mai/2022) |
-| Óbitos em 2010 | 45.263 |
-| Óbitos em 2023 | 60.827 |
-| Códigos CID distintos | 447 |
-
-Distribuição por sítio: pulmão (C33-C34) 12,5%, colorretal (C18-C21) 10,6%, mama (C50) 8,0%
-e próstata (C61) 5,8%, somando 36,9% dos óbitos. Sem localização especificada (C80): 3,1%.
-
-O total de 4.317.224 registros brutos bate exatamente com o extraído pelo projeto
-cardiovascular a partir dos mesmos arquivos, o que valida o caminho de download e
-decodificação. A conferência contra o Atlas do INCA continua pendente.
-
-A série agregada está versionada em `results/series/serie_onco_SP_sim_real_2010-2023.csv`.
-O microdado não é versionado.
-
-### Ruptura de 2020
-
-A tendência de 2010 a 2019 é quase perfeitamente linear: +1.352 óbitos por ano, R² = 0,992.
-Projetada para diante, ela erra 2020 por -6,6% e ainda erra 2023 por -2,7%. 2020 foi o único
-ano de queda absoluta da série, -5,6% sobre 2019. A série não retornou ao patamar anterior.
-
-Qual tratamento dar a esse período é decisão aberta, registrada na LAB-114 do Linear. O
-default do `Makefile` usa a série inteira sem tratamento, e essa escolha precisa estar
-declarada em qualquer resultado publicado.
+Duas ressalvas. As duas tabelas têm desenhos diferentes (horizonte 6 com 55 origens contra
+horizonte 48 com uma origem) e não se comparam número a número; na fatia comparável, os
+primeiros 6 meses de 2020, os sete ficam entre 7,3 e 8,2 e praticamente empatam. E origem
+única não tem incerteza: com n = 1, a ordem fora do regime é descritiva.
 
 ## Diferença em relação ao projeto cardiovascular
 
