@@ -1,0 +1,50 @@
+{
+  "dominios": [
+    {
+      "dominio": "cancer",
+      "amplitude": 1.4,
+      "cv": 0.084,
+      "melhor_por_smape": "sarima",
+      "smape": 1.51,
+      "smape_baseline": 3.18,
+      "razao_smape": 0.474,
+      "melhor_por_mae": "sarima",
+      "razao_mae": 0.483,
+      "metrica_concorda": true,
+      "pares_confirmados": "13/21",
+      "batem_o_baseline": [
+        "prophet",
+        "sarima",
+        "timesfm"
+      ]
+    },
+    {
+      "dominio": "cardiovascular",
+      "amplitude": 1.5,
+      "cv": 0.098,
+      "melhor_por_smape": "sarima",
+      "smape": 3.3,
+      "smape_baseline": 4.15,
+      "razao_smape": 0.795,
+      "melhor_por_mae": "sarima",
+      "razao_mae": 0.793,
+      "metrica_concorda": true,
+      "pares_confirmados": "9/21",
+      "batem_o_baseline": []
+    },
+    {
+      "dominio": "dengue",
+      "amplitude": 140.8,
+      "cv": 2.023,
+      "melhor_por_smape": "xgboost",
+      "smape": 70.62,
+      "smape_baseline": 75.5,
+      "razao_smape": 0.935,
+      "melhor_por_mae": "timesfm",
+      "razao_mae": 0.622,
+      "metrica_concorda": false,
+      "pares_confirmados": "1/21",
+      "batem_o_baseline": []
+    }
+  ]
+}
