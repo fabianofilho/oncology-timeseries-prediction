@@ -55,3 +55,44 @@ uncertainty:
 
 test:
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) -m pytest
+
+MODELS_ALL ?= seasonal_naive,linear_trend,sarima,prophet,timesfm,xgboost,catboost
+SITES ?= pulmao colorretal mama prostata
+DOMAINS ?= cancer cardiovascular dengue
+
+.PHONY: sites domains
+
+sites:
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/build_site_series.py \
+		--raw-csv data/raw/sim_onco_$(UF)_$(YEARS).csv
+	@for s in $(SITES); do \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_benchmark.py \
+			--input-csv results/series/serie_onco_$(UF)_$${s}_2010-2019.csv \
+			--horizon 6 --min-train-size 60 --models $(MODELS_ALL) \
+			--output-prefix results/benchmark_onco_$(UF)_$${s}_2010_2019 ; \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_uncertainty.py \
+			--predictions-csv results/benchmark_onco_$(UF)_$${s}_2010_2019_predictions.csv \
+			--models $(MODELS_ALL) --n-boot 10000 --seed 20260818 \
+			--output-prefix results/uncertainty_onco_$(UF)_$${s}_2010_2019 ; \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/apply_criterion.py \
+			--pairwise-csv results/uncertainty_onco_$(UF)_$${s}_2010_2019_pairwise_tests.csv \
+			--report-output results/criterion_verdict_$${s}_2010_2019.json ; \
+	done
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/analyze_site_scale.py
+
+domains:
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/compare_domains.py
+	@for d in $(DOMAINS); do \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_benchmark.py \
+			--input-csv results/series/comp_$${d}_2010_2019.csv \
+			--horizon 6 --min-train-size 60 --models $(MODELS_ALL) \
+			--output-prefix results/benchmark_dominio_$${d}_2010_2019 ; \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_uncertainty.py \
+			--predictions-csv results/benchmark_dominio_$${d}_2010_2019_predictions.csv \
+			--models $(MODELS_ALL) --n-boot 10000 --seed 20260818 \
+			--output-prefix results/uncertainty_dominio_$${d}_2010_2019 ; \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/apply_criterion.py \
+			--pairwise-csv results/uncertainty_dominio_$${d}_2010_2019_pairwise_tests.csv \
+			--report-output results/criterion_verdict_dominio_$${d}_2010_2019.json ; \
+	done
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/report_domain_comparison.py

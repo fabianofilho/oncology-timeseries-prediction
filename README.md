@@ -95,6 +95,48 @@ horizonte 48 com uma origem) e não se comparam número a número; na fatia comp
 primeiros 6 meses de 2020, os sete ficam entre 7,3 e 8,2 e praticamente empatam. E origem
 única não tem incerteza: com n = 1, a ordem fora do regime é descritiva.
 
+### Por sítio tumoral
+
+Mesmo protocolo aplicado às quatro séries de maior volume.
+
+| Série | Média mensal | Melhor sMAPE | Pares confirmados |
+|---|---:|---:|---|
+| Agregado C00-C97 | 4.251 | 1,515 | 12 de 21 |
+| Pulmão (C33-C34) | 533 | 3,492 | 13 de 21 |
+| Colorretal (C18-C21) | 436 | 4,340 | 12 de 21 |
+| Mama (C50) | 333 | 5,238 | 4 de 21 |
+| Próstata (C61) | 246 | 6,513 | 2 de 21 |
+
+Em próstata, nenhum modelo bate o ingênuo sazonal pelo critério.
+
+**O sMAPE de 1,5% do agregado não é evidência de modelo bom, é evidência de série
+grande.** Contagem maior tem menos ruído relativo por construção: para contagem Poisson o
+desvio escala com 1/√N. A razão de sMAPE observada entre agregado e cada sítio fica entre
+0,82 e 1,03 da razão esperada só pelo tamanho, então a vantagem do agregado é explicada
+pela contagem, sem evidência de cancelamento de erro entre sítios. Cálculo em
+`scripts/analyze_site_scale.py`.
+
+### Comparação com os outros dois domínios da linha
+
+As séries de cardiovascular (CPT) e dengue (DFP) foram rerodadas por este mesmo código, não
+comparadas a partir dos números que cada projeto publicou. Janela comum 2010-02 a 2019-12,
+119 pontos, 54 janelas, 324 previsões por modelo.
+
+| Domínio | Amplitude máx/mín | Razão sMAPE contra o baseline | Pares confirmados | Batem o ingênuo sazonal |
+|---|---:|---:|---|---|
+| Câncer | 1,4 | 0,474 | 13 de 21 | sarima, prophet, timesfm |
+| Cardiovascular | 1,5 | 0,795 | 9 de 21 | nenhum |
+| Dengue | 140,8 | 0,935 | 1 de 21 | nenhum |
+
+**Dos três domínios, só em câncer algum modelo bate o baseline trivial de forma
+confirmada.** Em cardiovascular o SARIMA erra 20% menos e mesmo assim não passa: o DM fica
+abaixo de 0,05 em apenas 2 dos 6 horizontes.
+
+Em dengue o vencedor muda com a métrica (XGBoost por sMAPE, TimesFM por MAE e RMSE, com
+razão 0,62 e 0,56). Com 52% dos meses abaixo de 1.000 casos, o sMAPE é dominado pelos
+vales. Isso é limitação do critério deste projeto, não do TimesFM, e está registrado como
+questão aberta antes de qualquer publicação que inclua dengue.
+
 ## Diferença em relação ao projeto cardiovascular
 
 Mortalidade por câncer tem tendência secular mais forte e sazonalidade mais fraca que
@@ -134,6 +176,19 @@ Rodar o benchmark com backtesting por rolling origin:
 
 ```bash
 make benchmark
+```
+
+Estratificar por sítio tumoral e rodar os quatro sítios:
+
+```bash
+make sites
+```
+
+Comparar os três domínios da linha sob protocolo idêntico (requer os repositórios
+`cardiovascular-timeseries-prediction` e `dengue-time-series` clonados ao lado deste):
+
+```bash
+make domains
 ```
 
 Medir a incerteza das diferenças entre modelos:
