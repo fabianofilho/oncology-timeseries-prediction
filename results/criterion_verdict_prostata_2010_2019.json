@@ -1,0 +1,177 @@
+{
+  "criterio": {
+    "alpha": 0.05,
+    "min_horizontes": 3,
+    "metrica_bootstrap": "smape"
+  },
+  "pares": [
+    {
+      "par": "seasonal_naive_menos_linear_trend",
+      "diferenca": 0.236,
+      "ic95": "[-0.611, 1.126]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "seasonal_naive_menos_sarima",
+      "diferenca": 1.132,
+      "ic95": "[0.624, 1.646]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "1/6",
+      "confirmado": false
+    },
+    {
+      "par": "seasonal_naive_menos_prophet",
+      "diferenca": 0.261,
+      "ic95": "[-0.639, 1.184]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "seasonal_naive_menos_timesfm",
+      "diferenca": 0.168,
+      "ic95": "[-0.643, 1.026]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "seasonal_naive_menos_xgboost",
+      "diferenca": -0.465,
+      "ic95": "[-1.112, 0.199]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "seasonal_naive_menos_catboost",
+      "diferenca": -0.907,
+      "ic95": "[-1.546, -0.255]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "linear_trend_menos_sarima",
+      "diferenca": 0.896,
+      "ic95": "[0.366, 1.428]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "linear_trend_menos_prophet",
+      "diferenca": 0.025,
+      "ic95": "[-0.477, 0.515]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "linear_trend_menos_timesfm",
+      "diferenca": -0.069,
+      "ic95": "[-0.318, 0.182]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "linear_trend_menos_xgboost",
+      "diferenca": -0.701,
+      "ic95": "[-1.254, -0.142]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "linear_trend_menos_catboost",
+      "diferenca": -1.143,
+      "ic95": "[-1.704, -0.606]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "sarima_menos_prophet",
+      "diferenca": -0.871,
+      "ic95": "[-1.339, -0.390]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "sarima_menos_timesfm",
+      "diferenca": -0.965,
+      "ic95": "[-1.437, -0.481]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "2/6",
+      "confirmado": false
+    },
+    {
+      "par": "sarima_menos_xgboost",
+      "diferenca": -1.597,
+      "ic95": "[-2.101, -1.096]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "4/6",
+      "confirmado": true
+    },
+    {
+      "par": "sarima_menos_catboost",
+      "diferenca": -2.039,
+      "ic95": "[-2.543, -1.541]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "6/6",
+      "confirmado": true
+    },
+    {
+      "par": "prophet_menos_timesfm",
+      "diferenca": -0.094,
+      "ic95": "[-0.576, 0.395]",
+      "ic_exclui_zero": false,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "prophet_menos_xgboost",
+      "diferenca": -0.726,
+      "ic95": "[-1.417, -0.028]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "prophet_menos_catboost",
+      "diferenca": -1.168,
+      "ic95": "[-1.859, -0.464]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "timesfm_menos_xgboost",
+      "diferenca": -0.632,
+      "ic95": "[-1.140, -0.117]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "timesfm_menos_catboost",
+      "diferenca": -1.074,
+      "ic95": "[-1.617, -0.557]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "0/6",
+      "confirmado": false
+    },
+    {
+      "par": "xgboost_menos_catboost",
+      "diferenca": -0.442,
+      "ic95": "[-0.688, -0.200]",
+      "ic_exclui_zero": true,
+      "dm_abaixo_alpha": "1/6",
+      "confirmado": false
+    }
+  ]
+}

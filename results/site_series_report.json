@@ -1,0 +1,73 @@
+{
+  "min_media_mensal": 30.0,
+  "sitios": [
+    {
+      "sitio": "pulmao",
+      "rotulo": "Traqueia, bronquios e pulmao",
+      "cid": [
+        "C33",
+        "C34"
+      ],
+      "obitos": 92821,
+      "pontos": 168,
+      "media_mensal": 552.5,
+      "minimo_mensal": 404,
+      "maximo_mensal": 666,
+      "incluido": true,
+      "arquivo": "results/series/serie_onco_SP_pulmao_2010-2023.csv",
+      "arquivo_pre": "results/series/serie_onco_SP_pulmao_2010-2019.csv",
+      "pontos_pre": 120
+    },
+    {
+      "sitio": "colorretal",
+      "rotulo": "Colorretal",
+      "cid": [
+        "C18",
+        "C19",
+        "C20",
+        "C21"
+      ],
+      "obitos": 78643,
+      "pontos": 168,
+      "media_mensal": 468.1,
+      "minimo_mensal": 322,
+      "maximo_mensal": 663,
+      "incluido": true,
+      "arquivo": "results/series/serie_onco_SP_colorretal_2010-2023.csv",
+      "arquivo_pre": "results/series/serie_onco_SP_colorretal_2010-2019.csv",
+      "pontos_pre": 120
+    },
+    {
+      "sitio": "mama",
+      "rotulo": "Mama",
+      "cid": [
+        "C50"
+      ],
+      "obitos": 59103,
+      "pontos": 168,
+      "media_mensal": 351.8,
+      "minimo_mensal": 229,
+      "maximo_mensal": 471,
+      "incluido": true,
+      "arquivo": "results/series/serie_onco_SP_mama_2010-2023.csv",
+      "arquivo_pre": "results/series/serie_onco_SP_mama_2010-2019.csv",
+      "pontos_pre": 120
+    },
+    {
+      "sitio": "prostata",
+      "rotulo": "Prostata",
+      "cid": [
+        "C61"
+      ],
+      "obitos": 43007,
+      "pontos": 168,
+      "media_mensal": 256.0,
+      "minimo_mensal": 198,
+      "maximo_mensal": 334,
+      "incluido": true,
+      "arquivo": "results/series/serie_onco_SP_prostata_2010-2023.csv",
+      "arquivo_pre": "results/series/serie_onco_SP_prostata_2010-2019.csv",
+      "pontos_pre": 120
+    }
+  ]
+}

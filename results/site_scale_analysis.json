@@ -1,0 +1,49 @@
+{
+  "series": [
+    {
+      "serie": "agregado",
+      "media_mensal": 4251.0,
+      "melhor_modelo": "sarima",
+      "smape": 1.515,
+      "razao_observada": 1.0,
+      "razao_esperada_poisson": 1.0,
+      "obs_sobre_poisson": 1.0
+    },
+    {
+      "serie": "pulmao",
+      "media_mensal": 533.0,
+      "melhor_modelo": "sarima",
+      "smape": 3.492,
+      "razao_observada": 2.3,
+      "razao_esperada_poisson": 2.82,
+      "obs_sobre_poisson": 0.82
+    },
+    {
+      "serie": "colorretal",
+      "media_mensal": 436.0,
+      "melhor_modelo": "prophet",
+      "smape": 4.34,
+      "razao_observada": 2.87,
+      "razao_esperada_poisson": 3.12,
+      "obs_sobre_poisson": 0.92
+    },
+    {
+      "serie": "mama",
+      "media_mensal": 333.0,
+      "melhor_modelo": "sarima",
+      "smape": 5.238,
+      "razao_observada": 3.46,
+      "razao_esperada_poisson": 3.58,
+      "obs_sobre_poisson": 0.97
+    },
+    {
+      "serie": "prostata",
+      "media_mensal": 246.0,
+      "melhor_modelo": "sarima",
+      "smape": 6.513,
+      "razao_observada": 4.3,
+      "razao_esperada_poisson": 4.16,
+      "obs_sobre_poisson": 1.03
+    }
+  ]
+}

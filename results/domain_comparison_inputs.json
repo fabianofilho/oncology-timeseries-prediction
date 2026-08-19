@@ -1,0 +1,42 @@
+{
+  "start": "2010-02-01",
+  "end": "2019-12-01",
+  "dominios": [
+    {
+      "dominio": "cancer",
+      "rotulo": "OPT cancer (obitos CID C, SIM)",
+      "origem": "results/series/serie_onco_SP_sim_real_2010-2023.csv",
+      "arquivo": "results/series/comp_cancer_2010_2019.csv",
+      "pontos": 119,
+      "media": 4255.7,
+      "minimo": 3513,
+      "maximo": 5085,
+      "amplitude_max_sobre_min": 1.4,
+      "cv": 0.084
+    },
+    {
+      "dominio": "cardiovascular",
+      "rotulo": "CPT cardiovascular (obitos CID I, SIM)",
+      "origem": "../cardiovascular-timeseries-prediction/results/series/serie_eventos_sp_sim_real_2010_2023.csv",
+      "arquivo": "results/series/comp_cardiovascular_2010_2019.csv",
+      "pontos": 119,
+      "media": 7048.8,
+      "minimo": 5811,
+      "maximo": 8919,
+      "amplitude_max_sobre_min": 1.5,
+      "cv": 0.098
+    },
+    {
+      "dominio": "dengue",
+      "rotulo": "DFP dengue (casos notificados, InfoDengue)",
+      "origem": "../dengue-time-series/data/processed/dengue_monthly_sao.csv",
+      "arquivo": "results/series/comp_dengue_2010_2019.csv",
+      "pontos": 119,
+      "media": 2496.7,
+      "minimo": 262,
+      "maximo": 36897,
+      "amplitude_max_sobre_min": 140.8,
+      "cv": 2.023
+    }
+  ]
+}
