@@ -32,13 +32,15 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
 ### 1. Bloqueiam a submissão, e dependem do Fabiano
 
-1.1. Resumo em português e resumen em espanhol. A CSP exige os três idiomas e só existe o
-     em inglês.
+1.1. FEITO. Resumo, Abstract e Resumen no pacote, 249, 245 e 247 palavras, dentro do
+     limite de 250 que a CSP define no documento de recomendação do resumo. Não
+     estruturados e com o mínimo de siglas, como ela pede. Revisar a tradução.
 1.2. Autoria, afiliações, ORCID, contribuições (CRediT), financiamento, conflitos e
-     agradecimentos. São 5 dos 9 marcadores `[PENDING]`.
-1.3. Decidir a seção: "Artigo" ou "Questões Metodológicas". A segunda encaixa melhor
-     porque a contribuição é de reporte, e muda o perfil do revisor. Mesmo limite de
-     6.000 palavras e 5 ilustrações nas duas, então não muda o texto.
+     agradecimentos. São 5 dos 7 marcadores `[PENDING]` restantes. Só o Fabiano resolve.
+1.3. Decidir a seção: "Artigo" ou "Questões Metodológicas". O documento da seção
+     metodológica descreve como típico a proposta de um método novo, e este paper compara
+     métodos existentes. O texto dela cobre "análise, comparação ou desenvolvimento
+     metodológico", então continua defensável, mas menos óbvio do que eu disse antes.
 
 ### 2. Bloqueava a validade, e foi resolvido
 

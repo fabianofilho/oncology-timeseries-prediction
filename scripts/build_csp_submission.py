@@ -44,6 +44,9 @@ FIGURES = PAPER / "figures"
 
 LIMITE_PALAVRAS = 6000
 LIMITE_ILUSTRACOES = 5
+# "O Resumo pode ter ate 250 palavras", e a CSP nao adota resumo estruturado.
+# Fonte: leia-mais-resumo-port, linkado nas instrucoes aos autores.
+LIMITE_RESUMO = 250
 
 LABEL = {
     "sarima": "SARIMA",
@@ -208,6 +211,97 @@ def tabela(doc, header, rows, bold_cells=None):
     return t
 
 
+def resumos(v: dict) -> list[tuple[str, str, str, str]]:
+    """Resumo, Abstract e Resumen, cada um com no maximo 250 palavras.
+
+    A CSP nao adota resumo estruturado e recomenda evitar siglas. Os numeros vem
+    do JSON como em todo o resto: nenhum valor e digitado aqui.
+    """
+    co, ba = v["coorte"], v["benchmark_agregado"]
+    ci, crit = ba["ci_smape"], ba["criterio"]
+    ext, sit = v["extrapolacao"], v["sitios"]
+    sa = ci["sarima"]
+    n_obitos, n_meses = n(co["obitos_por_cancer"]), co["pontos_serie_completa"]
+    n_treino, n_jan = co["pontos_serie_treino"], ba["n_janelas"]
+    n_prev = ba["n_previsoes_por_modelo"]
+    n_conf, n_par = crit["pares_confirmados"], crit["pares_total"]
+    pct_acima = ext["_observacoes_acima_do_max_treino"]["pct"]
+
+    pt = (
+        f"Previsoes de mortalidade por cancer orientam o planejamento de servicos, mas "
+        f"raramente testam se o modelo ajustado supera um comparador trivial, e raramente "
+        f"informam se a diferenca entre modelos resiste a uma medida de incerteza. Extraimos "
+        f"do Sistema de Informacoes sobre Mortalidade todos os obitos por neoplasia maligna "
+        f"(CID-10 C00-C97) de residentes no Estado de Sao Paulo entre {co['anos'][0]} e "
+        f"{co['anos'][1]}, num total de {n_obitos} obitos e {n_meses} observacoes mensais, que "
+        f"reproduziram os dados oficiais sem diferenca. Como a pandemia representa uma ruptura "
+        f"estrutural, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. Comparamos "
+        f"sete metodos sob um unico protocolo de validacao por origem movel, com {n_jan} "
+        f"janelas e {n_prev} previsoes cada, medindo a incerteza por reamostragem de janelas "
+        f"inteiras. Declaramos, antes de ver resultado, que uma diferenca so contaria como "
+        f"confirmada se o intervalo de confianca excluisse o zero e o teste por horizonte "
+        f"tambem a detectasse. O modelo sazonal classico teve o menor erro percentual, de "
+        f"{sa['point']:.2f}%. O criterio confirmou {n_conf} das {n_par} comparacoes, e o padrao "
+        f"foi de dois grupos e nao de um ordenamento: os metodos que representam a serie nao se "
+        f"distinguiram entre si, os que nao a representam tampouco, e toda comparacao entre "
+        f"grupos foi confirmada. As arvores potencializadas nao superaram o comparador "
+        f"trivial porque nunca preveem acima do maximo ja observado, que {pct_acima}% das "
+        f"observacoes de teste superam. Nenhum modelo pode ser declarado o melhor: o que os "
+        f"dados sustentam e um degrau entre representar e nao representar a serie."
+    )
+    en = (
+        f"Forecasts of cancer mortality inform health service planning, yet forecasting studies "
+        f"rarely test whether a fitted model outperforms a trivial comparator, and rarely report "
+        f"whether an observed difference between models survives a measure of uncertainty. We "
+        f"extracted from the Mortality Information System all deaths from malignant neoplasms "
+        f"(ICD-10 C00-C97) among residents of Sao Paulo State between {co['anos'][0]} and "
+        f"{co['anos'][1]}, totalling {n_obitos} deaths and {n_meses} monthly observations, which "
+        f"reproduced the official figures with no difference at all. Because the pandemic is a "
+        f"structural break, model fitting was restricted to the {n_treino} months from 2010 to "
+        f"2019. We compared seven forecasting methods under one rolling-origin protocol, with "
+        f"{n_jan} windows and {n_prev} forecasts each, and measured uncertainty by resampling "
+        f"whole windows. We declared, before seeing any result, that a difference would count as "
+        f"confirmed only if the confidence interval excluded zero and the horizon-wise test also "
+        f"detected it. The classical seasonal model had the lowest percentage error, "
+        f"{sa['point']:.2f}%. The criterion confirmed {n_conf} of {n_par} comparisons, and the "
+        f"pattern was two groups rather than a ranking: methods that represent the series were "
+        f"indistinguishable from one another, so were the methods that do not, and every "
+        f"comparison across the two groups was confirmed. Boosted trees did not beat the trivial "
+        f"comparator because they never forecast above the maximum already observed, while "
+        f"{pct_acima}% of test observations lie above it. No model can be declared best in this "
+        f"series: what the data support is a step between representing and not representing it."
+    )
+    es = (
+        f"Las proyecciones de mortalidad por cancer orientan la planificacion de servicios, pero "
+        f"los estudios de prediccion raramente comprueban si el modelo ajustado supera a un "
+        f"comparador trivial, y raramente informan si la diferencia observada entre modelos "
+        f"resiste una medida de incertidumbre. Extrajimos del Sistema de Informacion sobre "
+        f"Mortalidad todas las muertes por neoplasia maligna (CIE-10 C00-C97) de residentes del "
+        f"Estado de Sao Paulo entre {co['anos'][0]} y {co['anos'][1]}, un total de {n_obitos} "
+        f"muertes y {n_meses} observaciones mensuales, que reprodujeron las cifras oficiales sin "
+        f"diferencia alguna. Dado que la pandemia constituye una ruptura estructural, el ajuste "
+        f"se restringio a los {n_treino} meses de 2010 a 2019. Comparamos siete metodos de "
+        f"prediccion bajo un unico protocolo de validacion de origen movil, con {n_jan} ventanas "
+        f"y {n_prev} predicciones cada uno, y medimos la incertidumbre remuestreando ventanas "
+        f"completas. Declaramos, antes de ver resultado alguno, que una diferencia solo contaria "
+        f"como confirmada si el intervalo de confianza excluia el cero y la prueba por horizonte "
+        f"tambien la detectaba. El modelo estacional clasico tuvo el menor error porcentual, "
+        f"{sa['point']:.2f}%. El criterio confirmo {n_conf} de {n_par} comparaciones, y el patron "
+        f"fue de dos grupos y no de un ordenamiento: los metodos que representan la serie no se "
+        f"distinguieron entre si, los que no la representan tampoco, y toda comparacion entre "
+        f"ambos grupos fue confirmada. Los arboles potenciados no superaron al comparador trivial "
+        f"porque nunca predicen por encima del maximo ya observado, que {pct_acima}% de las "
+        f"observaciones de prueba superan. Ningun modelo puede declararse el mejor."
+    )
+    return [
+        ("Resumo", pt, "Neoplasias; Mortalidade; Previsoes; Sistemas de Informacao",
+         "Palavras-chave: "),
+        ("Abstract", en, "Neoplasms; Mortality; Forecasting; Information Systems", "Keywords: "),
+        ("Resumen", es, "Neoplasias; Mortalidad; Predicciones; Sistemas de Informacion",
+         "Palabras clave: "),
+    ]
+
+
 # --------------------------------------------------------------------------- #
 def build_texto(v: dict) -> tuple[Document, int]:
     co, ba = v["coorte"], v["benchmark_agregado"]
@@ -232,45 +326,13 @@ def build_texto(v: dict) -> tuple[Document, int]:
 
     flag_par(doc, "author list, affiliations, ORCID, corresponding author and author contributions")
 
-    h(doc, "Abstract")
-    body(
-        doc,
-        f"Forecasts of cancer mortality inform service planning, yet forecasting studies rarely "
-        f"test whether a fitted model outperforms a trivial baseline, and rarely report whether "
-        f"an observed difference between models survives a measure of uncertainty. We extracted "
-        f"all deaths with an underlying cause coded as a malignant neoplasm (ICD-10 C00-C97) in "
-        f"Sao Paulo State, Brazil, from the Mortality Information System (SIM), "
-        f"{co['anos'][0]} to {co['anos'][1]} ({n(co['obitos_por_cancer'])} deaths, "
-        f"{co['pontos_serie_completa']} monthly observations). Because the COVID-19 period is a "
-        f"structural break, model fitting was restricted to the {co['pontos_serie_treino']} "
-        f"months of 2010-2019. Seven forecasters were compared under an identical rolling-origin "
-        f"protocol ({ba['n_janelas']} windows, {ba['n_previsoes_por_modelo']} forecasts each): "
-        f"seasonal naive, linear trend, SARIMA, Prophet, a foundation model applied zero-shot "
-        f"(TimesFM), XGBoost and CatBoost. Uncertainty came from a block bootstrap over whole "
-        f"windows (B = {ci['sarima']['B']}). We declared before seeing any result that a "
-        f"difference counts as confirmed only if the 95% confidence interval excludes zero and "
-        f"the Diebold-Mariano test falls below {crit['alpha']} in at least "
-        f"{crit['min_horizontes']} of {ba['horizonte']} horizons. SARIMA had the lowest error "
-        f"(sMAPE {n(ci['sarima']['point'], 2)}%, 95%CI: {ci_str(ci['sarima'])}). The criterion "
-        f"confirmed {crit['pares_confirmados']} of {crit['pares_total']} comparisons, and the "
-        f"pattern was two groups rather than a ranking: no comparison within SARIMA, TimesFM and "
-        f"Prophet was confirmed, none within linear trend, CatBoost, XGBoost and seasonal naive "
-        f"was, and every comparison across the two groups was. Gradient boosting was "
-        f"indistinguishable from the seasonal naive baseline, producing no forecast above the "
-        f"training maximum in {ext['catboost']['total']} attempts while "
-        f"{ext['_observacoes_acima_do_max_treino']['pct']}% of test observations lay above it. "
-        f"Across tumour sites the ratio of observed to Poisson-expected error stayed between "
-        f"{min(razoes):.2f} and {max(razoes):.2f}, so the low error of the aggregate series "
-        f"reflects its count size and not greater predictability. No single model can be "
-        f"declared best in this series; what the data support is a step between models that "
-        f"represent the series and models that do not.",
-    )
-
-    p = doc.add_paragraph()
-    p.add_run("Keywords: ").bold = True
-    p.add_run("Neoplasms; Mortality; Forecasting; Information Systems; Machine Learning")
-
-    flag_par(doc, "resumo em portugues e resumen em espanhol, exigidos pela CSP")
+    # Tres resumos de ate 250 palavras cada, nao estruturados, como a CSP pede.
+    for titulo, corpo, chaves, rot in resumos(v):
+        h(doc, titulo)
+        body(doc, corpo)
+        par = doc.add_paragraph()
+        par.add_run(rot).bold = True
+        par.add_run(chaves)
 
     h(doc, "Introduction")
     p = body(
