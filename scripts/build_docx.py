@@ -255,6 +255,7 @@ def build(v: dict) -> tuple[Document, dict]:
     met = ba["metricas"]
     crit = ba["criterio"]
     ext = v["extrapolacao"]
+    cross = v["conferencia_tabnet"]
     tend = v["tendencia_pre_pandemia"]
     sit = v["sitios"]
     reg = v["teste_regime"]
@@ -429,7 +430,8 @@ def build(v: dict) -> tuple[Document, dict]:
     body(
         doc,
         f"We used the Mortality Information System (SIM/DataSUS), the national death "
-        f"registration database, restricted to Sao Paulo State (UF = {co['uf']}) for the years "
+        f"registration database, by state of residence, restricted to Sao Paulo State "
+        f"(UF = {co['uf']}) for the years "
         f"{co['anos'][0]} to {co['anos'][1]}. Annual DBC files were downloaded from the DataSUS "
         f"public server and decoded locally. The outcome was the monthly count of deaths whose "
         f"underlying cause (field CAUSABAS) carried an ICD-10 code beginning with "
@@ -445,19 +447,21 @@ def build(v: dict) -> tuple[Document, dict]:
         f"observations with no missing month and no zero-count month (mean "
         f"{n(co['media_mensal'])} deaths per month, range {n(co['minimo_mensal'])} to "
         f"{n(co['maximo_mensal'])}). An automated data-plausibility check passed "
-        f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions. "
-        f"The total number of raw records reproduced exactly the count obtained by an "
-        f"independent extraction of the same source files in a companion project, which "
-        f"validates the download and decoding path but not the source itself.",
+        f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions.",
     )
-    p = body(doc, "")
-    inline_flag(
-        p,
-        "external cross-check of annual cancer death counts against the INCA Atlas de "
-        "Mortalidade or TabNet, for at least two years. This is the only check that validates "
-        "the source rather than our reading of it, and it has not been performed",
+    body(
+        doc,
+        f"We cross-checked the annual counts against the figures published by the Ministry of "
+        f"Health through TabNet, using the equivalent selection (Sao Paulo, ICD-10 groups "
+        f"covering C00-C97). Our series reproduced the official deaths-by-residence counts "
+        f"exactly in all {cross['anos_conferidos']} years, difference zero, total "
+        f"{n(cross['total_tabnet_residencia'])} in both. Querying the same selection by state "
+        f"of occurrence returns {n(cross['total_tabnet_ocorrencia'])}, "
+        f"{abs(cross['dif_pct_vs_ocorrencia'])}% higher; that gap is the expected difference "
+        f"between two population definitions and not a discrepancy in extraction. The annual "
+        f"files distributed by DataSUS are organised by residence, which is the basis used "
+        f"throughout this work.",
     )
-    stats["pendencias"] += 1
 
     heading(doc, "Handling of the COVID-19 period", level=2)
     body(

@@ -467,6 +467,25 @@ def main() -> None:
         },
     }
 
+    # Conferencia contra o TabNet, gerada por scripts/crosscheck_tabnet.py.
+    # E a unica checagem que valida a fonte, entao entra no JSON e o manuscrito
+    # cita a partir daqui.
+    p_cross = RESULTS / "tabnet_crosscheck.json"
+    if p_cross.exists():
+        cross = json.loads(p_cross.read_text(encoding="utf-8"))
+        v["conferencia_tabnet"] = {
+            "fonte": cross["fonte"],
+            "confere": cross["confere"],
+            "anos_conferidos": len(cross["tabnet_residencia"]),
+            "anos_divergentes": len(cross["anos_divergentes_vs_residencia"]),
+            "base_comparacao": "obitos por residencia",
+            "total_tabnet_residencia": sum(cross["tabnet_residencia"].values()),
+            "total_tabnet_ocorrencia": sum(cross["tabnet_ocorrencia"].values()),
+            "dif_pct_vs_ocorrencia": cross["dif_pct_vs_ocorrencia"],
+        }
+    else:
+        v["conferencia_tabnet"] = {"confere": None}
+
     v["extrapolacao"] = extrapolacao(
         RESULTS / "benchmark_onco_SP_2010_2019_full_predictions.csv",
         RESULTS / "series" / "serie_onco_SP_sim_real_2010-2019.csv",

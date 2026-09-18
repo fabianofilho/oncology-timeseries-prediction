@@ -1,7 +1,7 @@
 {
   "_gerado_por": "scripts/build_paper_assets.py",
-  "_gerado_em_utc": "2026-08-29T11:25:02+00:00",
-  "_commit": "48e0d38",
+  "_gerado_em_utc": "2026-09-18T10:21:34+00:00",
+  "_commit": "b77f507",
   "coorte": {
     "fonte": "SIM/DataSUS",
     "uf": "SP",
@@ -326,6 +326,16 @@
         }
       ]
     }
+  },
+  "conferencia_tabnet": {
+    "fonte": "MS/SVSA/CGIAE - SIM, via TabNet (tabnet.datasus.gov.br)",
+    "confere": true,
+    "anos_conferidos": 14,
+    "anos_divergentes": 0,
+    "base_comparacao": "obitos por residencia",
+    "total_tabnet_residencia": 741313,
+    "total_tabnet_ocorrencia": 754447,
+    "dif_pct_vs_ocorrencia": -1.74
   },
   "extrapolacao": {
     "catboost": {

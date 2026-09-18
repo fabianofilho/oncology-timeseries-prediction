@@ -103,3 +103,8 @@ paper:
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/build_paper_assets.py
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/build_docx.py
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/check_docx_numbers.py
+
+.PHONY: crosscheck
+
+crosscheck:
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/crosscheck_tabnet.py

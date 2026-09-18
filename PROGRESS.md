@@ -22,6 +22,7 @@ Análise concluída e manuscrito montado. Alvo escolhido: Cadernos de Saúde Pú
 | Comparação CPT vs DFP vs OPT sob protocolo idêntico | feita |
 | Manuscrito .docx de revisão (18 páginas) | feito, `build/manuscript.docx` |
 | Pacote de submissão da CSP (4 arquivos) | feito, `build/csp/` |
+| Conferência contra o TabNet | feita, bate exato nos 14 anos |
 
 Achado principal: não há vencedor. Existe um degrau entre os modelos que representam a
 série (SARIMA, TimesFM, Prophet) e os que não representam (tendência linear, CatBoost,
@@ -39,12 +40,14 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      porque a contribuição é de reporte, e muda o perfil do revisor. Mesmo limite de
      6.000 palavras e 5 ilustrações nas duas, então não muda o texto.
 
-### 2. Bloqueia a validade do que está escrito
+### 2. Bloqueava a validade, e foi resolvido
 
-2.1. Conferir os totais anuais contra o Atlas de Mortalidade do INCA ou o TabNet, para
-     pelo menos dois anos. Comparar contra 57.858 (2019) e 58.595 (2022). É a única
-     checagem que valida a fonte, e não só a nossa leitura dela. Se divergir, o
-     manuscrito inteiro muda. LAB-115 está In Review por causa disso.
+2.1. FEITO em 2026-09-18. `scripts/crosscheck_tabnet.py` consulta o TabNet e compara ano a
+     ano. A série reproduz exatamente os óbitos por residência nos 14 anos, diferença zero,
+     total 741.313 nos dois. Contra a visão por ocorrência a diferença é de 1,74%, que é a
+     distinção entre duas definições de população e não erro de extração. Isso também
+     corrigiu uma imprecisão: o manuscrito não dizia que a base é por residência, e agora
+     diz. Relatório em `results/tabnet_crosscheck.json`.
 
 ### 3. Melhoram o manuscrito, não bloqueiam
 

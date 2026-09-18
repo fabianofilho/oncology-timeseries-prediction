@@ -214,6 +214,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     ci, met, crit = ba["ci_smape"], ba["metricas"], ba["criterio"]
     ext, tend, sit, reg = v["extrapolacao"], v["tendencia_pre_pandemia"], v["sitios"], v["teste_regime"]
     rm = reg["por_modelo"]
+    cross = v["conferencia_tabnet"]
     razoes = [sit[s]["obs_sobre_poisson"] for s in SITES]
 
     doc = base_doc()
@@ -327,8 +328,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
     )
     body(
         doc,
-        f"We used the Mortality Information System (SIM/DataSUS) restricted to Sao Paulo State "
-        f"for {co['anos'][0]} to {co['anos'][1]}. Annual files were downloaded from the DataSUS "
+        f"We used the Mortality Information System (SIM/DataSUS), by state of residence, "
+        f"restricted to Sao Paulo State for {co['anos'][0]} to {co['anos'][1]}. Annual files "
+        f"were downloaded from the DataSUS "
         f"public server and decoded locally. The outcome was the monthly count of deaths whose "
         f"underlying cause carried an ICD-10 code beginning with \"{co['cid_prefixo']}\", that "
         f"is, malignant neoplasms C00 to C97. Carcinoma in situ, benign neoplasms and neoplasms "
@@ -340,13 +342,16 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"{n(co['minimo_mensal'])} to {n(co['maximo_mensal'])}; {n(co['obitos_por_ano']['2010'])} "
         f"deaths in {co['anos'][0]} rising to {n(co['obitos_por_ano']['2023'])} in "
         f"{co['anos'][1]}). An automated plausibility check passed "
-        f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions, "
-        f"and the raw record count reproduced exactly an independent extraction of the same "
-        f"source files, which validates the decoding path but not the source.",
+        f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions. "
+        f"We cross-checked the annual counts against the figures published by the Ministry of "
+        f"Health through TabNet for the same selection (Sao Paulo, ICD-10 groups covering "
+        f"C00-C97): our series reproduced the official deaths-by-residence figures exactly in "
+        f"all {cross['anos_conferidos']} years, with a difference of zero and a total of "
+        f"{n(cross['total_tabnet_residencia'])} in both. The deaths-by-occurrence view of the "
+        f"same query returns {n(cross['total_tabnet_ocorrencia'])}, "
+        f"{abs(cross['dif_pct_vs_ocorrencia'])}% higher, which is the expected gap between two "
+        f"different population definitions and not a discrepancy in extraction.",
     )
-    p = doc.add_paragraph()
-    flag(p, "conferencia externa dos totais anuais contra o Atlas de Mortalidade do INCA ou o "
-            "TabNet, para pelo menos dois anos. E a unica checagem que valida a fonte, e nao foi feita")
 
     body(
         doc,
@@ -529,9 +534,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
     )
     body(
         doc,
-        f"Several limitations bound these conclusions. The external cross-check of our extracted "
-        f"counts against an independent source has not been performed, so we have validated our "
-        f"reading of the SIM files but not the files themselves; if coding practice for "
+        f"Several limitations bound these conclusions. Our counts reproduce the official "
+        f"deaths-by-residence figures exactly, so extraction error is ruled out, but that "
+        f"agreement says nothing about the underlying registration: if coding practice for "
         f"ill-defined cancer sites changed over the period, our series would carry that drift "
         f"and every model would inherit it. The analysis covers one state, and Sao Paulo has "
         f"better death registration coverage than most of Brazil, so error rates here are "
