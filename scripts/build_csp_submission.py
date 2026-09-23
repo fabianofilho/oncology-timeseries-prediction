@@ -309,6 +309,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     ext, tend, sit, reg = v["extrapolacao"], v["tendencia_pre_pandemia"], v["sitios"], v["teste_regime"]
     rm = reg["por_modelo"]
     cross = v["conferencia_tabnet"]
+    itv = v["intervalos"]
     razoes = [sit[s]["obs_sobre_poisson"] for s in SITES]
 
     doc = base_doc()
@@ -550,6 +551,23 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"of the aggregate series is accounted for by its count size, with no evidence of error "
         f"cancellation between sites nor of additional structural predictability (Figure 3).",
     )
+    if itv:
+        fx = itv["faixa_cobertura"]
+        pos_lt = itv["posicao_wis"].index("linear_trend") + 1
+        pos_sn = itv["posicao_wis"].index("seasonal_naive") + 1
+        body(
+            doc,
+            f"Conformal prediction intervals calibrated only on earlier windows reached "
+            f"empirical coverage between {fx['n95'][0]:.3f} and {fx['n95'][1]:.3f} at the 95% "
+            f"nominal level and between {fx['n80'][0]:.3f} and {fx['n80'][1]:.3f} at 80%, "
+            f"stable across the six horizons; at the 50% level calibration was poor, ranging "
+            f"from {fx['n50'][0]:.3f} to {fx['n50'][1]:.3f} (Supplementary Table S1). Ranking "
+            f"the models by weighted interval score reordered the lower group: the linear "
+            f"trend, fourth by point error, had the worst interval score of the seven "
+            f"({itv['pior_wis']['valor']:.1f}), while the seasonal naive baseline, last by "
+            f"point error, ranked {pos_sn}th ({itv['wis_seasonal_naive']:.1f}).",
+        )
+
     body(
         doc,
         f"In the out-of-regime test the ordering essentially inverted. Every model "
@@ -565,6 +583,14 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"within-regime error of the best model. This test has a single origin, so it carries no "
         f"measure of uncertainty and the ordering is descriptive.",
     )
+    if itv and itv["cobertura_95_fora"] is not None:
+        body(
+            doc,
+            f"Applying the same intervals to the first {itv['n_fora_por_modelo']} months of "
+            f"2020 with training frozen at December 2019, coverage at the 95% level fell to "
+            f"{itv['cobertura_95_fora']:.3f} for all seven models.",
+        )
+
 
     h(doc, "Discussion")
     body(
@@ -621,8 +647,10 @@ def build_texto(v: dict) -> tuple[Document, int]:
         "improved on it here. Planning applications that need site-specific forecasts should "
         "expect materially worse accuracy, and for the smallest site examined no method "
         "outperformed repeating the previous year. Any deployment should be paired with "
-        "monitoring for regime change, because the models that fit the stable period best were "
-        "the ones that failed hardest when the trend broke. In this series, model choice matters "
+        "monitoring for regime change. The intervals did not widen in time to absorb the break, "
+        "so interval coverage cannot serve as that monitoring signal on its own, and the models "
+        "that fit the stable period best were the ones that failed hardest when the trend broke. "
+        "In this series, model choice matters "
         "less than whether a trivial baseline was included and whether the criterion for a real "
         "difference was fixed before the results were seen.",
     )
@@ -758,6 +786,54 @@ def build_legendas(v: dict) -> Document:
     return doc
 
 
+def build_suplementar(v: dict) -> Document:
+    """Tabela S1: calibracao e nitidez dos intervalos, por modelo.
+
+    Material suplementar da CSP nao pode carregar resultado principal. O intervalo
+    de predicao e resultado secundario, entao esta tabela detalha o que as frases
+    do corpo ja afirmam, sem sustentar sozinha nenhuma conclusao.
+    """
+    itv = v["intervalos"]
+    doc = base_doc(tamanho=9, entrelinhas=1.0)
+
+    par = doc.add_paragraph()
+    r = par.add_run("Supplementary Table S1")
+    r.bold = True
+    r.font.size = Pt(10)
+    par = doc.add_paragraph()
+    par.add_run(
+        f"Empirical coverage, mean interval width and weighted interval score of conformal "
+        f"prediction intervals, by model, over {itv['n_avaliado_por_modelo']} forecasts per "
+        f"model within the stable regime (2010-2019)."
+    ).font.size = Pt(9)
+
+    rows = []
+    for m in itv["posicao_wis"]:
+        d = itv["dentro"][m]
+        rows.append([
+            LABEL[m],
+            f"{d['cobertura_50']:.3f}", f"{d['cobertura_80']:.3f}", f"{d['cobertura_95']:.3f}",
+            f"{d['largura_50']:.0f}", f"{d['largura_80']:.0f}", f"{d['largura_95']:.0f}",
+            f"{d['WIS']:.1f}",
+        ])
+    tabela(
+        doc,
+        ["Model", "Cov. 50%", "Cov. 80%", "Cov. 95%",
+         "Width 50%", "Width 80%", "Width 95%", "WIS"],
+        rows,
+    )
+    par = doc.add_paragraph()
+    par.add_run(
+        f"Nominal coverage is 0.500, 0.800 and 0.950. Widths and the weighted interval score "
+        f"are in deaths per month. Intervals were calibrated on the absolute-scale residuals of "
+        f"earlier rolling-origin windows only, stratified by forecast horizon, with a finite "
+        f"sample conformal quantile and a minimum of {itv['min_calib_janelas']} calibration "
+        f"windows declared before the analysis was run. Rows are ordered by weighted interval "
+        f"score, which differs from the ordering by point error reported in Table 1."
+    ).font.size = Pt(8)
+    return doc
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Pacote de submissao para a CSP")
     ap.add_argument("--out", default="build/csp")
@@ -772,6 +848,8 @@ def main() -> None:
     doc_texto.save(str(out / "CSP_texto.docx"))
     build_tabelas(v).save(str(out / "CSP_tabelas.docx"))
     build_legendas(v).save(str(out / "CSP_legendas_figuras.docx"))
+    if v.get("intervalos"):
+        build_suplementar(v).save(str(out / "CSP_material_suplementar.docx"))
 
     for destino, origem in FIG_SRC.items():
         alvo = figs_out / f"{destino.replace(' ', '')}.png"

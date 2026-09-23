@@ -526,6 +526,41 @@ def main() -> None:
         100.0 * sum(por_sitio[s]["obitos"] for s in SITES) / por_sitio["agregado"]["obitos"], 1
     )
 
+    # Intervalos conformais, gerados por scripts/run_intervals.py. Resultado
+    # secundario: entra no texto em frases e numa tabela suplementar, sem
+    # consumir nenhuma das 5 ilustracoes que a CSP permite.
+    p_int = RESULTS / "intervals_2010_2019_report.json"
+    if p_int.exists():
+        rel = json.loads(p_int.read_text(encoding="utf-8"))
+        dentro = {d["model"]: d for d in rel["dentro_do_regime"]}
+        fora = {d["model"]: d for d in rel.get("fora_do_regime", [])}
+        cobs = {p: [dentro[m][f"cobertura_{p}"] for m in dentro] for p in (50, 80, 95)}
+        pior_wis = max(dentro, key=lambda m: dentro[m]["WIS"])
+        v["intervalos"] = {
+            "escala": rel["escala"],
+            "min_calib_janelas": rel["min_calib_janelas"],
+            "n_avaliado_por_modelo": int(next(iter(dentro.values()))["n_avaliado"]),
+            "dentro": dentro,
+            "fora": fora,
+            "faixa_cobertura": {
+                f"n{p}": [round(min(cobs[p]), 3), round(max(cobs[p]), 3)] for p in (50, 80, 95)
+            },
+            "pior_wis": {"model": pior_wis, "valor": round(dentro[pior_wis]["WIS"], 1)},
+            "wis_seasonal_naive": round(dentro["seasonal_naive"]["WIS"], 1),
+            "posicao_wis": [
+                m for m in sorted(dentro, key=lambda x: dentro[x]["WIS"])
+            ],
+            "cobertura_95_fora": (
+                round(rel["cobertura_95_media"]["fora"], 3)
+                if "cobertura_95_media" in rel else None
+            ),
+            "n_fora_por_modelo": (
+                int(next(iter(fora.values()))["n_avaliado"]) if fora else None
+            ),
+        }
+    else:
+        v["intervalos"] = None
+
     reg = pd.read_csv(RESULTS / "regime_test_2020_2023_full_metrics.csv").set_index("model")
     v["teste_regime"] = {
         "treino_ate": "2019-12",

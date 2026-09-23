@@ -92,6 +92,17 @@ def main() -> None:
     for a, val in co["obitos_por_ano"].items():
         esperar(f"obitos em {a}", f"{val:,}")
 
+    itv = v.get("intervalos")
+    if itv:
+        fx = itv["faixa_cobertura"]
+        for nivel in ("n50", "n80", "n95"):
+            esperar(f"cobertura minima {nivel}", f"{fx[nivel][0]:.3f}")
+            esperar(f"cobertura maxima {nivel}", f"{fx[nivel][1]:.3f}")
+        esperar("pior WIS", f"{itv['pior_wis']['valor']:.1f}")
+        esperar("WIS do ingenuo sazonal", f"{itv['wis_seasonal_naive']:.1f}")
+        esperar("cobertura 95 fora do regime", f"{itv['cobertura_95_fora']:.3f}")
+        esperar("n avaliado por modelo", str(itv["n_avaliado_por_modelo"]))
+
     faltando = [(r, x) for r, x in checagens if x not in txt]
     print(f"Numeros conferidos: {len(checagens)}")
     print(f"Encontrados no documento: {len(checagens) - len(faltando)}")
@@ -121,7 +132,10 @@ def main() -> None:
     print(f"figuras ausentes:                           {ausentes_fig}")
     print(f"paragrafos:                                 {len(doc.paragraphs)}")
 
-    ok = not faltando and tem_ln and tem_pg and figs == 5 and tabs == 5 and ausentes_fig == 0
+    # 6 tabelas desde que a calibracao de intervalo entrou como Table 6.
+    n_tab_esperado = 6 if v.get("intervalos") else 5
+    ok = (not faltando and tem_ln and tem_pg and figs == 5
+          and tabs == n_tab_esperado and ausentes_fig == 0)
     print("\nVEREDITO: " + ("estrutura e numeros OK" if ok else "REVISAR os itens acima"))
     raise SystemExit(0 if ok else 1)
 

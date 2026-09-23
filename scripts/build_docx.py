@@ -256,6 +256,7 @@ def build(v: dict) -> tuple[Document, dict]:
     crit = ba["criterio"]
     ext = v["extrapolacao"]
     cross = v["conferencia_tabnet"]
+    itv = v["intervalos"]
     tend = v["tendencia_pre_pandemia"]
     sit = v["sitios"]
     reg = v["teste_regime"]
@@ -737,6 +738,43 @@ def build(v: dict) -> tuple[Document, dict]:
         f"its count size, with no evidence of error cancellation between sites nor of additional "
         f"structural predictability.",
     )
+    if itv:
+        fx = itv["faixa_cobertura"]
+        pos_sn = itv["posicao_wis"].index("seasonal_naive") + 1
+        heading(doc, "Calibration of prediction intervals", level=2)
+        body(
+            doc,
+            f"Conformal prediction intervals calibrated only on earlier windows reached "
+            f"empirical coverage between {fx['n95'][0]:.3f} and {fx['n95'][1]:.3f} at the 95% "
+            f"nominal level and between {fx['n80'][0]:.3f} and {fx['n80'][1]:.3f} at 80%, "
+            f"stable across the six horizons; at the 50% level calibration was poor, ranging "
+            f"from {fx['n50'][0]:.3f} to {fx['n50'][1]:.3f}. Ranking the models by weighted "
+            f"interval score reordered the lower group: the linear trend, fourth by point "
+            f"error, had the worst interval score of the seven "
+            f"({itv['pior_wis']['valor']:.1f}), while the seasonal naive baseline, last by "
+            f"point error, ranked {pos_sn}th ({itv['wis_seasonal_naive']:.1f}). Applying the "
+            f"same intervals to the first {itv['n_fora_por_modelo']} months of 2020 with "
+            f"training frozen at December 2019, coverage at the 95% level fell to "
+            f"{itv['cobertura_95_fora']:.3f} for all seven models.",
+        )
+        linhas_itv = []
+        for m in itv["posicao_wis"]:
+            d = itv["dentro"][m]
+            linhas_itv.append([
+                LABEL[m], f"{d['cobertura_50']:.3f}", f"{d['cobertura_80']:.3f}",
+                f"{d['cobertura_95']:.3f}", f"{d['largura_95']:.0f}", f"{d['WIS']:.1f}",
+            ])
+        add_table(
+            doc,
+            ["Model", "Cov. 50%", "Cov. 80%", "Cov. 95%", "Width 95%", "WIS"],
+            linhas_itv, "Table 6.",
+            f"Coverage, width and weighted interval score of conformal prediction intervals "
+            f"over {itv['n_avaliado_por_modelo']} forecasts per model, 2010-2019. Nominal "
+            f"coverage is 0.500, 0.800 and 0.950; widths and WIS are in deaths per month. "
+            f"Rows are ordered by weighted interval score, which differs from the ordering by "
+            f"point error in Table 2.",
+        )
+        stats["tabelas"] += 1
     add_figure(
         doc, "fig4_sites", "Figure 4.",
         "Left: sMAPE of the best model against mean monthly deaths, with the curve expected if "
@@ -849,8 +887,9 @@ def build(v: dict) -> tuple[Document, dict]:
         "improved on it here. Planning applications that need site-specific forecasts should "
         "expect materially worse accuracy, and for the smallest site examined no method "
         "outperformed repeating the previous year. Any deployment should be paired with "
-        "monitoring for regime change, because the models that fit the stable period best were "
-        "the ones that failed hardest when the trend broke.",
+        "monitoring for regime change. The intervals did not widen in time to absorb the break, "
+        "so interval coverage cannot serve as that monitoring signal on its own, and the models "
+        "that fit the stable period best were the ones that failed hardest when the trend broke.",
     )
     body(
         doc,

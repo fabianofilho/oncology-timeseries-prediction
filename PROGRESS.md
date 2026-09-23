@@ -1,6 +1,6 @@
 # PROGRESS
 
-Última atualização: 2026-09-18. Commit de referência: `f5c7221`.
+Última atualização: 2026-09-23. Commit de referência: `ecf9789` mais a revisão de robustez.
 
 ## Objetivo
 
@@ -23,6 +23,8 @@ Análise concluída e manuscrito montado. Alvo escolhido: Cadernos de Saúde Pú
 | Manuscrito .docx de revisão (18 páginas) | feito, `build/manuscript.docx` |
 | Pacote de submissão da CSP (4 arquivos) | feito, `build/csp/` |
 | Conferência contra o TabNet | feita, bate exato nos 14 anos |
+| Revisão de robustez (4 etapas) | feita em 2026-09-23 |
+| Intervalos de predição conformais | feitos, cobertura 0,911 a 0,961 a 95% |
 
 Achado principal: não há vencedor. Existe um degrau entre os modelos que representam a
 série (SARIMA, TimesFM, Prophet) e os que não representam (tendência linear, CatBoost,
@@ -50,6 +52,19 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      distinção entre duas definições de população e não erro de extração. Isso também
      corrigiu uma imprecisão: o manuscrito não dizia que a base é por residência, e agora
      diz. Relatório em `results/tabnet_crosscheck.json`.
+
+### 2b. Revisão de robustez, feita em 2026-09-23
+
+- Benchmark agora falha na hora se um modelo perde qualquer janela. CSVs publicados
+  regerados e idênticos byte a byte.
+- XGBoost reproduz o valor publicado (3.112688870260289, diferença zero), mas depende do
+  número de threads, amplitude de 0,032 pp. Versão fixada em 3.4.1, documentado em
+  `docs/xgboost_reprodutibilidade.md`.
+- Intervalos conformais em `src/onco_timeseries/intervals.py`, calibrados só com janelas
+  anteriores. Dentro do regime a cobertura a 95% fica entre 0,911 e 0,961; fora do regime
+  cai para 0,500 nos sete modelos. O WIS reordena o grupo de baixo.
+- Parágrafo de limitação de hiperparâmetros em `docs/limitacao_hiperparametros.md`, sem
+  rodar Optuna. Aguardando resposta na LAB-128 sobre rodar a diferenciação aqui.
 
 ### 3. Melhoram o manuscrito, não bloqueiam
 
