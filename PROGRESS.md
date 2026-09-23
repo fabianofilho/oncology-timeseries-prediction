@@ -64,7 +64,8 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
   anteriores. Dentro do regime a cobertura a 95% fica entre 0,911 e 0,961; fora do regime
   cai para 0,500 nos sete modelos. O WIS reordena o grupo de baixo.
 - Parágrafo de limitação de hiperparâmetros em `docs/limitacao_hiperparametros.md`, sem
-  rodar Optuna. Aguardando resposta na LAB-128 sobre rodar a diferenciação aqui.
+  rodar Optuna. A LAB-128 foi fechada sem executar nada, porque o cardiovascular já
+  testou a diferenciação sazonal e ela não passa no critério.
 
 ### 3. Melhoram o manuscrito, não bloqueiam
 
@@ -78,7 +79,10 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
 4.1. LAB-135: decidir a métrica do critério. O bootstrap usa sMAPE, que fica cego em série
      com surto. Bloqueia qualquer publicação que inclua dengue, não bloqueia esta.
-4.2. LAB-128: testar boosting sobre a série diferenciada, com condição de parada declarada.
+4.2. LAB-128: FECHADA como Canceled em 2026-09-23. Não vale rodar a diferenciação aqui:
+     o cardiovascular já testou 12 variantes de boosting, incluindo a diferença sazonal,
+     e nenhuma passou no critério. O achado ficou em `docs/limitacao_hiperparametros.md`
+     e já está aplicado no manuscrito.
 4.3. LAB-120: relatório comparativo entre os três domínios, In Review, travado pela LAB-135.
 
 ## Decisões tomadas e por quê
@@ -106,7 +110,9 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
 - **Boosting no nível da série.** CatBoost e XGBoost fizeram 0 previsões acima do máximo do
   treino em 330, enquanto 26,7% das observações de teste estão acima dele. Limite estrutural
-  de árvore, não de tuning. Virou LAB-128.
+  de árvore, não de tuning. Virou LAB-128, fechada sem execução: o cardiovascular já testou
+  12 variantes, incluindo a diferença sazonal, e nenhuma bateu o ingênuo sazonal pelo
+  critério. A melhor delas, catboost_diff12, vai de 6,589 para 6,203 e ainda assim reprova.
 - **Sensibilidade com a série inteira** sem tratar o período pandêmico. Recomendada na
   LAB-114, nunca executada.
 - **Estratificação por sexo.** A hipótese de pulmão subir em mulheres e cair em homens
