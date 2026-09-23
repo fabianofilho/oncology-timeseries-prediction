@@ -108,3 +108,8 @@ paper:
 
 crosscheck:
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/crosscheck_tabnet.py
+
+.PHONY: intervals
+
+intervals:
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_intervals.py
