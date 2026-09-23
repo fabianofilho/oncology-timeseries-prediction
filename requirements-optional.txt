@@ -2,7 +2,7 @@ prophet>=1.1.5
 torch>=2.5.0
 timesfm @ git+https://github.com/google-research/timesfm.git
 skforecast>=0.14.0
-xgboost>=2.0.0
+xgboost==3.4.1  # fixado: o sMAPE varia com versao e threads, ver docs/xgboost_reprodutibilidade.md
 catboost>=1.2.0
 
 # Testes. A suite nao precisa de statsmodels, prophet nem timesfm de proposito:
