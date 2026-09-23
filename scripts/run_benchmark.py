@@ -136,6 +136,17 @@ def build_models(model_names: list[str]):
     return models
 
 
+class BacktestIncompleto(RuntimeError):
+    """Um modelo nao produziu previsao em todas as janelas exigidas.
+
+    Existe para a falha ser visivel na hora. Antes, uma janela que estourava
+    excecao era registrada como aviso e o backtest seguia, produzindo uma tabela
+    de metricas com menos previsoes que as demais. O run_uncertainty aborta
+    depois nesse caso, entao nenhum numero publicado corria risco, mas o
+    benchmark terminava com codigo zero fingindo sucesso.
+    """
+
+
 def run_backtest(
     series: pd.Series,
     model,
@@ -150,16 +161,24 @@ def run_backtest(
     y_true_all = []
     y_pred_all = []
     rows = []
+    falhas: list[tuple[int, str]] = []
 
-    for window_id, (train, test) in enumerate(
+    janelas = list(
         rolling_origin_splits(
             series,
             horizon=horizon,
             min_train_size=min_train_size,
             max_train_size=max_train_size,
-        ),
-        start=1,
-    ):
+        )
+    )
+    n_esperado = len(janelas)
+    if n_esperado == 0:
+        raise BacktestIncompleto(
+            f"{label}: nenhuma janela de rolling origin para serie de {len(series)} pontos "
+            f"com min_train_size={min_train_size} e horizon={horizon}."
+        )
+
+    for window_id, (train, test) in enumerate(janelas, start=1):
         try:
             if exog is not None:
                 exog_train, exog_future = build_exog_frames(
@@ -174,18 +193,21 @@ def run_backtest(
             else:
                 y_pred = model.forecast(train, horizon=len(test))
         except Exception as exc:
-            print(f"[WARN] Falha em {label} (janela {window_id}): {exc}")
+            print(f"[ERRO] Falha em {label} (janela {window_id}): {exc}")
+            falhas.append((window_id, f"excecao: {exc}"))
             continue
 
         y_true = test.to_numpy(dtype=float)
         y_pred = np.asarray(y_pred, dtype=float)
 
         if len(y_pred) != len(y_true):
-            print(f"[WARN] Tamanho inválido em {label}: pred={len(y_pred)} true={len(y_true)}")
+            print(f"[ERRO] Tamanho inválido em {label}: pred={len(y_pred)} true={len(y_true)}")
+            falhas.append((window_id, f"tamanho {len(y_pred)} != {len(y_true)}"))
             continue
 
         if not np.all(np.isfinite(y_pred)):
-            print(f"[WARN] Previsão não-finita em {label} (janela {window_id}); janela descartada")
+            print(f"[ERRO] Previsão não-finita em {label} (janela {window_id})")
+            falhas.append((window_id, "previsao nao-finita"))
             continue
 
         # Diagnóstico (substitui o antigo clamp, que corrigia valores só para
@@ -214,8 +236,18 @@ def run_backtest(
                 }
             )
 
-    if not y_true_all:
-        return None, pd.DataFrame(rows)
+    # Exigencia de completude: o numero de janelas com previsao tem que ser
+    # exatamente o numero de janelas do rolling origin. Faltando qualquer uma,
+    # a tabela de metricas nao e comparavel com a dos outros modelos.
+    n_obtido = len(y_true_all)
+    if n_obtido != n_esperado:
+        detalhe = "; ".join(f"janela {w}: {m}" for w, m in falhas[:5])
+        if len(falhas) > 5:
+            detalhe += f"; e mais {len(falhas) - 5}"
+        raise BacktestIncompleto(
+            f"{label}: {n_obtido} de {n_esperado} janelas com previsao. "
+            f"Faltaram {n_esperado - n_obtido}. {detalhe}"
+        )
 
     y_true_cat = np.concatenate(y_true_all)
     y_pred_cat = np.concatenate(y_pred_all)
@@ -240,7 +272,19 @@ def main() -> None:
         freq=args.freq,
     )
 
-    models = build_models(args.models.split(","))
+    pedidos = [m.strip().lower() for m in args.models.split(",") if m.strip()]
+    models = build_models(pedidos)
+
+    # Modelo pedido que nao carregou nao pode sumir da tabela em silencio: foi
+    # assim que XGBoost e CatBoost ficaram de fora do benchmark real no projeto
+    # cardiovascular sem que a tabela dissesse isso.
+    ausentes = [m for m in pedidos if m not in {mod.name for mod in models}]
+    if ausentes:
+        raise SystemExit(
+            f"[ERRO] Modelos pedidos que nao puderam ser construidos: {ausentes}. "
+            "Instale as dependencias ou remova-os de --models; rodar sem eles "
+            "produziria uma tabela incompleta sem aviso."
+        )
 
     exog = None
     if args.exog_csv:
@@ -274,18 +318,23 @@ def main() -> None:
         if max_train is not None:
             label = f"{label}_slide{max_train}"
         print(f"[INFO] Rodando backtest para: {label}")
-        metric_row, pred_df = run_backtest(
-            series=series,
-            model=model,
-            horizon=args.horizon,
-            min_train_size=args.min_train_size,
-            model_label=label,
-            exog=exog,
-            exog_policy=args.exog_policy,
-            max_train_size=max_train,
-        )
-        if metric_row is not None:
-            metrics_rows.append(metric_row)
+        try:
+            metric_row, pred_df = run_backtest(
+                series=series,
+                model=model,
+                horizon=args.horizon,
+                min_train_size=args.min_train_size,
+                model_label=label,
+                exog=exog,
+                exog_policy=args.exog_policy,
+                max_train_size=max_train,
+            )
+        except BacktestIncompleto as exc:
+            # Sai na hora, com codigo diferente de zero. Gravar um CSV parcial
+            # seria pior: ele parece valido e so quebra no passo seguinte.
+            raise SystemExit(f"[ERRO] Backtest incompleto, nada foi gravado. {exc}") from exc
+
+        metrics_rows.append(metric_row)
         if not pred_df.empty:
             preds_frames.append(pred_df)
 
