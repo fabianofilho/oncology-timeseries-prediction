@@ -91,13 +91,19 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
 ### 4. Continuam o projeto, fora do manuscrito atual
 
-4.1. LAB-135: decidir a métrica do critério. O bootstrap usa sMAPE, que fica cego em série
-     com surto. Bloqueia qualquer publicação que inclua dengue, não bloqueia esta.
+4.1. LAB-135: FEITA em 2026-09-28. Opção 3, concordância entre sMAPE e MAE, registrada na
+     issue antes de aplicar. Os 9 vereditos regerados dos mesmos CSVs, sem rodar modelo: a
+     v1 reproduz par a par o que estava publicado, e a v2 não muda nenhum par de câncer
+     (agregado, sítios, domínio) nem de cardiovascular. Dengue: 1 confirmado e 8
+     discordantes. Achado: em dengue o DM, que já usa erro absoluto, também quase não passa
+     (TimesFM contra ingênuo sazonal em 1 de 6 horizontes), então nem um critério só de MAE
+     confirmaria o TimesFM ali.
 4.2. LAB-128: FECHADA como Canceled em 2026-09-23. Não vale rodar a diferenciação aqui:
      o cardiovascular já testou 12 variantes de boosting, incluindo a diferença sazonal,
      e nenhuma passou no critério. O achado ficou em `docs/limitacao_hiperparametros.md`
      e já está aplicado no manuscrito.
-4.3. LAB-120: relatório comparativo entre os três domínios, In Review, travado pela LAB-135.
+4.3. LAB-120: relatório comparativo entre os três domínios, In Review. Destravada pela
+     LAB-135 em 2026-09-28; falta revisar o texto do relatório com os discordantes.
 
 ## Decisões tomadas e por quê
 

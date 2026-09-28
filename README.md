@@ -122,11 +122,11 @@ As séries de cardiovascular (CPT) e dengue (DFP) foram rerodadas por este mesmo
 comparadas a partir dos números que cada projeto publicou. Janela comum 2010-02 a 2019-12,
 119 pontos, 54 janelas, 324 previsões por modelo.
 
-| Domínio | Amplitude máx/mín | Razão sMAPE contra o baseline | Pares confirmados | Batem o ingênuo sazonal |
-|---|---:|---:|---|---|
-| Câncer | 1,4 | 0,474 | 13 de 21 | sarima, prophet, timesfm |
-| Cardiovascular | 1,5 | 0,795 | 9 de 21 | nenhum |
-| Dengue | 140,8 | 0,935 | 1 de 21 | nenhum |
+| Domínio | Amplitude máx/mín | Razão sMAPE contra o baseline | Pares confirmados | Discordantes sMAPE x MAE | Batem o ingênuo sazonal |
+|---|---:|---:|---|---|---|
+| Câncer | 1,4 | 0,474 | 13 de 21 | 0 de 21 | sarima, prophet, timesfm |
+| Cardiovascular | 1,5 | 0,795 | 9 de 21 | 0 de 21 | nenhum |
+| Dengue | 140,8 | 0,935 | 1 de 21 | 8 de 21 | nenhum |
 
 **Dos três domínios, só em câncer algum modelo bate o baseline trivial de forma
 confirmada.** Em cardiovascular o SARIMA erra 20% menos e mesmo assim não passa: o DM fica
@@ -134,8 +134,12 @@ abaixo de 0,05 em apenas 2 dos 6 horizontes.
 
 Em dengue o vencedor muda com a métrica (XGBoost por sMAPE, TimesFM por MAE e RMSE, com
 razão 0,62 e 0,56). Com 52% dos meses abaixo de 1.000 casos, o sMAPE é dominado pelos
-vales. Isso é limitação do critério deste projeto, não do TimesFM, e está registrado como
-questão aberta antes de qualquer publicação que inclua dengue.
+vales. Isso era limitação do critério, não do TimesFM, e foi resolvido na LAB-135: o
+critério passou a exigir que sMAPE e MAE concordem, e os pares em que discordam viram
+resultado próprio, "discordante". Em dengue são 8 de 21, entre eles TimesFM contra o
+ingênuo sazonal. Mesmo assim o TimesFM não seria confirmado nem por um critério só de MAE:
+o Diebold-Mariano, que já usa erro absoluto, passa em apenas 1 dos 6 horizontes. Em câncer
+e cardiovascular a regra nova não muda nenhum dos pares.
 
 ## Diferença em relação ao projeto cardiovascular
 
@@ -211,8 +215,13 @@ make test
 - **Métricas**: MAE, RMSE, sMAPE
 - **Incerteza**: bootstrap por bloco reamostrando janelas inteiras (B = 10.000), mais
   Diebold-Mariano por horizonte com correção de Harvey
-- **Critério pré-declarado**: uma melhoria só conta como confirmada se o IC95% da diferença
-  exclui zero e o DM fica abaixo de 0,05 em 3 ou mais dos 6 horizontes
+- **Critério pré-declarado** (v1, LAB-118): uma melhoria só conta como confirmada se o IC95%
+  da diferença de sMAPE exclui zero e o DM, sobre erro absoluto, fica abaixo de 0,05 em 3 ou
+  mais dos 6 horizontes
+- **Critério v2** (LAB-135, registrado antes de ser aplicado): soma a exigência de que o
+  IC95% da diferença de MAE também exclua zero, com o mesmo sinal. Se só uma das duas
+  métricas vê diferença, o par é "discordante". Regra em `src/onco_timeseries/criterion.py`;
+  os JSONs de veredito trazem a v2 em `confirmado` e a v1 em `confirmado_v1`
 
 Esse critério é declarado antes de rodar, de propósito. No projeto cardiovascular, a
 primeira leitura dos resultados afirmou vitória de um modelo que o intervalo de confiança

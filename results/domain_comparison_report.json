@@ -12,6 +12,7 @@
       "razao_mae": 0.483,
       "metrica_concorda": true,
       "pares_confirmados": "13/21",
+      "pares_discordantes": "0/21",
       "batem_o_baseline": [
         "prophet",
         "sarima",
@@ -30,6 +31,7 @@
       "razao_mae": 0.793,
       "metrica_concorda": true,
       "pares_confirmados": "9/21",
+      "pares_discordantes": "0/21",
       "batem_o_baseline": []
     },
     {
@@ -44,6 +46,7 @@
       "razao_mae": 0.622,
       "metrica_concorda": false,
       "pares_confirmados": "1/21",
+      "pares_discordantes": "8/21",
       "batem_o_baseline": []
     }
   ]

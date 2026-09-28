@@ -8,7 +8,8 @@ Reporta tres coisas separadas, porque elas respondem perguntas diferentes:
 2. Razao contra o ingenuo sazonal do proprio dominio: quanto modelar adianta ali.
    Essa e a comparacao valida entre dominios.
 3. Quantos pares o criterio pre-declarado confirma: se ha estrutura suficiente
-   para distinguir modelo nenhum.
+   para distinguir modelo nenhum. Desde a LAB-135 o criterio exige sMAPE e MAE
+   concordando; os pares em que as duas metricas discordam sao contados a parte.
 """
 from __future__ import annotations
 
@@ -31,7 +32,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def confirmados(path: Path, smape_por_modelo: pd.Series) -> tuple[int, int, list[str]]:
+def confirmados(path: Path, smape_por_modelo: pd.Series) -> tuple[int, int, int, list[str]]:
     """Modelos que batem o baseline: diferenca confirmada E sMAPE menor.
 
     Um par confirmado so diz que a diferenca existe, nao em que direcao. Checar a
@@ -49,7 +50,8 @@ def confirmados(path: Path, smape_por_modelo: pd.Series) -> tuple[int, int, list
         outro = partes[0] if partes[1] == BASELINE else partes[1]
         if smape_por_modelo[outro] < smape_por_modelo[BASELINE]:
             batem.append(outro)
-    return len(conf), len(pares), sorted(set(batem))
+    n_disc = sum(1 for p in pares if p.get("veredito") == "discordante")
+    return len(conf), len(pares), n_disc, sorted(set(batem))
 
 
 def main() -> None:
@@ -60,7 +62,7 @@ def main() -> None:
     linhas = []
     for dom in DOMINIOS:
         m = pd.read_csv(rd / f"benchmark_dominio_{dom}_{args.periodo}_metrics.csv").set_index("model")
-        n_conf, n_par, batem = confirmados(
+        n_conf, n_par, n_disc, batem = confirmados(
             rd / f"criterion_verdict_dominio_{dom}_{args.periodo}.json", m.smape
         )
 
@@ -82,6 +84,7 @@ def main() -> None:
                 "razao_mae": round(float(m.mae.min()) / base_mae, 3),
                 "metrica_concorda": melhor_smape == melhor_mae,
                 "pares_confirmados": f"{n_conf}/{n_par}",
+                "pares_discordantes": f"{n_disc}/{n_par}",
                 "batem_o_baseline": batem,
             }
         )
@@ -101,7 +104,8 @@ def main() -> None:
     print("\n3. Ha estrutura para distinguir modelos?\n")
     for _, r in res.iterrows():
         b = ", ".join(r["batem_o_baseline"]) if r["batem_o_baseline"] else "NENHUM"
-        print(f"   {r['dominio']:<16} {r['pares_confirmados']:>6} pares confirmados | batem o ingenuo sazonal: {b}")
+        print(f"   {r['dominio']:<16} {r['pares_confirmados']:>6} pares confirmados | "
+              f"{r['pares_discordantes']:>6} discordantes entre sMAPE e MAE | batem o ingenuo sazonal: {b}")
 
     disc = res[~res.metrica_concorda]
     if len(disc):

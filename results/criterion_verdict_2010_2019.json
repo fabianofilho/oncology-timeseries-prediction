@@ -1,8 +1,14 @@
 {
   "criterio": {
+    "versao": 2,
     "alpha": 0.05,
     "min_horizontes": 3,
-    "metrica_bootstrap": "smape"
+    "metricas_bootstrap": [
+      "smape",
+      "mae"
+    ],
+    "perda_dm": "erro absoluto",
+    "decisao": "LAB-135, registrada em 2026-09-28 antes de ser aplicada"
   },
   "pares": [
     {
@@ -10,48 +16,78 @@
       "diferenca": -0.186,
       "ic95": "[-0.290, -0.091]",
       "ic_exclui_zero": true,
+      "diferenca_mae": -8.096,
+      "ic95_mae": "[-12.711, -3.828]",
+      "ic_mae_exclui_zero": true,
       "dm_abaixo_alpha": "1/6",
-      "confirmado": false
+      "veredito": "nao_confirmado",
+      "confirmado": false,
+      "confirmado_v1": false
     },
     {
       "par": "sarima_menos_linear_trend",
       "diferenca": -1.243,
       "ic95": "[-1.420, -1.069]",
       "ic_exclui_zero": true,
+      "diferenca_mae": -55.95,
+      "ic95_mae": "[-63.895, -48.142]",
+      "ic_mae_exclui_zero": true,
       "dm_abaixo_alpha": "6/6",
-      "confirmado": true
+      "veredito": "confirmado",
+      "confirmado": true,
+      "confirmado_v1": true
     },
     {
       "par": "sarima_menos_seasonal_naive",
       "diferenca": -1.711,
       "ic95": "[-1.979, -1.448]",
       "ic_exclui_zero": true,
+      "diferenca_mae": -74.793,
+      "ic95_mae": "[-86.017, -63.646]",
+      "ic_mae_exclui_zero": true,
       "dm_abaixo_alpha": "6/6",
-      "confirmado": true
+      "veredito": "confirmado",
+      "confirmado": true,
+      "confirmado_v1": true
     },
     {
       "par": "prophet_menos_linear_trend",
       "diferenca": -1.056,
       "ic95": "[-1.261, -0.844]",
       "ic_exclui_zero": true,
+      "diferenca_mae": -47.855,
+      "ic95_mae": "[-57.209, -38.203]",
+      "ic_mae_exclui_zero": true,
       "dm_abaixo_alpha": "6/6",
-      "confirmado": true
+      "veredito": "confirmado",
+      "confirmado": true,
+      "confirmado_v1": true
     },
     {
       "par": "prophet_menos_seasonal_naive",
       "diferenca": -1.525,
       "ic95": "[-1.811, -1.225]",
       "ic_exclui_zero": true,
+      "diferenca_mae": -66.698,
+      "ic95_mae": "[-79.082, -53.558]",
+      "ic_mae_exclui_zero": true,
       "dm_abaixo_alpha": "6/6",
-      "confirmado": true
+      "veredito": "confirmado",
+      "confirmado": true,
+      "confirmado_v1": true
     },
     {
       "par": "linear_trend_menos_seasonal_naive",
       "diferenca": -0.468,
       "ic95": "[-0.744, -0.208]",
       "ic_exclui_zero": true,
+      "diferenca_mae": -18.843,
+      "ic95_mae": "[-30.750, -7.676]",
+      "ic_mae_exclui_zero": true,
       "dm_abaixo_alpha": "0/6",
-      "confirmado": false
+      "veredito": "nao_confirmado",
+      "confirmado": false,
+      "confirmado_v1": false
     }
   ]
 }
