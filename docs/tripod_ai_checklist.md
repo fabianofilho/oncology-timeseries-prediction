@@ -13,16 +13,16 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 
 | Situação | Itens |
 |---|---|
-| OK | 1, 2, 3a, 4, 5a, 5b, 6a, 6b, 7, 8a, 9a, 10, 11, 12a, 12c, 12e, 12g, 15, 16, 18e, 18f, 20a, 20b, 21, 22, 23a, 23b, 25, 26 |
+| OK | 1, 2, 3a, 4, 5a, 5b, 6a, 6b, 7, 8a, 9a, 10, 11, 12a, 12c, 12e, 12g, 15, 16, 17, 18c, 18d, 18e, 18f, 19, 20a, 20b, 21, 22, 23a, 23b, 25, 26 |
 | Parcial | 3b, 3c, 12b, 27c |
-| Falta, depende do Fabiano | 17, 18a, 18b, 18c, 18d, 19 |
+| Falta, depende do Fabiano | 18a, 18b |
 | N/A | 6c, 8b, 8c, 9b, 9c, 12d, 12f, 13, 14, 20c, 24, 27a, 27b |
 
 ## Item a item
 
 | Item | Situação | Onde está, ou o que falta |
 |---|---|---|
-| 1 Título | OK, com ressalva | Identifica avaliação de modelos, população (SP) e desfecho. **Diz "pre-registered", mas não há registro em repositório de protocolos**: ver 18d |
+| 1 Título | OK | Identifica avaliação de modelos, população (SP) e desfecho. "Pre-registered" virou "pre-specified" em 2026-09-28, porque não há registro em repositório de protocolos |
 | 2 Resumo | OK | Três resumos não estruturados, como a CSP exige |
 | 3a Contexto e modelos existentes | OK | Introdução, parágrafo 1: carga (ref. 1) e projeções publicadas na CSP (refs. 2 e 3) |
 | 3b População-alvo e usuários | Parcial | O uso (planejamento) aparece; o usuário (gestor, vigilância) fica implícito na Discussão |
@@ -51,14 +51,14 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 | 14 Equidade | N/A | Desfecho agregado. Dá para declarar isso numa frase, se o revisor pedir |
 | 15 Saída do modelo | OK | Contagem pontual mais intervalos |
 | 16 Diferença entre treino e avaliação | OK | Teste fora do regime |
-| 17 Ética | **Falta** | O texto diz que o dado é público e anonimizado, mas não cita a dispensa. Proposta abaixo |
+| 17 Ética | OK | Fim dos Métodos: dispensa de CEP pela Res. CNS 510/2016 |
 | 18a Financiamento | **Falta** | `[PENDING]` |
 | 18b Conflitos | **Falta** | `[PENDING]` |
-| 18c Protocolo | **Falta** | Proposta abaixo |
-| 18d Registro | **Falta** | Proposta abaixo; afeta o título |
+| 18c Protocolo | OK | Fim dos Métodos: sem protocolo publicado; decisões registradas no issue tracker e no git antes do benchmark |
+| 18d Registro | OK | Mesma frase: estudo não registrado |
 | 18e Dados | OK | Série agregada no GitHub; microdado no DataSUS |
 | 18f Código | OK, trocar na submissão | O texto aponta o commit `81f5937`, que é antigo. Trocar pelo commit com tag da submissão |
-| 19 Envolvimento do público | **Falta** | Proposta abaixo |
+| 19 Envolvimento do público | OK | Additional information |
 | 20a Fluxo | OK | 4.317.224 registros, 741.313 elegíveis |
 | 20b Características | OK | Média, faixa e total por ano |
 | 20c Comparação com o desenvolvimento | N/A | Mesma base |
@@ -72,21 +72,18 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 | 27a, 27b Uso na prática | N/A | Não é ferramenta implantada |
 | 27c Próximos passos | Parcial | Monitoramento de mudança de regime está na Discussão; não há um "próximos estudos" explícito |
 
-## Texto proposto para os itens que faltam
+## De onde vem a frase de protocolo
 
-Não entrou no manuscrito porque são afirmações que só os autores podem fazer.
+"The training cutoff, the model set and the criterion for a confirmed difference were
+recorded in the project's issue tracker and version history before the benchmark was run."
+Conferido em 2026-09-28 pelos timestamps:
 
-**17 Ética.** "In accordance with Resolution 510/2016 of the Brazilian National Health Council,
-research using publicly available data without identifiable information does not require
-review by a research ethics committee."
+| Registro | Criado (UTC) |
+|---|---|
+| LAB-114, desfecho, recorte e período | 2026-08-18 09:33 |
+| LAB-117, TimesFM e boosting no mesmo protocolo | 2026-08-18 09:34 |
+| LAB-118, critério escrito por extenso (IC95% exclui zero E DM < 0,05 em 3 de 6 horizontes) | 2026-08-18 09:35 |
+| Primeiro commit do benchmark, `0e39333` | 2026-08-18 10:42 |
 
-**18c Protocolo e 18d Registro.** "No formal protocol was published and the study was not
-registered. The training cutoff, the model set and the criterion for a confirmed difference
-were recorded in the project's issue tracker and version history before the benchmark was
-run."
-
-**Título, por causa do 18d.** Trocar "a pre-registered comparison" por "a pre-specified
-comparison". "Pre-registered" sugere registro em repositório de protocolos (OSF,
-PROSPERO), que não existe, e o revisor pode pedir o número.
-
-**19 Envolvimento do público.** "There was no patient or public involvement in this study."
+A LAB-118 tem `updatedAt` em 2026-08-19 15:26:30.642Z, o mesmo instante da criação da
+LAB-135: é o vínculo entre as duas, não edição do critério.

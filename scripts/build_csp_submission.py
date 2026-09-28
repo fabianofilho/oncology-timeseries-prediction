@@ -369,7 +369,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run(
-        "Forecasting monthly cancer mortality in São Paulo State, Brazil: a pre-registered "
+        "Forecasting monthly cancer mortality in São Paulo State, Brazil: a pre-specified "
         "comparison of seven models against trivial baselines"
     )
     r.bold = True
@@ -559,8 +559,15 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"aggregated series are available at "
         f"https://github.com/fabianofilho/oncology-timeseries-prediction (commit {v['_commit']}). "
         f"Individual death records are not redistributed and the aggregated series contains no "
-        f"identifiable information. The study used publicly available, anonymised, aggregated "
-        f"records and did not involve human participants directly.",
+        f"identifiable information. In accordance with Resolution 510/2016 of the Brazilian "
+        f"National Health Council, research using publicly available data without identifiable "
+        f"information does not require review by a research ethics committee.",
+    )
+    body(
+        doc,
+        "No formal protocol was published and the study was not registered. The training "
+        "cutoff, the model set and the criterion for a confirmed difference were recorded in "
+        "the project's issue tracker and version history before the benchmark was run.",
     )
 
     h(doc, "Results")
@@ -733,6 +740,11 @@ def build_texto(v: dict) -> tuple[Document, int]:
         "output, verified every reported number against the analysis code, and take full "
         "responsibility for the content.",
         lead="Use of artificial intelligence. ",
+    )
+    body(
+        doc,
+        "There was no patient or public involvement in this study.",
+        lead="Patient and public involvement. ",
     )
     for titulo in ("Contributors. ", "Funding. ", "Conflict of interests. ", "Acknowledgments. "):
         p = doc.add_paragraph()

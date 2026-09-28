@@ -40,10 +40,11 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      estruturados e com o mínimo de siglas, como ela pede. Revisar a tradução.
 1.2. Autoria, afiliações, ORCID, contribuições (CRediT), financiamento, conflitos e
      agradecimentos. São os 5 marcadores `[PENDING]` restantes. Só o Fabiano resolve.
-1.2b. Quatro declarações do TRIPOD+AI que só os autores fazem, com texto proposto em
-     `docs/tripod_ai_checklist.md`: ética (Res. CNS 510/2016), protocolo, registro e
-     envolvimento do público. Junto, decidir o título: "pre-registered" sugere registro que
-     não existe; a proposta é "pre-specified".
+1.2b. FEITO em 2026-09-28, aprovado pelo Fabiano. Título com "pre-specified" no lugar de
+     "pre-registered" (nos dois geradores), e as quatro declarações do TRIPOD+AI no texto:
+     ética (Res. CNS 510/2016) e protocolo/registro no fim dos Métodos, envolvimento do
+     público em Additional information. A frase de protocolo foi conferida contra os
+     timestamps do Linear e do git (ver `docs/tripod_ai_checklist.md`).
 1.2c. Na hora de submeter, trocar o commit `81f5937` citado no texto pelo commit com tag.
 1.3. Decidir a seção: "Artigo" ou "Questões Metodológicas". O documento da seção
      metodológica descreve como típico a proposta de um método novo, e este paper compara

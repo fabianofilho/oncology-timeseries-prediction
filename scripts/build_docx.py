@@ -266,7 +266,7 @@ def build(v: dict) -> tuple[Document, dict]:
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run(
         "Forecasting monthly cancer mortality in Sao Paulo State, Brazil: "
-        "a pre-registered comparison of seven models against trivial baselines"
+        "a pre-specified comparison of seven models against trivial baselines"
     )
     r.bold = True
     r.font.size = Pt(15)
