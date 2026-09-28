@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -89,21 +90,42 @@ FIG_SRC = {
     "Figure 3": "fig4_sites.png",
 }
 
-REFERENCES = [
-    "Collins GS, Moons KGM, Dhiman P, Riley RD, Beam AL, Van Calster B, et al. TRIPOD+AI "
-    "statement: updated guidance for reporting clinical prediction models that use regression "
-    "or machine learning methods. BMJ 2024; 385:e078378.",
-    "Diebold FX, Mariano RS. Comparing predictive accuracy. J Bus Econ Stat 1995; 13:253-63.",
-    "Harvey D, Leybourne S, Newbold P. Testing the equality of prediction mean squared errors. "
-    "Int J Forecast 1997; 13:281-91.",
-    "Hyndman RJ, Koehler AB. Another look at measures of forecast accuracy. Int J Forecast "
-    "2006; 22:679-88.",
-    "Taylor SJ, Letham B. Forecasting at scale. Am Stat 2018; 72:37-45.",
-    "Makridakis S, Spiliotis E, Assimakopoulos V. The M4 Competition: 100,000 time series and "
-    "61 forecasting methods. Int J Forecast 2020; 36:54-74.",
-    "Das A, Kong W, Sen R, Zhou Y. A decoder-only foundation model for time-series forecasting. "
-    "arXiv:2310.10688 [cs.CL]. 2023.",
-]
+# A CSP exige referencias numeradas na ordem em que aparecem no texto, em arabicos
+# sobrescritos. Por isso o texto cita por chave, [@chave], e o numero sai da ordem de
+# aparicao em cite_runs(). A ordem deste dicionario nao importa.
+REFERENCES = {
+    "guerra2017": "Guerra MR, Bustamante-Teixeira MT, Corrêa CSL, Abreu DMX, Curado MP, "
+    "Mooney M, et al. Magnitude and variation of the burden of cancer mortality in Brazil and "
+    "Federation Units, 1990 and 2015. Rev Bras Epidemiol 2017; 20 Suppl 1:102-15.",
+    "jerezroig2014": "Jerez-Roig J, Souza DL, Medeiros PF, Barbosa IR, Curado MP, Costa IC, "
+    "et al. Future burden of prostate cancer mortality in Brazil: a population-based study. "
+    "Cad Saúde Pública 2014; 30:2451-8.",
+    "reis2026": "Reis RS, Lima FCDS, Silva DHND, Scaff AJM, Szklo AS. Projections for lung "
+    "cancer mortality in Brazil by 2045: a regional analysis. Cad Saúde Pública 2026; "
+    "42:e00199725.",
+    "lima2014": "Lima EEC, Queiroz BL. Evolution of the deaths registry system in Brazil: "
+    "associations with changes in the mortality profile, under-registration of death counts, "
+    "and ill-defined causes of death. Cad Saúde Pública 2014; 30:1721-30.",
+    "collins2024": "Collins GS, Moons KGM, Dhiman P, Riley RD, Beam AL, Van Calster B, et al. "
+    "TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use "
+    "regression or machine learning methods. BMJ 2024; 385:e078378.",
+    "diebold1995": "Diebold FX, Mariano RS. Comparing predictive accuracy. J Bus Econ Stat "
+    "1995; 13:253-63.",
+    "harvey1997": "Harvey D, Leybourne S, Newbold P. Testing the equality of prediction mean "
+    "squared errors. Int J Forecast 1997; 13:281-91.",
+    "hyndman2006": "Hyndman RJ, Koehler AB. Another look at measures of forecast accuracy. "
+    "Int J Forecast 2006; 22:679-88.",
+    "taylor2018": "Taylor SJ, Letham B. Forecasting at scale. Am Stat 2018; 72:37-45.",
+    "makridakis2020": "Makridakis S, Spiliotis E, Assimakopoulos V. The M4 Competition: 100,000 "
+    "time series and 61 forecasting methods. Int J Forecast 2020; 36:54-74.",
+    "bracher2021": "Bracher J, Ray EL, Gneiting T, Reich NG. Evaluating epidemic forecasts in "
+    "an interval format. PLoS Comput Biol 2021; 17:e1008618.",
+    "das2023": "Das A, Kong W, Sen R, Zhou Y. A decoder-only foundation model for time-series "
+    "forecasting. arXiv:2310.10688 [cs.CL]. 2023.",
+}
+CITE = re.compile(r" ?\[@([a-z0-9]+(?:,@[a-z0-9]+)*)\]")
+# ordem de primeira citacao; build_texto() zera no inicio
+CITADAS: list[str] = []
 
 
 # --------------------------------------------------------------------------- #
@@ -154,12 +176,33 @@ def h(doc, text, size=13):
     return p
 
 
+def cite_runs(p, text, ordem):
+    """Escreve text em p trocando cada [@chave] ou [@a,@b] por numero sobrescrito.
+
+    O numero e a posicao da chave em ordem, que cresce na primeira citacao. Chave
+    desconhecida derruba o build, para nao sair referencia fantasma.
+    """
+    pos = 0
+    for m in CITE.finditer(text):
+        p.add_run(text[pos:m.start()])
+        numeros = []
+        for chave in m.group(1).split(",@"):
+            if chave not in REFERENCES:
+                raise KeyError(f"citacao sem referencia: {chave}")
+            if chave not in ordem:
+                ordem.append(chave)
+            numeros.append(str(ordem.index(chave) + 1))
+        p.add_run(",".join(numeros)).font.superscript = True
+        pos = m.end()
+    p.add_run(text[pos:])
+
+
 def body(doc, text, lead=None):
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     if lead:
         p.add_run(lead).bold = True
-    p.add_run(text)
+    cite_runs(p, text, CITADAS)
     return p
 
 
@@ -227,34 +270,39 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
     n_conf, n_par = crit["pares_confirmados"], crit["pares_total"]
     pct_acima = ext["_observacoes_acima_do_max_treino"]["pct"]
 
+    # Portugues e espanhol usam ponto no milhar e virgula no decimal.
+    n_obitos_lat = n_obitos.replace(",", ".")
+    erro_lat = f"{sa['point']:.2f}".replace(".", ",")
+    acima_lat = str(pct_acima).replace(".", ",")
+
     pt = (
-        f"Previsoes de mortalidade por cancer orientam o planejamento de servicos, mas "
+        f"Previsões de mortalidade por câncer orientam o planejamento de serviços, mas "
         f"raramente testam se o modelo ajustado supera um comparador trivial, e raramente "
-        f"informam se a diferenca entre modelos resiste a uma medida de incerteza. Extraimos "
-        f"do Sistema de Informacoes sobre Mortalidade todos os obitos por neoplasia maligna "
-        f"(CID-10 C00-C97) de residentes no Estado de Sao Paulo entre {co['anos'][0]} e "
-        f"{co['anos'][1]}, num total de {n_obitos} obitos e {n_meses} observacoes mensais, que "
-        f"reproduziram os dados oficiais sem diferenca. Como a pandemia representa uma ruptura "
-        f"estrutural, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. Comparamos "
-        f"sete metodos sob um unico protocolo de validacao por origem movel, com {n_jan} "
-        f"janelas e {n_prev} previsoes cada, medindo a incerteza por reamostragem de janelas "
-        f"inteiras. Declaramos, antes de ver resultado, que uma diferenca so contaria como "
-        f"confirmada se o intervalo de confianca excluisse o zero e o teste por horizonte "
-        f"tambem a detectasse. O modelo sazonal classico teve o menor erro percentual, de "
-        f"{sa['point']:.2f}%. O criterio confirmou {n_conf} das {n_par} comparacoes, e o padrao "
-        f"foi de dois grupos e nao de um ordenamento: os metodos que representam a serie nao se "
-        f"distinguiram entre si, os que nao a representam tampouco, e toda comparacao entre "
-        f"grupos foi confirmada. As arvores potencializadas nao superaram o comparador "
-        f"trivial porque nunca preveem acima do maximo ja observado, que {pct_acima}% das "
-        f"observacoes de teste superam. Nenhum modelo pode ser declarado o melhor: o que os "
-        f"dados sustentam e um degrau entre representar e nao representar a serie."
+        f"informam se a diferença entre modelos resiste a uma medida de incerteza. Extraímos "
+        f"do Sistema de Informações sobre Mortalidade todos os óbitos por neoplasia maligna "
+        f"(CID-10 C00-C97) de residentes no Estado de São Paulo entre {co['anos'][0]} e "
+        f"{co['anos'][1]}, num total de {n_obitos_lat} óbitos e {n_meses} observações mensais, "
+        f"que reproduziram os dados oficiais sem diferença. Como a pandemia representa uma "
+        f"ruptura estrutural, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. "
+        f"Comparamos sete métodos sob um único protocolo de validação por origem móvel, com "
+        f"{n_jan} janelas e {n_prev} previsões cada, medindo a incerteza por reamostragem de "
+        f"janelas inteiras. Declaramos, antes de ver resultado, que uma diferença só contaria "
+        f"como confirmada se o intervalo de confiança excluísse o zero e o teste por horizonte "
+        f"também a detectasse. O modelo sazonal clássico teve o menor erro percentual, de "
+        f"{erro_lat}%. O critério confirmou {n_conf} das {n_par} comparações, e o padrão foi de "
+        f"dois grupos e não de um ordenamento: os métodos que representam a série não se "
+        f"distinguiram entre si, os que não a representam tampouco, e toda comparação entre "
+        f"grupos foi confirmada. As árvores potencializadas não superaram o comparador "
+        f"trivial porque nunca preveem acima do máximo já observado, que {acima_lat}% das "
+        f"observações de teste superam. Nenhum modelo pode ser declarado o melhor: o que os "
+        f"dados sustentam é um degrau entre representar e não representar a série."
     )
     en = (
         f"Forecasts of cancer mortality inform health service planning, yet forecasting studies "
         f"rarely test whether a fitted model outperforms a trivial comparator, and rarely report "
         f"whether an observed difference between models survives a measure of uncertainty. We "
         f"extracted from the Mortality Information System all deaths from malignant neoplasms "
-        f"(ICD-10 C00-C97) among residents of Sao Paulo State between {co['anos'][0]} and "
+        f"(ICD-10 C00-C97) among residents of São Paulo State between {co['anos'][0]} and "
         f"{co['anos'][1]}, totalling {n_obitos} deaths and {n_meses} monthly observations, which "
         f"reproduced the official figures with no difference at all. Because the pandemic is a "
         f"structural break, model fitting was restricted to the {n_treino} months from 2010 to "
@@ -272,32 +320,33 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"series: what the data support is a step between representing and not representing it."
     )
     es = (
-        f"Las proyecciones de mortalidad por cancer orientan la planificacion de servicios, pero "
-        f"los estudios de prediccion raramente comprueban si el modelo ajustado supera a un "
-        f"comparador trivial, y raramente informan si la diferencia observada entre modelos "
-        f"resiste una medida de incertidumbre. Extrajimos del Sistema de Informacion sobre "
+        f"Las proyecciones de mortalidad por cáncer orientan la planificación de servicios, "
+        f"pero los estudios de predicción raramente comprueban si el modelo ajustado supera a "
+        f"un comparador trivial, y raramente informan si la diferencia observada entre modelos "
+        f"resiste una medida de incertidumbre. Extrajimos del Sistema de Información sobre "
         f"Mortalidad todas las muertes por neoplasia maligna (CIE-10 C00-C97) de residentes del "
-        f"Estado de Sao Paulo entre {co['anos'][0]} y {co['anos'][1]}, un total de {n_obitos} "
-        f"muertes y {n_meses} observaciones mensuales, que reprodujeron las cifras oficiales sin "
-        f"diferencia alguna. Dado que la pandemia constituye una ruptura estructural, el ajuste "
-        f"se restringio a los {n_treino} meses de 2010 a 2019. Comparamos siete metodos de "
-        f"prediccion bajo un unico protocolo de validacion de origen movil, con {n_jan} ventanas "
-        f"y {n_prev} predicciones cada uno, y medimos la incertidumbre remuestreando ventanas "
-        f"completas. Declaramos, antes de ver resultado alguno, que una diferencia solo contaria "
-        f"como confirmada si el intervalo de confianza excluia el cero y la prueba por horizonte "
-        f"tambien la detectaba. El modelo estacional clasico tuvo el menor error porcentual, "
-        f"{sa['point']:.2f}%. El criterio confirmo {n_conf} de {n_par} comparaciones, y el patron "
-        f"fue de dos grupos y no de un ordenamiento: los metodos que representan la serie no se "
-        f"distinguieron entre si, los que no la representan tampoco, y toda comparacion entre "
-        f"ambos grupos fue confirmada. Los arboles potenciados no superaron al comparador trivial "
-        f"porque nunca predicen por encima del maximo ya observado, que {pct_acima}% de las "
-        f"observaciones de prueba superan. Ningun modelo puede declararse el mejor."
+        f"Estado de São Paulo entre {co['anos'][0]} y {co['anos'][1]}, un total de "
+        f"{n_obitos_lat} muertes y {n_meses} observaciones mensuales, que reprodujeron las "
+        f"cifras oficiales sin diferencia alguna. Dado que la pandemia constituye una ruptura "
+        f"estructural, el ajuste se restringió a los {n_treino} meses de 2010 a 2019. "
+        f"Comparamos siete métodos de predicción bajo un único protocolo de validación de "
+        f"origen móvil, con {n_jan} ventanas y {n_prev} predicciones cada uno, y medimos la "
+        f"incertidumbre remuestreando ventanas completas. Declaramos, antes de ver resultado "
+        f"alguno, que una diferencia solo contaría como confirmada si el intervalo de confianza "
+        f"excluía el cero y la prueba por horizonte también la detectaba. El modelo estacional "
+        f"clásico tuvo el menor error porcentual, {erro_lat}%. El criterio confirmó {n_conf} de "
+        f"{n_par} comparaciones, y el patrón fue de dos grupos y no de un ordenamiento: los "
+        f"métodos que representan la serie no se distinguieron entre sí, los que no la "
+        f"representan tampoco, y toda comparación entre ambos grupos fue confirmada. Los "
+        f"árboles potenciados no superaron al comparador trivial porque nunca predicen por "
+        f"encima del máximo ya observado, que {acima_lat}% de las observaciones de prueba "
+        f"superan. Ningún modelo puede declararse el mejor."
     )
     return [
-        ("Resumo", pt, "Neoplasias; Mortalidade; Previsoes; Sistemas de Informacao",
+        ("Resumo", pt, "Neoplasias; Mortalidade; Previsões; Sistemas de Informação",
          "Palavras-chave: "),
         ("Abstract", en, "Neoplasms; Mortality; Forecasting; Information Systems", "Keywords: "),
-        ("Resumen", es, "Neoplasias; Mortalidad; Predicciones; Sistemas de Informacion",
+        ("Resumen", es, "Neoplasias; Mortalidad; Predicciones; Sistemas de Información",
          "Palabras clave: "),
     ]
 
@@ -310,6 +359,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     rm = reg["por_modelo"]
     cross = v["conferencia_tabnet"]
     itv = v["intervalos"]
+    CITADAS.clear()
     razoes = [sit[s]["obs_sobre_poisson"] for s in SITES]
 
     doc = base_doc()
@@ -319,7 +369,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run(
-        "Forecasting monthly cancer mortality in Sao Paulo State, Brazil: a pre-registered "
+        "Forecasting monthly cancer mortality in São Paulo State, Brazil: a pre-registered "
         "comparison of seven models against trivial baselines"
     )
     r.bold = True
@@ -338,27 +388,32 @@ def build_texto(v: dict) -> tuple[Document, int]:
     h(doc, "Introduction")
     p = body(
         doc,
-        "Cancer mortality in Brazil has risen steadily for two decades, driven largely by "
-        "population ageing, and projections of that trajectory feed decisions about oncology "
-        "capacity, screening and palliative care provision.",
+        "Age-standardised cancer mortality rates in Brazil stayed broadly stable from 1990 to "
+        "2015 in Global Burden of Disease estimates [@guerra2017], so the growth in the number "
+        "of cancer deaths reflects population growth and ageing more than rising risk. "
+        "Projections published in this journal, using age-period-cohort models over five-year "
+        "periods, anticipate more prostate and lung cancer deaths in Brazil even where "
+        "age-adjusted rates fall [@jerezroig2014,@reis2026]. Those projections feed decisions "
+        "about oncology capacity, screening and palliative care provision over decades; "
+        "monthly forecasts over a horizon of months serve operational planning and pose a "
+        "different methodological question.",
     )
-    flag(p, "referencia para a carga e a tendencia de mortalidade por cancer no Brasil (INCA)")
     p = body(
         doc,
         "The Mortality Information System records every registered death with an underlying "
-        "cause coded in ICD-10, and its coverage in Sao Paulo State makes an aggregate monthly "
-        "series available over more than a decade.",
+        "cause coded in ICD-10. Its completeness exceeded 95% nationally in 2000-2010 and is "
+        "highest in the South and Southeast, which includes São Paulo State [@lima2014], so an "
+        "aggregate monthly series is available there over more than a decade.",
     )
-    flag(p, "referencia para cobertura e completude do SIM em Sao Paulo")
 
     body(
         doc,
         "Forecasting such series has become methodologically crowded. Seasonal ARIMA remains "
-        "the reference, decomposition approaches such as Prophet are widely deployed 5, "
+        "the reference, decomposition approaches such as Prophet are widely deployed [@taylor2018], "
         "gradient boosting over lagged features is a common default, and time-series foundation "
-        "models now offer zero-shot forecasts without any fitting on the target series 7. "
+        "models now offer zero-shot forecasts without any fitting on the target series [@das2023]. "
         "Large-scale forecasting competitions have repeatedly found that method complexity and "
-        "accuracy are only loosely related, and that simple benchmarks are hard to beat 6.",
+        "accuracy are only loosely related, and that simple benchmarks are hard to beat [@makridakis2020].",
     )
     body(
         doc,
@@ -368,11 +423,11 @@ def build_texto(v: dict) -> tuple[Document, int]:
         "differences are reported as point estimates, without uncertainty and without a rule, "
         "fixed in advance, for what magnitude counts as real. A difference of a few tenths of a "
         "percentage point in symmetric mean absolute percentage error is easy to present as a "
-        "winner and easy to be noise 4.",
+        "winner and easy to be noise [@hyndman2006].",
     )
     body(
         doc,
-        "We compared seven forecasters of monthly cancer mortality in Sao Paulo State under a "
+        "We compared seven forecasters of monthly cancer mortality in São Paulo State under a "
         "single rolling-origin protocol, including two deliberately trivial baselines, with "
         "uncertainty measured by block bootstrap and a criterion for a confirmed difference "
         "declared before any result was inspected. We additionally asked whether the accuracy "
@@ -383,7 +438,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     h(doc, "Methods")
     body(
         doc,
-        "Reporting follows TRIPOD+AI 1 where applicable. TRIPOD+AI was designed for "
+        "Reporting follows TRIPOD+AI [@collins2024] where applicable. TRIPOD+AI was designed for "
         "individual-level clinical prediction models, whereas the outcome here is an aggregate "
         "monthly count, so items concerning participants, individually measured predictors, "
         "events per variable and calibration of individual risks do not apply and are not "
@@ -392,7 +447,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     body(
         doc,
         f"We used the Mortality Information System (SIM/DataSUS), by state of residence, "
-        f"restricted to Sao Paulo State for {co['anos'][0]} to {co['anos'][1]}. Annual files "
+        f"restricted to São Paulo State for {co['anos'][0]} to {co['anos'][1]}. Annual files "
         f"were downloaded from the DataSUS "
         f"public server and decoded locally. The outcome was the monthly count of deaths whose "
         f"underlying cause carried an ICD-10 code beginning with \"{co['cid_prefixo']}\", that "
@@ -407,7 +462,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"{co['anos'][1]}). An automated plausibility check passed "
         f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions. "
         f"We cross-checked the annual counts against the figures published by the Ministry of "
-        f"Health through TabNet for the same selection (Sao Paulo, ICD-10 groups covering "
+        f"Health through TabNet for the same selection (São Paulo, ICD-10 groups covering "
         f"C00-C97): our series reproduced the official deaths-by-residence figures exactly in "
         f"all {cross['anos_conferidos']} years, with a difference of zero and a total of "
         f"{n(cross['total_tabnet_residencia'])} in both. The deaths-by-occurrence view of the "
@@ -438,9 +493,11 @@ def build_texto(v: dict) -> tuple[Document, int]:
         "fitted line is expected to be competitive, and a model that cannot beat it has not "
         "shown that the series has structure worth modelling. The remaining five were SARIMA "
         "with multiplicative seasonality (order (1,1,1), seasonal order (0,1,1,12)), Prophet "
-        "with yearly seasonality only 5, TimesFM 2.5 (200M parameters) applied zero-shot with "
-        "no fitting on the target series 7, and XGBoost and CatBoost as recursive multi-step "
-        "forecasters over 12 lagged values. Hyperparameters were fixed a priori and not tuned, "
+        "with yearly seasonality only [@taylor2018], TimesFM 2.5 (200M parameters) applied zero-shot with "
+        "no fitting on the target series [@das2023], and XGBoost and CatBoost as recursive multi-step "
+        "forecasters over 12 lagged values. All seven were univariate: they used only past "
+        "values of the series, with no covariates. Hyperparameters were fixed a priori and not "
+        "tuned, "
         "so the comparison is between reasonable default configurations.",
     )
     body(
@@ -452,15 +509,15 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"and produced the same number of forecasts, so the comparison is paired, and no model "
         f"had access to any observation after the end of its training window. Accuracy was "
         f"summarised with mean absolute error, root mean squared error and symmetric mean "
-        f"absolute percentage error, whose limitations are well documented 4.",
+        f"absolute percentage error, whose limitations are well documented [@hyndman2006].",
     )
     body(
         doc,
         f"Forecasts from the same origin are dependent across horizons, so we resampled whole "
         f"windows rather than individual forecasts, drawing B = {ci['sarima']['B']} bootstrap "
         f"replicates with the same resampled windows for every model within each replicate and "
-        f"a fixed seed. We additionally applied the Diebold-Mariano test 2 at each horizon with "
-        f"the Harvey small-sample correction 3. We declared, before running the benchmark and "
+        f"a fixed seed. We additionally applied the Diebold-Mariano test [@diebold1995] at each horizon with "
+        f"the Harvey small-sample correction [@harvey1997]. We declared, before running the benchmark and "
         f"before any result was inspected, that an improvement counts as confirmed only if the "
         f"95% confidence interval of the sMAPE difference excludes zero AND the "
         f"Diebold-Mariano p value falls below {crit['alpha']} in at least "
@@ -470,6 +527,18 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"horizon or comes from a single point. We stated in advance that if no model passed, "
         f"the finding would be that the models tie.",
     )
+    if itv:
+        body(
+            doc,
+            f"Prediction intervals were built by conformal calibration on the absolute-scale "
+            f"residuals that each model produced, at the same horizon, in earlier windows only, "
+            f"with a finite-sample conformal quantile and a minimum of "
+            f"{itv['min_calib_janelas']} calibration windows fixed before the analysis, which "
+            f"leaves {itv['n_avaliado_por_modelo']} evaluable forecasts per model. We report "
+            f"empirical coverage at nominal levels of 50%, 80% and 95% and the weighted interval "
+            f"score [@bracher2021], which rewards narrow intervals and penalises observations "
+            f"that fall outside them.",
+        )
     body(
         doc,
         f"We repeated the identical protocol on the four highest-volume tumour sites, excluding "
@@ -596,7 +665,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     body(
         doc,
         "Under a single backtesting protocol with uncertainty measured and a criterion fixed in "
-        "advance, no model of monthly cancer mortality in Sao Paulo State could be declared "
+        "advance, no model of monthly cancer mortality in São Paulo State could be declared "
         "best. What the data support is a step between models that represent the series and "
         "models that do not, and within each side of that step the models tie.",
     )
@@ -604,8 +673,8 @@ def build_texto(v: dict) -> tuple[Document, int]:
         doc,
         "This is consistent with the recurring finding of large forecasting competitions that "
         "the relationship between method complexity and accuracy is weak and that simple "
-        "benchmarks are competitive 6, and with the known limitations of percentage-based error "
-        "measures as a basis for cross-study comparison 4. Our contribution is not a new method "
+        "benchmarks are competitive [@makridakis2020], and with the known limitations of percentage-based error "
+        "measures as a basis for cross-study comparison [@hyndman2006]. Our contribution is not a new method "
         "but a demonstration that reporting conventions common in applied epidemiological "
         "forecasting would have produced a different and less defensible conclusion on the same "
         "data.",
@@ -626,8 +695,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"deaths-by-residence figures exactly, so extraction error is ruled out, but that "
         f"agreement says nothing about the underlying registration: if coding practice for "
         f"ill-defined cancer sites changed over the period, our series would carry that drift "
-        f"and every model would inherit it. The analysis covers one state, and Sao Paulo has "
-        f"better death registration coverage than most of Brazil, so error rates here are "
+        f"and every model would inherit it. The analysis covers one state, and São Paulo has "
+        f"better death registration coverage than most of Brazil [@lima2014], so error rates "
+        f"here are "
         f"probably optimistic relative to a national series. Hyperparameters were fixed rather "
         f"than tuned, which understates the attainable accuracy of the boosting models, although "
         f"it cannot remove their extrapolation ceiling. The regime-shift test rests on a single "
@@ -670,10 +740,13 @@ def build_texto(v: dict) -> tuple[Document, int]:
         flag(p, titulo.strip().rstrip(".").lower())
 
     h(doc, "References")
-    for i, ref in enumerate(REFERENCES, start=1):
+    sobra = set(REFERENCES) - set(CITADAS) - (set() if itv else {"bracher2021"})
+    if sobra:
+        raise ValueError(f"referencias nunca citadas no texto: {sorted(sobra)}")
+    for i, chave in enumerate(CITADAS, start=1):
         p = doc.add_paragraph()
         p.paragraph_format.line_spacing = 1.5
-        p.add_run(f"{i}. {ref}")
+        p.add_run(f"{i}. {REFERENCES[chave]}")
 
     # contagem de palavras no criterio da CSP: corpo + referencias
     palavras = sum(len(par.text.split()) for par in doc.paragraphs)
@@ -693,7 +766,7 @@ def build_tabelas(v: dict) -> Document:
     p = doc.add_paragraph()
     p.add_run(
         f"Forecast accuracy of seven models over {ba['n_janelas']} rolling-origin windows, "
-        f"monthly deaths from malignant neoplasms, Sao Paulo State, Brazil, 2010-2019."
+        f"monthly deaths from malignant neoplasms, São Paulo State, Brazil, 2010-2019."
     ).font.size = Pt(9)
 
     melhor = min(met, key=lambda m: met[m]["smape"])
@@ -761,7 +834,7 @@ def build_legendas(v: dict) -> Document:
 
     legendas = [
         ("Figure 1",
-         f"Monthly deaths from malignant neoplasms (ICD-10 C00-C97), Sao Paulo State, Brazil, "
+         f"Monthly deaths from malignant neoplasms (ICD-10 C00-C97), São Paulo State, Brazil, "
          f"{co['anos'][0]}-{co['anos'][1]}. The shaded area marks the "
          f"{co['pontos_serie_treino']} months used for model fitting and backtesting. The dashed "
          f"line is the {co['anos'][0]}-2019 annual linear trend (R2 = {tend['r2']}) extrapolated "
@@ -866,6 +939,10 @@ def main() -> None:
           f"   {'OK' if n_ilus <= LIMITE_ILUSTRACOES else 'EXCEDE'}")
     print(f"{'tamanho do arquivo de texto (MB)':<38}{tam_texto / 1e6:>6.2f}   limite 1.00"
           f"   {'OK' if tam_texto <= 1e6 else 'EXCEDE'}")
+    for titulo, corpo, _, _ in resumos(v):
+        np_ = len(corpo.split())
+        print(f"{'palavras do ' + titulo:<38}{np_:>6}   limite {LIMITE_RESUMO}"
+              f"   {'OK' if np_ <= LIMITE_RESUMO else 'EXCEDE'}")
     print()
     print("Ilustracoes mantidas:")
     for k, w in ILUSTRACOES.items():

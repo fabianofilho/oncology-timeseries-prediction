@@ -1,6 +1,6 @@
 # PROGRESS
 
-Última atualização: 2026-09-23. Commit de referência: `ecf9789` mais a revisão de robustez.
+Última atualização: 2026-09-28. Sessão de fechamento da submissão (LAB-169).
 
 ## Objetivo
 
@@ -25,6 +25,7 @@ Análise concluída e manuscrito montado. Alvo escolhido: Cadernos de Saúde Pú
 | Conferência contra o TabNet | feita, bate exato nos 14 anos |
 | Revisão de robustez (4 etapas) | feita em 2026-09-23 |
 | Intervalos de predição conformais | feitos, cobertura 0,911 a 0,961 a 95% |
+| Referências e checklist TRIPOD+AI | feitos em 2026-09-28, sobram 5 `[PENDING]`, todos de autoria |
 
 Achado principal: não há vencedor. Existe um degrau entre os modelos que representam a
 série (SARIMA, TimesFM, Prophet) e os que não representam (tendência linear, CatBoost,
@@ -38,7 +39,12 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      limite de 250 que a CSP define no documento de recomendação do resumo. Não
      estruturados e com o mínimo de siglas, como ela pede. Revisar a tradução.
 1.2. Autoria, afiliações, ORCID, contribuições (CRediT), financiamento, conflitos e
-     agradecimentos. São 5 dos 7 marcadores `[PENDING]` restantes. Só o Fabiano resolve.
+     agradecimentos. São os 5 marcadores `[PENDING]` restantes. Só o Fabiano resolve.
+1.2b. Quatro declarações do TRIPOD+AI que só os autores fazem, com texto proposto em
+     `docs/tripod_ai_checklist.md`: ética (Res. CNS 510/2016), protocolo, registro e
+     envolvimento do público. Junto, decidir o título: "pre-registered" sugere registro que
+     não existe; a proposta é "pre-specified".
+1.2c. Na hora de submeter, trocar o commit `81f5937` citado no texto pelo commit com tag.
 1.3. Decidir a seção: "Artigo" ou "Questões Metodológicas". O documento da seção
      metodológica descreve como típico a proposta de um método novo, e este paper compara
      métodos existentes. O texto dela cobre "análise, comparação ou desenvolvimento
@@ -69,10 +75,16 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
 ### 3. Melhoram o manuscrito, não bloqueiam
 
-3.1. Rodar `/paper check` contra o checklist completo do TRIPOD+AI antes de mandar para
-     coautor.
-3.2. Encontrar as 2 referências que faltam: carga e tendência de mortalidade por câncer no
-     Brasil (INCA), e cobertura e completude do SIM em São Paulo.
+3.1. FEITO em 2026-09-28. Checklist item a item em `docs/tripod_ai_checklist.md`, com a
+     lista oficial extraída do PMC. Dois buracos corrigidos no texto: o método dos
+     intervalos conformais e do WIS não estava nos Métodos, e não se dizia que os modelos
+     são univariados.
+3.2. FEITO em 2026-09-28. Guerra 2017 (GBD, taxas padronizadas estáveis 1990-2015) e Lima e
+     Queiroz 2014 (completude do SIM, melhor no Sul e Sudeste), conferidas no texto de
+     origem. Entraram também os dois precedentes da própria CSP, Jerez-Roig 2014 (próstata)
+     e Reis 2026 (pulmão), e Bracher 2021 para o WIS. Agora são 12 referências.
+3.4. O manuscrito de revisão (`scripts/build_docx.py`) não recebeu nada disso: ainda tem os
+     números de citação digitados e o `[PENDING]` do INCA. Só o pacote da CSP foi atualizado.
 3.3. `/eng` para polir o inglês.
 
 ### 4. Continuam o projeto, fora do manuscrito atual
@@ -98,6 +110,14 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 - **Corte de 10 para 5 ilustrações.** A CSP cobra taxa por excedente. O teste de regime
   perdeu tabela e figura e virou texto com números inline, porque material suplementar da
   CSP não pode carregar resultado principal.
+
+- **Citação por chave no pacote da CSP.** A CSP exige numeração na ordem de citação e em
+  sobrescrito. O texto citava 5, 7, 6, 4, 1, 2, 3 com números digitados. Agora cita
+  `[@chave]` e `cite_runs()` numera pela primeira aparição; chave desconhecida ou
+  referência nunca citada derruba o build.
+- **Resumo e Resumen com acento e número local** (741.313; 1,51%). Estavam em ASCII e com
+  separador em inglês. `LIMITE_RESUMO` existia mas nunca era conferido; agora o build
+  imprime a contagem dos três.
 
 ## Restrições ativas
 
