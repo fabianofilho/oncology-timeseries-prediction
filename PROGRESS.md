@@ -46,10 +46,11 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      público em Additional information. A frase de protocolo foi conferida contra os
      timestamps do Linear e do git (ver `docs/tripod_ai_checklist.md`).
 1.2c. Na hora de submeter, trocar o commit `81f5937` citado no texto pelo commit com tag.
-1.3. Decidir a seção: "Artigo" ou "Questões Metodológicas". O documento da seção
-     metodológica descreve como típico a proposta de um método novo, e este paper compara
-     métodos existentes. O texto dela cobre "análise, comparação ou desenvolvimento
-     metodológico", então continua defensável, mas menos óbvio do que eu disse antes.
+1.3. FEITO em 2026-09-28, decisão do Fabiano: Questões Metodológicas. A página de
+     instruções da CSP define a seção como "discussão, comparação ou avaliação de aspectos
+     metodológicos", incluindo análise de dados, com os mesmos limites do Artigo (6.000
+     palavras, 5 ilustrações). O pacote cabe como está. A seção não vai no manuscrito: é
+     escolhida no formulário, e o build imprime `SECAO` para lembrar.
 
 ### 2. Bloqueava a validade, e foi resolvido
 

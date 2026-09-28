@@ -5,7 +5,8 @@ A CSP exige os arquivos separados, e nao um manuscrito unico como o .docx de
 revisao. Regras aplicadas aqui, todas conferidas nas instrucoes aos autores em
 https://cadernos.ensp.fiocruz.br/ojs/index.php/csp/instrucoes-autores-ojs :
 
-  - secao Questoes Metodologicas ou Artigo: max 6.000 palavras e 5 ILUSTRACOES,
+  - secao Questoes Metodologicas (escolhida em 2026-09-28; Artigo tem os mesmos
+    limites): max 6.000 palavras e 5 ILUSTRACOES,
     contando tabelas e figuras juntas;
   - arquivo de texto com apenas corpo e referencias, Times New Roman 12,
     margens 2cm, entrelinhas 1,5, ate 1MB;
@@ -43,6 +44,9 @@ ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "paper"
 FIGURES = PAPER / "figures"
 
+# A secao nao vai no manuscrito, e escolhida no formulario de submissao. Fica aqui para
+# o build lembrar na hora de preencher.
+SECAO = "Questões Metodológicas"
 LIMITE_PALAVRAS = 6000
 LIMITE_ILUSTRACOES = 5
 # "O Resumo pode ter ate 250 palavras", e a CSP nao adota resumo estruturado.
@@ -944,6 +948,7 @@ def main() -> None:
     n_ilus = len(ILUSTRACOES)
 
     print(f"Pacote em {out}")
+    print(f"Seção a escolher no formulário da CSP: {SECAO}")
     print()
     print(f"{'palavras (corpo + referencias)':<38}{palavras:>6}   limite {LIMITE_PALAVRAS}"
           f"   {'OK' if palavras <= LIMITE_PALAVRAS else 'EXCEDE'}")
