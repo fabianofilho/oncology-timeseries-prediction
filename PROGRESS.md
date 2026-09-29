@@ -87,7 +87,11 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      e Reis 2026 (pulmão), e Bracher 2021 para o WIS. Agora são 12 referências.
 3.4. O manuscrito de revisão (`scripts/build_docx.py`) não recebeu nada disso: ainda tem os
      números de citação digitados e o `[PENDING]` do INCA. Só o pacote da CSP foi atualizado.
-3.3. `/eng` para polir o inglês.
+3.3. FEITO em 2026-09-28. `/eng` no inglês do pacote: uma frase agramatical ("easy to be
+     noise"), dois modificadores soltos, três orações coladas por vírgula, concordância,
+     artigos, "nor" depois de "no" e o "ranked 4th", que imprimiria "1th" se a posição
+     mudasse. Números idênticos antes e depois, conferido por extração. Grafia britânica
+     mantida, porque o texto já era consistente nela.
 
 ### 4. Continuam o projeto, fora do manuscrito atual
 

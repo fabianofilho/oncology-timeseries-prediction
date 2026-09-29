@@ -127,6 +127,7 @@ REFERENCES = {
     "das2023": "Das A, Kong W, Sen R, Zhou Y. A decoder-only foundation model for time-series "
     "forecasting. arXiv:2310.10688 [cs.CL]. 2023.",
 }
+ORDINAL = {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth", 7: "seventh"}
 CITE = re.compile(r" ?\[@([a-z0-9]+(?:,@[a-z0-9]+)*)\]")
 # ordem de primeira citacao; build_texto() zera no inicio
 CITADAS: list[str] = []
@@ -308,7 +309,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"extracted from the Mortality Information System all deaths from malignant neoplasms "
         f"(ICD-10 C00-C97) among residents of São Paulo State between {co['anos'][0]} and "
         f"{co['anos'][1]}, totalling {n_obitos} deaths and {n_meses} monthly observations, which "
-        f"reproduced the official figures with no difference at all. Because the pandemic is a "
+        f"matched the official figures exactly. Because the pandemic is a "
         f"structural break, model fitting was restricted to the {n_treino} months from 2010 to "
         f"2019. We compared seven forecasting methods under one rolling-origin protocol, with "
         f"{n_jan} windows and {n_prev} forecasts each, and measured uncertainty by resampling "
@@ -317,7 +318,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"detected it. The classical seasonal model had the lowest percentage error, "
         f"{sa['point']:.2f}%. The criterion confirmed {n_conf} of {n_par} comparisons, and the "
         f"pattern was two groups rather than a ranking: methods that represent the series were "
-        f"indistinguishable from one another, so were the methods that do not, and every "
+        f"indistinguishable from one another, as were those that do not, and every "
         f"comparison across the two groups was confirmed. Boosted trees did not beat the trivial "
         f"comparator because they never forecast above the maximum already observed, while "
         f"{pct_acima}% of test observations lie above it. No model can be declared best in this "
@@ -406,15 +407,15 @@ def build_texto(v: dict) -> tuple[Document, int]:
         doc,
         "The Mortality Information System records every registered death with an underlying "
         "cause coded in ICD-10. Its completeness exceeded 95% nationally in 2000-2010 and is "
-        "highest in the South and Southeast, which includes São Paulo State [@lima2014], so an "
+        "highest in the South and Southeast, which include São Paulo State [@lima2014], so an "
         "aggregate monthly series is available there over more than a decade.",
     )
 
     body(
         doc,
         "Forecasting such series has become methodologically crowded. Seasonal ARIMA remains "
-        "the reference, decomposition approaches such as Prophet are widely deployed [@taylor2018], "
-        "gradient boosting over lagged features is a common default, and time-series foundation "
+        "the reference; decomposition approaches such as Prophet are widely deployed [@taylor2018]; "
+        "gradient boosting over lagged features is a common default; and time-series foundation "
         "models now offer zero-shot forecasts without any fitting on the target series [@das2023]. "
         "Large-scale forecasting competitions have repeatedly found that method complexity and "
         "accuracy are only loosely related, and that simple benchmarks are hard to beat [@makridakis2020].",
@@ -426,8 +427,8 @@ def build_texto(v: dict) -> tuple[Document, int]:
         "whether the fitted model contributes anything beyond repeating last year. Second, "
         "differences are reported as point estimates, without uncertainty and without a rule, "
         "fixed in advance, for what magnitude counts as real. A difference of a few tenths of a "
-        "percentage point in symmetric mean absolute percentage error is easy to present as a "
-        "winner and easy to be noise [@hyndman2006].",
+        "percentage point in symmetric mean absolute percentage error can easily be presented as "
+        "a win when it is merely noise [@hyndman2006].",
     )
     body(
         doc,
@@ -479,10 +480,11 @@ def build_texto(v: dict) -> tuple[Document, int]:
         doc,
         f"Annual cancer deaths from {co['anos'][0]} to 2019 follow a near-linear trend of "
         f"{n(tend['slope_obitos_por_ano'])} additional deaths per year (R2 = {tend['r2']}). "
-        f"Extrapolating that line, 2020 fell {abs(tend['projecao']['2020']['dif_pct'])}% below "
+        f"Against that line extrapolated forward, 2020 fell "
+        f"{abs(tend['projecao']['2020']['dif_pct'])}% below "
         f"expectation and 2023 was still {abs(tend['projecao']['2023']['dif_pct'])}% below it; "
-        f"2020 was the only year of absolute decline ({tend['queda_2020_vs_2019_pct']}% against "
-        f"2019). Because mortality data alone cannot separate excess deaths among patients with "
+        f"2020 was the only year of absolute decline ({tend['queda_2020_vs_2019_pct']}% relative "
+        f"to 2019). Because mortality data alone cannot separate excess deaths among patients with "
         f"cancer from deaths displaced by interrupted diagnosis, and because the effect had not "
         f"resolved by the end of the series, we chose not to model the break: model fitting and "
         f"all backtesting were restricted to 2010-2019, and 2020-2023 was used only as an "
@@ -507,8 +509,8 @@ def build_texto(v: dict) -> tuple[Document, int]:
     body(
         doc,
         f"All models were evaluated by rolling-origin backtesting with an expanding window and "
-        f"a step of one month, minimum training length {ba['min_train']} months and horizon "
-        f"{ba['horizonte']} months, giving {ba['n_janelas']} windows and "
+        f"a step of one month, a minimum training length of {ba['min_train']} months and a "
+        f"horizon of {ba['horizonte']} months, giving {ba['n_janelas']} windows and "
         f"{ba['n_previsoes_por_modelo']} forecasts per model. Every model saw the same windows "
         f"and produced the same number of forecasts, so the comparison is paired, and no model "
         f"had access to any observation after the end of its training window. Accuracy was "
@@ -518,16 +520,16 @@ def build_texto(v: dict) -> tuple[Document, int]:
     body(
         doc,
         f"Forecasts from the same origin are dependent across horizons, so we resampled whole "
-        f"windows rather than individual forecasts, drawing B = {ci['sarima']['B']} bootstrap "
-        f"replicates with the same resampled windows for every model within each replicate and "
-        f"a fixed seed. We additionally applied the Diebold-Mariano test [@diebold1995] at each horizon with "
+        f"windows rather than individual forecasts, drawing B = {int(ci['sarima']['B']):,} "
+        f"bootstrap replicates with a fixed seed and the same resampled windows for every model "
+        f"within each replicate. We additionally applied the Diebold-Mariano test [@diebold1995] at each horizon with "
         f"the Harvey small-sample correction [@harvey1997]. We declared, before running the benchmark and "
         f"before any result was inspected, that an improvement counts as confirmed only if the "
         f"95% confidence interval of the sMAPE difference excludes zero AND the "
         f"Diebold-Mariano p value falls below {crit['alpha']} in at least "
         f"{crit['min_horizontes']} of the {ba['horizonte']} horizons. The two conditions test "
         f"different things: the bootstrap asks whether the average difference is "
-        f"distinguishable from zero, the horizon-wise test asks whether it persists across the "
+        f"distinguishable from zero; the horizon-wise test asks whether it persists across the "
         f"horizon or comes from a single point. We stated in advance that if no model passed, "
         f"the finding would be that the models tie.",
     )
@@ -546,8 +548,8 @@ def build_texto(v: dict) -> tuple[Document, int]:
     body(
         doc,
         f"We repeated the identical protocol on the four highest-volume tumour sites, excluding "
-        f"in advance any site averaging fewer than 30 deaths per month; no site met the "
-        f"exclusion. Because symmetric percentage error falls with count size by construction, "
+        f"in advance any site averaging fewer than 30 deaths per month; no site was "
+        f"excluded. Because symmetric percentage error falls with count size by construction, "
         f"we compared the observed ratio of site to aggregate sMAPE against the ratio expected "
         f"from counting noise alone, which for approximately Poisson counts scales as the square "
         f"root of the ratio of mean counts. Finally, we froze training at December 2019 and "
@@ -591,8 +593,8 @@ def build_texto(v: dict) -> tuple[Document, int]:
     body(
         doc,
         f"Of the {crit['pares_total']} pairwise comparisons, {crit['pares_confirmados']} met the "
-        f"pre-declared criterion. The {crit['pares_total'] - crit['pares_confirmados']} that did "
-        f"not do not scatter at random (Table 2): no comparison among SARIMA, TimesFM and "
+        f"pre-declared criterion. The {crit['pares_total'] - crit['pares_confirmados']} that "
+        f"failed are not scattered at random (Table 2): no comparison among SARIMA, TimesFM and "
         f"Prophet was confirmed, no comparison among linear trend, CatBoost, XGBoost and "
         f"seasonal naive was confirmed, and every comparison between a member of the first set "
         f"and a member of the second was. Five of the unconfirmed comparisons have a confidence "
@@ -604,9 +606,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
         doc,
         f"CatBoost and XGBoost were statistically indistinguishable from the seasonal naive "
         f"baseline. Their forecasts never exceeded the maximum value seen in the training "
-        f"window, {ext['catboost']['acima_do_max_treino']} and "
-        f"{ext['xgboost']['acima_do_max_treino']} times out of {ext['catboost']['total']} "
-        f"respectively, against {ext['prophet']['acima_do_max_treino']} for Prophet, "
+        f"window (in {ext['catboost']['acima_do_max_treino']} and "
+        f"{ext['xgboost']['acima_do_max_treino']} of {ext['catboost']['total']} forecasts, "
+        f"respectively), against {ext['prophet']['acima_do_max_treino']} for Prophet, "
         f"{ext['sarima']['acima_do_max_treino']} for SARIMA and "
         f"{ext['timesfm']['acima_do_max_treino']} for TimesFM, while "
         f"{ext['_observacoes_acima_do_max_treino']['pct']}% of test observations "
@@ -629,7 +631,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"stayed between {min(razoes):.2f} and {max(razoes):.2f} across the four sites, which "
         f"together account for {v['sitios_cobertura_pct']}% of cancer deaths, so the advantage "
         f"of the aggregate series is accounted for by its count size, with no evidence of error "
-        f"cancellation between sites nor of additional structural predictability (Figure 3).",
+        f"cancellation between sites or of additional structural predictability (Figure 3).",
     )
     if itv:
         fx = itv["faixa_cobertura"]
@@ -645,7 +647,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
             f"the models by weighted interval score reordered the lower group: the linear "
             f"trend, fourth by point error, had the worst interval score of the seven "
             f"({itv['pior_wis']['valor']:.1f}), while the seasonal naive baseline, last by "
-            f"point error, ranked {pos_sn}th ({itv['wis_seasonal_naive']:.1f}).",
+            f"point error, ranked {ORDINAL[pos_sn]} ({itv['wis_seasonal_naive']:.1f}).",
         )
 
     body(
@@ -666,8 +668,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
     if itv and itv["cobertura_95_fora"] is not None:
         body(
             doc,
-            f"Applying the same intervals to the first {itv['n_fora_por_modelo']} months of "
-            f"2020 with training frozen at December 2019, coverage at the 95% level fell to "
+            f"When the same intervals were applied to the first {itv['n_fora_por_modelo']} "
+            f"months of 2020, with training frozen at December 2019, coverage at the 95% level "
+            f"fell to "
             f"{itv['cobertura_95_fora']:.3f} for all seven models.",
         )
 
@@ -797,7 +800,7 @@ def build_tabelas(v: dict) -> Document:
     p.add_run(
         f"sMAPE: symmetric mean absolute percentage error; MAE: mean absolute error; RMSE: root "
         f"mean squared error; 95%CI: 95% confidence interval from a block bootstrap resampling "
-        f"whole rolling-origin windows, B = {ci['sarima']['B']}. Forecast horizon "
+        f"whole rolling-origin windows, B = {int(ci['sarima']['B']):,}. Forecast horizon "
         f"{ba['horizonte']} months, minimum training length {ba['min_train']} months. All models "
         f"were evaluated on identical windows. Bold marks the lowest point estimate, which is "
         f"not the same as the best model (Table 2)."
@@ -915,8 +918,8 @@ def build_suplementar(v: dict) -> Document:
     par.add_run(
         f"Nominal coverage is 0.500, 0.800 and 0.950. Widths and the weighted interval score "
         f"are in deaths per month. Intervals were calibrated on the absolute-scale residuals of "
-        f"earlier rolling-origin windows only, stratified by forecast horizon, with a finite "
-        f"sample conformal quantile and a minimum of {itv['min_calib_janelas']} calibration "
+        f"earlier rolling-origin windows only, stratified by forecast horizon, with a "
+        f"finite-sample conformal quantile and a minimum of {itv['min_calib_janelas']} calibration "
         f"windows declared before the analysis was run. Rows are ordered by weighted interval "
         f"score, which differs from the ordering by point error reported in Table 1."
     ).font.size = Pt(8)
