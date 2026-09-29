@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
-"""Confere o corpo do .docx contra paper/verified_numbers.json, numero por numero.
+"""Confere o pacote da CSP contra paper/verified_numbers.json, numero por numero.
 
 Passo obrigatorio antes de entregar: nao e feito de cabeca, e feito por este
-comparador. Le o .docx de volta (paragrafos e tabelas), procura cada valor que o
-JSON diz e reporta ausente ou divergente.
+comparador. Le de volta os quatro .docx do pacote (paragrafos e tabelas), procura
+cada valor que o JSON diz e reporta o que falta.
 
-Tambem valida a estrutura que o python-docx nao garante sozinho: numeracao de
-linha, campo de numero de pagina, figuras embutidas e tabelas nativas.
+Alguns numeros ficaram fora do pacote de proposito, no corte de 10 para 5
+ilustracoes (CORTADAS em build_csp_submission.py). Eles aparecem aqui com o motivo,
+para o corte ser visivel e nao ser confundido com esquecimento.
+
+Tambem valida a estrutura que a CSP exige e que o python-docx nao garante sozinho:
+numeracao de linha e numero de pagina no texto, tabelas nativas, figuras em arquivo
+separado com pelo menos 300 dpi.
+
+Ate 2026-09-28 conferia build/manuscript.docx, o manuscrito de revisao gerado por
+scripts/build_docx.py, aposentado nessa data: o pacote da CSP passou a ser a unica
+versao do texto.
 
 Uso:
-    python scripts/check_docx_numbers.py [--docx build/manuscript.docx]
+    python scripts/check_docx_numbers.py [--dir build/csp]
 """
 from __future__ import annotations
 
@@ -20,9 +29,14 @@ from pathlib import Path
 
 from docx import Document
 from docx.oxml.ns import qn
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "paper"
+ARQUIVOS = ("CSP_texto", "CSP_tabelas", "CSP_legendas_figuras", "CSP_material_suplementar")
+DPI_MINIMO = 300
+N_FIGURAS = 3
+N_TABELAS = 2
 
 
 def texto_completo(doc: Document) -> str:
@@ -34,22 +48,25 @@ def texto_completo(doc: Document) -> str:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Confere numeros do .docx")
-    ap.add_argument("--docx", default="build/manuscript.docx")
+    ap = argparse.ArgumentParser(description="Confere numeros do pacote da CSP")
+    ap.add_argument("--dir", default="build/csp")
     args = ap.parse_args()
+    pasta = ROOT / args.dir
 
     v = json.loads((PAPER / "verified_numbers.json").read_text(encoding="utf-8"))
-    doc = Document(str(ROOT / args.docx))
-    txt = texto_completo(doc)
+    docs = {nome: Document(str(pasta / f"{nome}.docx"))
+            for nome in ARQUIVOS if (pasta / f"{nome}.docx").exists()}
+    txt = "\n".join(texto_completo(d) for d in docs.values())
 
     co, ba = v["coorte"], v["benchmark_agregado"]
     ci, met, crit = ba["ci_smape"], ba["metricas"], ba["criterio"]
     ext, tend, sit, reg = v["extrapolacao"], v["tendencia_pre_pandemia"], v["sitios"], v["teste_regime"]
 
-    checagens: list[tuple[str, str]] = []
+    checagens: list[tuple[str, str, str | None]] = []
 
-    def esperar(rotulo: str, valor: str) -> None:
-        checagens.append((rotulo, valor))
+    def esperar(rotulo: str, valor: str, fora: str | None = None) -> None:
+        """`fora` e o motivo quando o numero ficou fora do pacote por decisao."""
+        checagens.append((rotulo, valor, fora))
 
     esperar("obitos por cancer", f"{co['obitos_por_cancer']:,}")
     esperar("pontos da serie completa", str(co["pontos_serie_completa"]))
@@ -61,7 +78,7 @@ def main() -> None:
     esperar("previsoes por modelo", str(ba["n_previsoes_por_modelo"]))
     esperar("min train", str(ba["min_train"]))
     esperar("horizonte", str(ba["horizonte"]))
-    esperar("replicas do bootstrap", str(ci["sarima"]["B"]))
+    esperar("replicas do bootstrap", f"{int(ci['sarima']['B']):,}")
     esperar("pares confirmados", str(crit["pares_confirmados"]))
     esperar("pares totais", str(crit["pares_total"]))
     esperar("alpha do criterio", str(crit["alpha"]))
@@ -81,16 +98,25 @@ def main() -> None:
     for m in ("catboost", "xgboost", "sarima", "prophet", "timesfm"):
         esperar(f"extrapolacoes de {m}", str(ext[m]["acima_do_max_treino"]))
 
+    # A tabela por sitio foi cortada: o texto carrega o agregado e a prostata, os
+    # extremos, e a Figura 3 carrega os demais.
+    no_texto = ("agregado", "prostata")
     for s in ("agregado", "pulmao", "colorretal", "mama", "prostata"):
-        esperar(f"sMAPE do sitio {s}", f"{sit[s]['smape_melhor']:.2f}")
-        esperar(f"media mensal do sitio {s}", f"{int(sit[s]['media_mensal']):,}")
+        fora = None if s in no_texto else "tabela por sitio cortada; valor so na Figura 3"
+        esperar(f"sMAPE do sitio {s}", f"{sit[s]['smape_melhor']:.2f}", fora)
+        esperar(f"media mensal do sitio {s}", f"{int(sit[s]['media_mensal']):,}", fora)
     esperar("cobertura dos sitios", str(v["sitios_cobertura_pct"]))
 
+    # O teste de regime virou texto com o ingenuo sazonal, o SARIMA e o Prophet inline.
     for m in reg["por_modelo"]:
-        esperar(f"sMAPE fora de regime de {m}", f"{reg['por_modelo'][m]['smape_total']:.2f}")
+        fora = (None if m in ("seasonal_naive", "sarima", "prophet")
+                else "tabela do teste de regime cortada; so os modelos citados no texto")
+        esperar(f"sMAPE fora de regime de {m}", f"{reg['por_modelo'][m]['smape_total']:.2f}", fora)
 
+    anos = list(co["obitos_por_ano"])
     for a, val in co["obitos_por_ano"].items():
-        esperar(f"obitos em {a}", f"{val:,}")
+        fora = None if a in (anos[0], anos[-1]) else "obitos por ano cortados; so o primeiro e o ultimo na prosa"
+        esperar(f"obitos em {a}", f"{val:,}", fora)
 
     itv = v.get("intervalos")
     if itv:
@@ -103,40 +129,50 @@ def main() -> None:
         esperar("cobertura 95 fora do regime", f"{itv['cobertura_95_fora']:.3f}")
         esperar("n avaliado por modelo", str(itv["n_avaliado_por_modelo"]))
 
-    faltando = [(r, x) for r, x in checagens if x not in txt]
-    print(f"Numeros conferidos: {len(checagens)}")
-    print(f"Encontrados no documento: {len(checagens) - len(faltando)}")
+    exigidos = [(r, x) for r, x, fora in checagens if fora is None]
+    cortados = [(r, x, fora) for r, x, fora in checagens if fora is not None]
+    faltando = [(r, x) for r, x in exigidos if x not in txt]
+    print(f"Numeros exigidos no pacote: {len(exigidos)}")
+    print(f"Encontrados: {len(exigidos) - len(faltando)}")
     if faltando:
         print(f"\nNAO ENCONTRADOS ({len(faltando)}):")
         for r, x in faltando:
             print(f"  ERRO  {r:44s} esperado no texto: {x}")
     else:
-        print("Todos os valores do JSON aparecem no documento com o mesmo valor.")
+        print("Todos os valores exigidos aparecem no pacote com o mesmo valor.")
+    print(f"\nFora do pacote por decisao ({len(cortados)}):")
+    for motivo in sorted({f for _, _, f in cortados}):
+        n = sum(1 for _, _, f in cortados if f == motivo)
+        print(f"  {n:>2}  {motivo}")
 
-    # numeros soltos no texto que nao vieram do JSON
     print("\n--- estrutura ---")
-    sec = doc.sections[0]
-    tem_ln = sec._sectPr.find(qn("w:lnNumType")) is not None
-    tem_pg = "PAGE" in sec.footer.paragraphs[0]._p.xml
-    figs = len(doc.inline_shapes)
-    tabs = len(doc.tables)
-    dims = [(len(t.rows), len(t.columns)) for t in doc.tables]
+    faltam_arquivos = [a for a in ARQUIVOS if a not in docs]
+    texto = docs.get("CSP_texto")
+    sec = texto.sections[0] if texto else None
+    tem_ln = bool(sec) and sec._sectPr.find(qn("w:lnNumType")) is not None
+    tem_pg = bool(sec) and "PAGE" in sec.footer.paragraphs[0]._p.xml
+    tabs = len(docs["CSP_tabelas"].tables) if "CSP_tabelas" in docs else 0
+    embutidas = len(texto.inline_shapes) if texto else 0
+    figs = sorted((pasta / "figures").glob("*.png"))
+    dpis = {f.name: Image.open(f).info.get("dpi", (0, 0))[0] for f in figs}
+    # o PNG grava pixels por metro, entao 300 dpi volta como 299,9994
+    dpi_ok = all(d >= DPI_MINIMO - 0.5 for d in dpis.values())
     pend = len(re.findall(r"\[PENDING:", txt))
-    ausentes_fig = len(re.findall(r"\[FIGURA AUSENTE:", txt))
 
-    print(f"numeracao de linha continua (w:lnNumType): {'OK' if tem_ln else 'AUSENTE'}")
-    print(f"campo de numero de pagina no rodape:       {'OK' if tem_pg else 'AUSENTE'}")
-    print(f"figuras embutidas (inline shapes):          {figs}")
-    print(f"tabelas nativas:                            {tabs} {dims}")
+    print(f"arquivos do pacote:                         {'OK' if not faltam_arquivos else 'FALTAM ' + str(faltam_arquivos)}")
+    print(f"numeracao de linha no texto (w:lnNumType):  {'OK' if tem_ln else 'AUSENTE'}")
+    print(f"campo de numero de pagina no rodape:        {'OK' if tem_pg else 'AUSENTE'}")
+    print(f"figuras embutidas no texto (devem ser 0):   {embutidas}")
+    print(f"tabelas nativas em CSP_tabelas:             {tabs} (esperado {N_TABELAS})")
+    print(f"figuras em arquivo separado:                {len(figs)} (esperado {N_FIGURAS})")
+    print(f"dpi das figuras (minimo {DPI_MINIMO}):              "
+          + ", ".join(f"{k} {d:.0f}" for k, d in dpis.items()))
     print(f"marcadores [PENDING]:                       {pend}")
-    print(f"figuras ausentes:                           {ausentes_fig}")
-    print(f"paragrafos:                                 {len(doc.paragraphs)}")
 
-    # 6 tabelas desde que a calibracao de intervalo entrou como Table 6.
-    n_tab_esperado = 6 if v.get("intervalos") else 5
-    ok = (not faltando and tem_ln and tem_pg and figs == 5
-          and tabs == n_tab_esperado and ausentes_fig == 0)
-    print("\nVEREDITO: " + ("estrutura e numeros OK" if ok else "REVISAR os itens acima"))
+    ok = (not faltando and not faltam_arquivos and tem_ln and tem_pg and embutidas == 0
+          and tabs == N_TABELAS and len(figs) == N_FIGURAS and dpi_ok)
+    print("\nVEREDITO: " + ("estrutura e numeros OK" if ok else "REVISAR os itens acima")
+          + (f" ({pend} PENDING a resolver antes de submeter)" if pend else ""))
     raise SystemExit(0 if ok else 1)
 
 

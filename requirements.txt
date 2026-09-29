@@ -6,3 +6,5 @@ pysus>=0.14.0
 requests>=2.31.0
 datasus-dbc>=0.1.3
 dbfread>=2.0.7
+python-docx>=1.1.0
+matplotlib>=3.8.0

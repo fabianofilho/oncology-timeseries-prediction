@@ -20,7 +20,7 @@ Análise concluída e manuscrito montado. Alvo escolhido: Cadernos de Saúde Pú
 | Incerteza e critério pré-declarado | feito, 12 de 21 pares confirmados |
 | Estratificação por 4 sítios tumorais | feita |
 | Comparação CPT vs DFP vs OPT sob protocolo idêntico | feita |
-| Manuscrito .docx de revisão (18 páginas) | feito, `build/manuscript.docx` |
+| Manuscrito .docx de revisão | aposentado em 2026-09-28; o pacote da CSP é a única versão |
 | Pacote de submissão da CSP (4 arquivos) | feito, `build/csp/` |
 | Conferência contra o TabNet | feita, bate exato nos 14 anos |
 | Revisão de robustez (4 etapas) | feita em 2026-09-23 |
@@ -85,8 +85,10 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      Queiroz 2014 (completude do SIM, melhor no Sul e Sudeste), conferidas no texto de
      origem. Entraram também os dois precedentes da própria CSP, Jerez-Roig 2014 (próstata)
      e Reis 2026 (pulmão), e Bracher 2021 para o WIS. Agora são 12 referências.
-3.4. O manuscrito de revisão (`scripts/build_docx.py`) não recebeu nada disso: ainda tem os
-     números de citação digitados e o `[PENDING]` do INCA. Só o pacote da CSP foi atualizado.
+3.4. FEITO em 2026-09-28. `scripts/build_docx.py` aposentado: o pacote da CSP é a única
+     versão do texto. `check_docx_numbers.py` passou a conferir o pacote (65 de 65 números
+     exigidos; 22 fora por decisão, cada um com o motivo) e a estrutura que a CSP exige,
+     inclusive 300 dpi nas figuras. `make paper` gera o pacote da CSP.
 3.3. FEITO em 2026-09-28. `/eng` no inglês do pacote: uma frase agramatical ("easy to be
      noise"), dois modificadores soltos, três orações coladas por vírgula, concordância,
      artigos, "nor" depois de "no" e o "ranked 4th", que imprimiria "1th" se a posição
@@ -159,5 +161,6 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 ```
 make extract-sim   make validate   make benchmark   make uncertainty
 make sites         make domains    make paper       make test
-python scripts/build_csp_submission.py
+python scripts/build_csp_submission.py   # só o pacote, sem regerar verified_numbers.json
+python scripts/check_docx_numbers.py     # confere o pacote contra o JSON
 ```

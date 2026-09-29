@@ -19,7 +19,7 @@ https://cadernos.ensp.fiocruz.br/ojs/index.php/csp/instrucoes-autores-ojs :
 O corte de 10 para 5 ilustracoes esta em ILUSTRACOES abaixo, num lugar so, para
 a escolha ser visivel e reversivel.
 
-Como no build_docx.py, nenhum numero e digitado: tudo vem de
+Nenhum numero e digitado: tudo vem de
 paper/verified_numbers.json.
 
 Uso:
