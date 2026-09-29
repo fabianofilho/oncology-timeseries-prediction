@@ -1,0 +1,79 @@
+{
+  "maquina": "Apple M4, arm64, 10 nucleos logicos",
+  "modelos": {
+    "sarima": {
+      "smape_publicado": 1.5149,
+      "smape_reproduzido": 1.5148,
+      "dif_smape": -3.0528131023110916e-06,
+      "max_dif_previsao": 0.037332518822040583
+    },
+    "timesfm": {
+      "smape_publicado": 1.6682,
+      "smape_reproduzido": 1.6682,
+      "dif_smape": -1.232101867865154e-06,
+      "max_dif_previsao": 0.001953125
+    },
+    "prophet": {
+      "smape_publicado": 1.701,
+      "smape_reproduzido": 1.7023,
+      "dif_smape": 0.0012352836100164577,
+      "max_dif_previsao": 6.0101827191183474
+    },
+    "linear_trend": {
+      "smape_publicado": 2.7575,
+      "smape_reproduzido": 2.7575,
+      "dif_smape": 2.6645352591003757e-15,
+      "max_dif_previsao": 5.4569682106375694e-12
+    },
+    "catboost": {
+      "smape_publicado": 3.0285,
+      "smape_reproduzido": 3.0285,
+      "dif_smape": 0.0,
+      "max_dif_previsao": 0.0
+    },
+    "xgboost": {
+      "smape_publicado": 3.1127,
+      "smape_reproduzido": 3.1526,
+      "dif_smape": 0.03987203304474107,
+      "max_dif_previsao": 111.8056640625
+    },
+    "seasonal_naive": {
+      "smape_publicado": 3.2257,
+      "smape_reproduzido": 3.2257,
+      "dif_smape": 0.0,
+      "max_dif_previsao": 0.0
+    }
+  },
+  "max_abs_dif_smape_sem_xgboost": 0.0012352836100164577,
+  "confirmados_publicado": 12,
+  "confirmados_reproduzido": 13,
+  "pares_total": 21,
+  "pares_que_mudam": [
+    {
+      "par": [
+        "linear_trend",
+        "xgboost"
+      ],
+      "veredito_publicado": "nao_confirmado",
+      "veredito_reproduzido": "confirmado",
+      "dm_publicado": "2/6",
+      "dm_reproduzido": "3/6",
+      "p_dm_publicado": [
+        0.8387,
+        0.5481,
+        0.034,
+        0.0411,
+        0.1737,
+        0.0887
+      ],
+      "p_dm_reproduzido": [
+        0.5859,
+        0.5854,
+        0.0,
+        0.0208,
+        0.1458,
+        0.0284
+      ]
+    }
+  ]
+}

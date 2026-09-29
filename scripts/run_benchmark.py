@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -69,6 +72,13 @@ def parse_args() -> argparse.Namespace:
             "antes, sem vazamento), observed (valor futuro real, VAZAMENTO DELIBERADO, apenas "
             "cenário-teto rotulado)"
         ),
+    )
+    parser.add_argument(
+        "--processo-por-modelo",
+        action="store_true",
+        help="Roda cada modelo num processo separado e junta as saidas. No macOS o torch "
+        "(TimesFM) e o XGBoost carregam copias diferentes da libomp, e as duas no mesmo "
+        "processo derrubam o Python com falha de segmentacao (LAB-182).",
     )
     return parser.parse_args()
 
@@ -262,8 +272,55 @@ def run_backtest(
     return metric_row, pd.DataFrame(rows)
 
 
+def _argv_trocando(argv: list[str], opcao: str, valor: str) -> list[str]:
+    """Copia de argv com o valor de `opcao` trocado, aceitando '--x v' e '--x=v'."""
+    out, pular = [], False
+    for i, a in enumerate(argv):
+        if pular:
+            pular = False
+            continue
+        if a == opcao:
+            out += [opcao, valor]
+            pular = True
+        elif a.startswith(opcao + "="):
+            out.append(f"{opcao}={valor}")
+        else:
+            out.append(a)
+    return out
+
+
+def rodar_isolado(args: argparse.Namespace) -> None:
+    """Um processo por modelo, na ordem pedida; junta metricas e previsoes.
+
+    Cada modelo ja roda independente dos outros no backtest, entao separar em processos
+    nao muda nenhum numero, so evita que duas bibliotecas nativas se encontrem.
+    """
+    pedidos = [m.strip().lower() for m in args.models.split(",") if m.strip()]
+    base = [a for a in sys.argv[1:] if a != "--processo-por-modelo"]
+    metricas, previsoes = [], []
+    with tempfile.TemporaryDirectory() as tmp:
+        for m in pedidos:
+            prefixo = str(Path(tmp) / m)
+            argv = _argv_trocando(_argv_trocando(base, "--models", m), "--output-prefix", prefixo)
+            r = subprocess.run([sys.executable, __file__, *argv])
+            if r.returncode != 0:
+                raise SystemExit(f"[ERRO] {m} saiu com codigo {r.returncode}; nada foi gravado")
+            metricas.append(pd.read_csv(prefixo + "_metrics.csv"))
+            previsoes.append(pd.read_csv(prefixo + "_predictions.csv"))
+    output_prefix = Path(args.output_prefix)
+    output_prefix.parent.mkdir(parents=True, exist_ok=True)
+    pd.concat(metricas, ignore_index=True).sort_values(by="smape").to_csv(
+        output_prefix.with_name(output_prefix.name + "_metrics.csv"), index=False)
+    pd.concat(previsoes, ignore_index=True).to_csv(
+        output_prefix.with_name(output_prefix.name + "_predictions.csv"), index=False)
+    print(f"[INFO] {len(pedidos)} modelos em processos separados; saidas em {output_prefix}_*.csv")
+
+
 def main() -> None:
     args = parse_args()
+    if args.processo_por_modelo:
+        rodar_isolado(args)
+        return
 
     series = load_and_aggregate_series(
         csv_path=args.input_csv,

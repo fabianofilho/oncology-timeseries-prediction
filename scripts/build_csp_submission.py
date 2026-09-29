@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import shutil
 from pathlib import Path
@@ -357,6 +358,32 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
 
 
 # --------------------------------------------------------------------------- #
+def reproducao_frase(rp: dict) -> str:
+    """Frase das Limitacoes sobre a reproducao em outra maquina, lida do JSON."""
+    x = rp["modelos"]["xgboost"]
+    outros = math.ceil(rp["max_abs_dif_smape_sem_xgboost"] * 1000) / 1000
+    texto = (
+        f"XGBoost forecasts are not reproducible across machines: rerunning the benchmark on "
+        f"a different computer moved its sMAPE from {x['smape_publicado']:.2f}% to "
+        f"{x['smape_reproduzido']:.2f}%, while the other six models reproduced to within "
+        f"{outros:.3f} percentage points. "
+    )
+    muda = rp["pares_que_mudam"]
+    if not muda:
+        return texto + "No verdict changed. "
+    if len(muda) == 1 and sorted(muda[0]["par"]) == ["linear_trend", "xgboost"]:
+        p = muda[0]
+        pub, rep = p["dm_publicado"].split("/"), p["dm_reproduzido"].split("/")
+        return texto + (
+            f"This moved one verdict: linear trend against XGBoost, which failed the "
+            f"horizon-wise condition in the reported run ({pub[0]} of {pub[1]} horizons), met "
+            f"it on the second machine ({rep[0]} of {rep[1]}). That comparison sits at the "
+            f"boundary of the criterion, and the two-group pattern holds on both machines "
+            f"except for it. "
+        )
+    raise ValueError("mais de um veredito muda na reproducao: reescrever a frase a mao")
+
+
 def build_texto(v: dict) -> tuple[Document, int]:
     co, ba = v["coorte"], v["benchmark_agregado"]
     ci, met, crit = ba["ci_smape"], ba["metricas"], ba["criterio"]
@@ -365,6 +392,10 @@ def build_texto(v: dict) -> tuple[Document, int]:
     cross = v["conferencia_tabnet"]
     itv = v["intervalos"]
     CITADAS.clear()
+    # Reproducao em outra maquina (scripts/compare_reproduction.py). Opcional: sem o
+    # arquivo, o texto volta a ser o de antes.
+    rp_path = ROOT / "results" / "reproducao_benchmark.json"
+    rp = json.loads(rp_path.read_text(encoding="utf-8")) if rp_path.exists() else None
     razoes = [sit[s]["obs_sobre_poisson"] for s in SITES]
 
     doc = base_doc()
@@ -596,7 +627,10 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"pre-declared criterion. The {crit['pares_total'] - crit['pares_confirmados']} that "
         f"failed are not scattered at random (Table 2): no comparison among SARIMA, TimesFM and "
         f"Prophet was confirmed, no comparison among linear trend, CatBoost, XGBoost and "
-        f"seasonal naive was confirmed, and every comparison between a member of the first set "
+        f"seasonal naive was confirmed"
+        + (" (one of these, linear trend against XGBoost, depends on the machine; see "
+           "Discussion)" if rp and rp["pares_que_mudam"] else "")
+        + f", and every comparison between a member of the first set "
         f"and a member of the second was. Five of the unconfirmed comparisons have a confidence "
         f"interval excluding zero and fail only the horizon-wise condition, so a report based on "
         f"the aggregate bootstrap alone would have presented a seven-way ranking instead of two "
@@ -714,7 +748,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"here are "
         f"probably optimistic relative to a national series. Hyperparameters were fixed rather "
         f"than tuned, which understates the attainable accuracy of the boosting models, although "
-        f"it cannot remove their extrapolation ceiling. The regime-shift test rests on a single "
+        f"it cannot remove their extrapolation ceiling. "
+        + (reproducao_frase(rp) if rp else "")
+        + f"The regime-shift test rests on a single "
         f"origin and therefore has no uncertainty measure; it is descriptive and should not be "
         f"read as evidence that the naive baseline is more robust in general. Stratification was "
         f"by site only and covered {v['sitios_cobertura_pct']}% of deaths, so no statement is "

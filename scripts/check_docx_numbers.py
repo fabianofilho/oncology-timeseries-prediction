@@ -129,6 +129,17 @@ def main() -> None:
         esperar("cobertura 95 fora do regime", f"{itv['cobertura_95_fora']:.3f}")
         esperar("n avaliado por modelo", str(itv["n_avaliado_por_modelo"]))
 
+    rp_path = ROOT / "results" / "reproducao_benchmark.json"
+    if rp_path.exists():
+        import math
+        rp = json.loads(rp_path.read_text(encoding="utf-8"))
+        esperar("sMAPE do XGBoost reproduzido", f"{rp['modelos']['xgboost']['smape_reproduzido']:.2f}")
+        esperar("tolerancia dos outros seis modelos",
+                f"{math.ceil(rp['max_abs_dif_smape_sem_xgboost'] * 1000) / 1000:.3f}")
+        for p in rp["pares_que_mudam"]:
+            a, b = p["dm_reproduzido"].split("/")
+            esperar("DM do par que muda, reproduzido", f"{a} of {b}")
+
     exigidos = [(r, x) for r, x, fora in checagens if fora is None]
     cortados = [(r, x, fora) for r, x, fora in checagens if fora is not None]
     faltando = [(r, x) for r, x in exigidos if x not in txt]

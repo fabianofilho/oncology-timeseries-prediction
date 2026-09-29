@@ -38,7 +38,35 @@ o mesmo código com a mesma versão dá outro número.
 
 O CatBoost não tem esse comportamento e não foi alterado.
 
-## Por que isso não muda nenhuma conclusão
+## [CORREÇÃO] 2026-09-29: a variação muda um veredito, e não é só thread
+
+A seção seguinte afirmava que a variação do XGBoost não muda nenhuma conclusão. Ela só
+examinou os pares do XGBoost contra CatBoost, contra o ingênuo sazonal e contra o SARIMA.
+Faltou o par **tendência linear contra XGBoost**, e é ele que muda.
+
+Reprodução completa do benchmark agregado num Apple M4 (arm64, 10 núcleos, macOS, Python
+3.13.2, xgboost 3.4.1, skforecast 0.25.0), gerada e comparada por
+`scripts/compare_reproduction.py`, com saída em `results/reproducao_benchmark.json`:
+
+| Modelo | Publicado | Reproduzido | Diferença |
+|---|---:|---:|---:|
+| XGBoost | 3.1127 | 3.1526 | +0.040 pp |
+| Os outros seis | | | no máximo 0.0012 pp (Prophet) |
+
+- **Não é o número de threads.** Neste Mac, `n_jobs` = 10, 12 ou -1 dá o mesmo 3.15256. A
+  diferença vem do ambiente (sistema, arquitetura ou versão do skforecast: 0.23.0 no
+  publicado, 0.25.0 aqui), e fica fora da faixa de 0.032 pp medida variando só threads.
+- **Um veredito muda.** Tendência linear contra XGBoost passa de não confirmado (DM abaixo
+  de 0,05 em 2 de 6 horizontes) para confirmado (3 de 6); o horizonte 6 vai de p = 0,089
+  para 0,028. Confirmados: 12 → 13 de 21.
+- **O que isso faz com o manuscrito.** O desenho em dois grupos continua nas duas máquinas,
+  com uma exceção: esse par, que fica na borda do critério. Por decisão do Fabiano em
+  2026-09-29, o manuscrito mantém os números publicados e declara isso nos Resultados e nas
+  Limitações, lendo os números de `results/reproducao_benchmark.json`.
+- A conclusão abaixo sobre boosting contra o baseline trivial continua valendo: XGBoost
+  contra o ingênuo sazonal não é confirmado em nenhuma das duas máquinas.
+
+## Por que isso não muda nenhuma conclusão (texto de 2026-09-23, corrigido acima)
 
 A amplitude de 0.032 pp precisa ser lida contra a incerteza já medida, não contra zero:
 
