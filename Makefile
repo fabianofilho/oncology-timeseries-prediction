@@ -96,6 +96,7 @@ domains:
 			--report-output results/criterion_verdict_dominio_$${d}_2010_2019.json ; \
 	done
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/report_domain_comparison.py
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/write_domain_report.py
 
 .PHONY: paper
 

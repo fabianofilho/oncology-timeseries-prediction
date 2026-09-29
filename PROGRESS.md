@@ -102,8 +102,11 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
      o cardiovascular já testou 12 variantes de boosting, incluindo a diferença sazonal,
      e nenhuma passou no critério. O achado ficou em `docs/limitacao_hiperparametros.md`
      e já está aplicado no manuscrito.
-4.3. LAB-120: relatório comparativo entre os três domínios, In Review. Destravada pela
-     LAB-135 em 2026-09-28; falta revisar o texto do relatório com os discordantes.
+4.3. LAB-120: FEITA em 2026-09-28. Relatório final em `docs/relatorio_dominios.md`,
+     gerado de `results/` por `scripts/write_domain_report.py` (entra no `make domains`).
+     Achado novo: a dengue é o município de São Paulo (IBGE 3550308, DFP trabalha por
+     capital), e câncer e cardiovascular são o estado; isso não estava declarado. SARIMA na
+     dengue fez 16 previsões negativas e 5 acima do máximo da série.
 
 ## Decisões tomadas e por quê
 

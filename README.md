@@ -122,6 +122,11 @@ As séries de cardiovascular (CPT) e dengue (DFP) foram rerodadas por este mesmo
 comparadas a partir dos números que cada projeto publicou. Janela comum 2010-02 a 2019-12,
 119 pontos, 54 janelas, 324 previsões por modelo.
 
+Relatório completo, com IC95% dos sete modelos nos três domínios e as diferenças de
+protocolo linha a linha, em [`docs/relatorio_dominios.md`](docs/relatorio_dominios.md),
+gerado por `scripts/write_domain_report.py`. Atenção ao recorte: câncer e cardiovascular
+são o estado de São Paulo, e a dengue é o município, porque o DFP trabalha por capital.
+
 | Domínio | Amplitude máx/mín | Razão sMAPE contra o baseline | Pares confirmados | Discordantes sMAPE x MAE | Batem o ingênuo sazonal |
 |---|---:|---:|---|---|---|
 | Câncer | 1,4 | 0,474 | 13 de 21 | 0 de 21 | sarima, prophet, timesfm |
