@@ -1,159 +1,144 @@
-# PROGRESS
+# PROGRESS, OPT (Oncology Prediction Timeseries)
 
-Última atualização: 2026-09-28. Sessão de fechamento da submissão (LAB-169).
+Última atualização: 2026-09-28, fim da sessão. Commit de referência: `05d9690`.
 
-## Objetivo
-
-Medir se modelos de forecasting preveem mortalidade mensal por neoplasia maligna
-(CID-10 C00-C97) em São Paulo melhor que baselines triviais, com incerteza medida e
+Medir se modelos de forecasting preveem mortalidade mensal por neoplasia maligna (CID-10
+C00-C97) no Estado de São Paulo melhor que baselines triviais, com incerteza medida e
 critério de diferença declarado antes de ver resultado. Terceiro projeto da linha, junto
-do CPT (cardiovascular) e do DFP (dengue).
+do CPT (cardiovascular) e do DFP (dengue). Linear: projeto OPT, time Labdaps.
 
-## Estado atual
-
-Análise concluída e manuscrito montado. Alvo escolhido: Cadernos de Saúde Pública.
-
-| Etapa | Estado |
-|---|---|
-| Extração e validação da série (SIM, SP, 2010-2023) | feita, 741.313 óbitos, 168 pontos |
-| Benchmark dos 7 modelos, 55 janelas, 330 previsões cada | feito |
-| Incerteza e critério pré-declarado | feito, 12 de 21 pares confirmados |
-| Estratificação por 4 sítios tumorais | feita |
-| Comparação CPT vs DFP vs OPT sob protocolo idêntico | feita |
-| Manuscrito .docx de revisão | aposentado em 2026-09-28; o pacote da CSP é a única versão |
-| Pacote de submissão da CSP (4 arquivos) | feito, `build/csp/` |
-| Conferência contra o TabNet | feita, bate exato nos 14 anos |
-| Revisão de robustez (4 etapas) | feita em 2026-09-23 |
-| Intervalos de predição conformais | feitos, cobertura 0,911 a 0,961 a 95% |
-| Referências e checklist TRIPOD+AI | feitos em 2026-09-28, sobram 5 `[PENDING]`, todos de autoria |
-
-Achado principal: não há vencedor. Existe um degrau entre os modelos que representam a
-série (SARIMA, TimesFM, Prophet) e os que não representam (tendência linear, CatBoost,
+**Onde está:** análise fechada; manuscrito da CSP pronto a menos dos 5 `[PENDING]` de
+autoria. Achado principal: não há vencedor. Há um degrau entre os modelos que representam
+a série (SARIMA, TimesFM, Prophet) e os que não representam (tendência linear, CatBoost,
 XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
-## Próximos passos, em ordem de bloqueio
+---
 
-### 1. Bloqueiam a submissão, e dependem do Fabiano
+## STATUS ATUAL DO ROADMAP
 
-1.1. FEITO. Resumo, Abstract e Resumen no pacote, 249, 245 e 247 palavras, dentro do
-     limite de 250 que a CSP define no documento de recomendação do resumo. Não
-     estruturados e com o mínimo de siglas, como ela pede. Revisar a tradução.
-1.2. Autoria, afiliações, ORCID, contribuições (CRediT), financiamento, conflitos e
-     agradecimentos. São os 5 marcadores `[PENDING]` restantes. Só o Fabiano resolve.
-1.2b. FEITO em 2026-09-28, aprovado pelo Fabiano. Título com "pre-specified" no lugar de
-     "pre-registered" (nos dois geradores), e as quatro declarações do TRIPOD+AI no texto:
-     ética (Res. CNS 510/2016) e protocolo/registro no fim dos Métodos, envolvimento do
-     público em Additional information. A frase de protocolo foi conferida contra os
-     timestamps do Linear e do git (ver `docs/tripod_ai_checklist.md`).
-1.2c. Na hora de submeter, trocar o commit `81f5937` citado no texto pelo commit com tag.
-1.3. FEITO em 2026-09-28, decisão do Fabiano: Questões Metodológicas. A página de
-     instruções da CSP define a seção como "discussão, comparação ou avaliação de aspectos
-     metodológicos", incluindo análise de dados, com os mesmos limites do Artigo (6.000
-     palavras, 5 ilustrações). O pacote cabe como está. A seção não vai no manuscrito: é
-     escolhida no formulário, e o build imprime `SECAO` para lembrar.
+### Concluído nesta sessão (2026-09-28), tudo mergeado na main
 
-### 2. Bloqueava a validade, e foi resolvido
+- [x] **Referências e ordem de citação da CSP** (PR #1, `69b7fc4`)
+  - Os 2 PENDING de referência resolvidos, conferidos no texto de origem: Guerra 2017 e
+    Lima e Queiroz 2014. Entraram Jerez-Roig 2014 e Reis 2026 (precedentes na própria CSP)
+    e Bracher 2021 (WIS). 12 referências.
+  - Citação por chave `[@chave]`, numerada pela primeira aparição e em sobrescrito, como a
+    CSP exige. Antes: 5, 7, 6, 4, 1, 2, 3 digitados.
+  - Resumo e Resumen com acento e número local; limite de 250 palavras conferido no build.
+  - `docs/tripod_ai_checklist.md` com os 52 itens; Métodos ganharam o parágrafo dos
+    intervalos conformais e a frase de modelos univariados.
+- [x] **Título "pre-specified" e as 4 declarações do TRIPOD+AI** (PR #2, `f6c64cd`)
+  - Ética (Res. CNS 510/2016), protocolo e registro nos Métodos; envolvimento do público
+    em Additional information. Frase de protocolo conferida contra timestamps do Linear e
+    do git.
+- [x] **Seção: Questões Metodológicas** (PR #3, `c2343cd`). Mesmos limites do Artigo; o
+  build imprime `SECAO` para lembrar no formulário.
+- [x] **LAB-135, critério v2** (PR #4, `fba8a17`). sMAPE e MAE precisam concordar;
+  discordância vira veredito próprio. Regra em `src/onco_timeseries/criterion.py`. Nenhum
+  par de câncer ou cardiovascular muda; dengue tem 8 de 21 discordantes.
+- [x] **LAB-120, relatório entre domínios** (PR #5, `1e9a907`). `docs/relatorio_dominios.md`,
+  gerado por `scripts/write_domain_report.py`. Declarou que a dengue é o município de São
+  Paulo e o resto é o estado; mediu 16 previsões negativas do SARIMA na dengue.
+- [x] **Polimento do inglês** (PR #6, `1f69faa`). Números idênticos antes e depois.
+- [x] **`build_docx.py` aposentado** (PR #7, `05d9690`). O pacote da CSP é a única versão
+  do texto; `check_docx_numbers.py` confere o pacote (65 de 65 números, 22 cortes com
+  motivo, estrutura e 300 dpi). `python-docx` e `matplotlib` no `requirements.txt`.
 
-2.1. FEITO em 2026-09-18. `scripts/crosscheck_tabnet.py` consulta o TabNet e compara ano a
-     ano. A série reproduz exatamente os óbitos por residência nos 14 anos, diferença zero,
-     total 741.313 nos dois. Contra a visão por ocorrência a diferença é de 1,74%, que é a
-     distinção entre duas definições de população e não erro de extração. Isso também
-     corrigiu uma imprecisão: o manuscrito não dizia que a base é por residência, e agora
-     diz. Relatório em `results/tabnet_crosscheck.json`.
+Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andamento.
 
-### 2b. Revisão de robustez, feita em 2026-09-23
+### EM PROGRESSO
 
-- Benchmark agora falha na hora se um modelo perde qualquer janela. CSVs publicados
-  regerados e idênticos byte a byte.
-- XGBoost reproduz o valor publicado (3.112688870260289, diferença zero), mas depende do
-  número de threads, amplitude de 0,032 pp. Versão fixada em 3.4.1, documentado em
-  `docs/xgboost_reprodutibilidade.md`.
-- Intervalos conformais em `src/onco_timeseries/intervals.py`, calibrados só com janelas
-  anteriores. Dentro do regime a cobertura a 95% fica entre 0,911 e 0,961; fora do regime
-  cai para 0,500 nos sete modelos. O WIS reordena o grupo de baixo.
-- Parágrafo de limitação de hiperparâmetros em `docs/limitacao_hiperparametros.md`, sem
-  rodar Optuna. A LAB-128 foi fechada sem executar nada, porque o cardiovascular já
-  testou a diferenciação sazonal e ela não passa no critério.
+Nada pela metade. Git limpo e sincronizado com origin.
 
-### 3. Melhoram o manuscrito, não bloqueiam
+### PRÓXIMOS PASSOS NA ORDEM
 
-3.1. FEITO em 2026-09-28. Checklist item a item em `docs/tripod_ai_checklist.md`, com a
-     lista oficial extraída do PMC. Dois buracos corrigidos no texto: o método dos
-     intervalos conformais e do WIS não estava nos Métodos, e não se dizia que os modelos
-     são univariados.
-3.2. FEITO em 2026-09-28. Guerra 2017 (GBD, taxas padronizadas estáveis 1990-2015) e Lima e
-     Queiroz 2014 (completude do SIM, melhor no Sul e Sudeste), conferidas no texto de
-     origem. Entraram também os dois precedentes da própria CSP, Jerez-Roig 2014 (próstata)
-     e Reis 2026 (pulmão), e Bracher 2021 para o WIS. Agora são 12 referências.
-3.4. FEITO em 2026-09-28. `scripts/build_docx.py` aposentado: o pacote da CSP é a única
-     versão do texto. `check_docx_numbers.py` passou a conferir o pacote (65 de 65 números
-     exigidos; 22 fora por decisão, cada um com o motivo) e a estrutura que a CSP exige,
-     inclusive 300 dpi nas figuras. `make paper` gera o pacote da CSP.
-3.3. FEITO em 2026-09-28. `/eng` no inglês do pacote: uma frase agramatical ("easy to be
-     noise"), dois modificadores soltos, três orações coladas por vírgula, concordância,
-     artigos, "nor" depois de "no" e o "ranked 4th", que imprimiria "1th" se a posição
-     mudasse. Números idênticos antes e depois, conferido por extração. Grafia britânica
-     mantida, porque o texto já era consistente nela.
+- [ ] **1. Os 5 `[PENDING]` de autoria** (LAB-169, só o Fabiano resolve)
+  - Autores, afiliações e ORCID; contribuições (CRediT); financiamento; conflitos;
+    agradecimentos. Entram em `build_texto()` de `scripts/build_csp_submission.py`, no
+    bloco de Additional information e logo abaixo do título.
+  - Depois: `python scripts/build_csp_submission.py && python scripts/check_docx_numbers.py`
+    tem de sair com 0 PENDING.
+- [ ] **2. Revisões humanas antes de submeter**
+  - Tradução do Resumo (PT) e do Resumen (ES): eu só corrigi acentos e formato numérico.
+  - Leitura de pelo menos um coautor.
+- [ ] **3. Submissão** (LAB-169)
+  - Tag no commit submetido: `git tag -a csp-submissao-v1 -m "Submissão à CSP" && git push --tags`
+  - Trocar o commit `81f5937` citado no texto pelo commit com tag. Ele vem de
+    `_commit` no `paper/verified_numbers.json`, gravado por `build_paper_assets.py`, que
+    neste Mac exige `make extract-sim` antes (ver INFRA). Sem a extração, a alternativa é
+    editar só esse campo do JSON, num commit próprio que diga isso.
+  - Cópia de `build/csp/` fora da máquina; seção Questões Metodológicas no formulário;
+    número de submissão registrado na LAB-169.
 
-### 4. Continuam o projeto, fora do manuscrito atual
+### Fora do manuscrito atual, sem prazo
 
-4.1. LAB-135: FEITA em 2026-09-28. Opção 3, concordância entre sMAPE e MAE, registrada na
-     issue antes de aplicar. Os 9 vereditos regerados dos mesmos CSVs, sem rodar modelo: a
-     v1 reproduz par a par o que estava publicado, e a v2 não muda nenhum par de câncer
-     (agregado, sítios, domínio) nem de cardiovascular. Dengue: 1 confirmado e 8
-     discordantes. Achado: em dengue o DM, que já usa erro absoluto, também quase não passa
-     (TimesFM contra ingênuo sazonal em 1 de 6 horizontes), então nem um critério só de MAE
-     confirmaria o TimesFM ali.
-4.2. LAB-128: FECHADA como Canceled em 2026-09-23. Não vale rodar a diferenciação aqui:
-     o cardiovascular já testou 12 variantes de boosting, incluindo a diferença sazonal,
-     e nenhuma passou no critério. O achado ficou em `docs/limitacao_hiperparametros.md`
-     e já está aplicado no manuscrito.
-4.3. LAB-120: FEITA em 2026-09-28. Relatório final em `docs/relatorio_dominios.md`,
-     gerado de `results/` por `scripts/write_domain_report.py` (entra no `make domains`).
-     Achado novo: a dengue é o município de São Paulo (IBGE 3550308, DFP trabalha por
-     capital), e câncer e cardiovascular são o estado; isso não estava declarado. SARIMA na
-     dengue fez 16 previsões negativas e 5 acima do máximo da série.
+- [ ] **Estratificação por sexo.** Hipótese de pulmão subir em mulheres e cair em homens,
+  nunca testada. Reis 2026 (já citado) aponta na mesma direção.
+- [ ] **Sensibilidade com a série inteira 2010-2023** tratando o período da pandemia.
+  Recomendada na LAB-114, nunca executada.
+- [ ] **Frase de robustez no manuscrito:** "exigir concordância com o MAE não muda nenhum
+  dos 21 vereditos". Depende de regerar `verified_numbers.json` (ver INFRA).
+- [ ] **Publicação com dengue:** liberada pela LAB-135, mas o DM com pouco poder em série
+  com surto precisa entrar como limitação.
+
+---
+
+## INFRA
+
+- **`make paper` não roda nesta máquina (Mac) sem antes `make extract-sim`.**
+  `build_paper_assets.py` lê `data/processed/sim_onco_extraction_metadata.json`, que não
+  é versionado. O pacote da CSP roda sem ele, a partir do `verified_numbers.json`
+  versionado. Qualquer número novo no manuscrito exige a extração, que baixa de novo o
+  microdado público do DataSUS.
+- Ambiente: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`. Os
+  modelos (Prophet, TimesFM, XGBoost 3.4.1, CatBoost) ficam em `requirements-optional.txt`.
+- `make domains` relê as séries de origem em `../cardiovascular-timeseries-prediction` e
+  `../dengue-time-series` (este último não está clonado neste Mac). Sem eles, os CSVs
+  versionados em `results/series/comp_*` bastam para o resto.
+- Fluxo de mudança: branch, PR e merge squash na hora (repositório pessoal).
 
 ## Decisões tomadas e por quê
 
 - **Treinar só até 2019.** A tendência 2010-2019 é quase uma reta (R2 = 0,992) e a projeção
   erra 2020 por -6,6% e ainda erra 2023 por -2,7%. A ruptura é real e não fechou, então
   modelá-la exigiria uma dummy sem fim óbvio. 2020-2023 virou teste de regime.
-- **Critério com duas condições**, IC excluindo zero E Diebold-Mariano abaixo de 0,05 em 3
-  ou mais dos 6 horizontes. Fixado antes de rodar. Mudou a conclusão duas vezes: sem a
-  segunda condição o relatório teria saído com ranking de sete posições.
-- **Cadernos de Saúde Pública como alvo.** Diamond confirmada na página do editor, com
-  precedente direto de julho de 2026 sobre projeções de mortalidade por câncer no Brasil.
+- **Critério com duas condições** (v1, LAB-118), IC excluindo zero E Diebold-Mariano abaixo
+  de 0,05 em 3 ou mais dos 6 horizontes. Fixado antes de rodar. Mudou a conclusão duas
+  vezes: sem a segunda condição o relatório teria saído com ranking de sete posições.
+- **Critério v2** (LAB-135), opção 3: sMAPE e MAE concordando. As outras opções trocariam a
+  métrica depois de ver o resultado. A v1 fica gravada em `confirmado_v1`.
+- **Cadernos de Saúde Pública, seção Questões Metodológicas.** Diamond; precedentes diretos
+  na própria revista (Jerez-Roig 2014, Reis 2026).
 - **Corte de 10 para 5 ilustrações.** A CSP cobra taxa por excedente. O teste de regime
   perdeu tabela e figura e virou texto com números inline, porque material suplementar da
   CSP não pode carregar resultado principal.
-
-- **Citação por chave no pacote da CSP.** A CSP exige numeração na ordem de citação e em
-  sobrescrito. O texto citava 5, 7, 6, 4, 1, 2, 3 com números digitados. Agora cita
-  `[@chave]` e `cite_runs()` numera pela primeira aparição; chave desconhecida ou
-  referência nunca citada derruba o build.
-- **Resumo e Resumen com acento e número local** (741.313; 1,51%). Estavam em ASCII e com
-  separador em inglês. `LIMITE_RESUMO` existia mas nunca era conferido; agora o build
-  imprime a contagem dos três.
+- **"Pre-specified", não "pre-registered".** Não há registro em repositório de protocolos;
+  as decisões foram registradas no Linear e no git antes do benchmark.
+- **Um texto só.** O pacote da CSP é a única versão; o manuscrito de revisão foi aposentado
+  porque divergia.
 
 ## Restrições ativas
 
 - Microdado nunca é versionado. Só a série agregada, sem identificação, em `results/series/`.
-- Nenhum número vai para README, paper ou Linear sem ter sido medido pelo script que o produz.
+- Nenhum número vai para README, paper ou Linear sem ter sido medido pelo script que o
+  produz. O manuscrito e o relatório entre domínios são gerados, nunca editados à mão.
 - Diferença entre modelos só é afirmada com o intervalo de confiança junto.
 - Material suplementar da CSP não pode conter resultado principal.
+- Regra do critério não muda depois de ver resultado; mudança se registra na issue antes.
+- Citação no manuscrito é por chave, `[@chave]` ou `[@a,@b]`, com a referência em
+  `REFERENCES`; nunca número digitado.
+- Depois de mexer no texto, `python scripts/check_docx_numbers.py` tem de sair com código 0.
+- `CLAUDE.md` existe só localmente (está no `.gitignore` desde o scaffold); as regras que
+  valem para qualquer máquina estão aqui.
 
 ## O que foi descartado, e por quê
 
 - **Boosting no nível da série.** CatBoost e XGBoost fizeram 0 previsões acima do máximo do
   treino em 330, enquanto 26,7% das observações de teste estão acima dele. Limite estrutural
-  de árvore, não de tuning. Virou LAB-128, fechada sem execução: o cardiovascular já testou
-  12 variantes, incluindo a diferença sazonal, e nenhuma bateu o ingênuo sazonal pelo
-  critério. A melhor delas, catboost_diff12, vai de 6,589 para 6,203 e ainda assim reprova.
-- **Sensibilidade com a série inteira** sem tratar o período pandêmico. Recomendada na
-  LAB-114, nunca executada.
-- **Estratificação por sexo.** A hipótese de pulmão subir em mulheres e cair em homens
-  continua não testada.
+  de árvore, não de tuning. LAB-128 fechada sem execução: o cardiovascular já testou 12
+  variantes, incluindo a diferença sazonal, e nenhuma bateu o ingênuo sazonal pelo
+  critério.
+- **MASE como métrica do critério** (opção 2 da LAB-135): reescreveria vereditos publicados.
 - **Incerteza do teste de regime.** Origem única, n = 1. O desenho atual não permite medir.
 
 ## Comandos
@@ -163,4 +148,24 @@ make extract-sim   make validate   make benchmark   make uncertainty
 make sites         make domains    make paper       make test
 python scripts/build_csp_submission.py   # só o pacote, sem regerar verified_numbers.json
 python scripts/check_docx_numbers.py     # confere o pacote contra o JSON
+python scripts/write_domain_report.py     # só o relatório entre domínios
 ```
+
+---
+
+## HISTÓRICO
+
+- **2026-09-23, revisão de robustez.** Benchmark falha na hora se um modelo perde janela
+  (CSVs regerados idênticos byte a byte). XGBoost reproduz o valor publicado, mas depende
+  do número de threads (amplitude 0,032 pp); versão fixada em 3.4.1
+  (`docs/xgboost_reprodutibilidade.md`). Intervalos conformais em
+  `src/onco_timeseries/intervals.py`: cobertura a 95% entre 0,911 e 0,961 no regime, 0,500
+  fora dele. Limitação de hiperparâmetros em `docs/limitacao_hiperparametros.md`.
+- **2026-09-18, conferência contra o TabNet.** `scripts/crosscheck_tabnet.py`: a série
+  reproduz exatamente os óbitos por residência nos 14 anos (741.313 nos dois). Contra a
+  visão por ocorrência, diferença de 1,74%, que é definição de população, não erro.
+- **2026-09-18.** Resumo, Abstract e Resumen no pacote, dentro de 250 palavras (`ecf9789`).
+- **2026-08-29 e 30.** Manuscrito de revisão (`7d59298`, aposentado em 2026-09-28) e
+  primeira versão do pacote da CSP (`f5c7221`).
+- **2026-08-18 e 19.** Extração do SIM, benchmark dos 7 modelos em 55 janelas, critério
+  pré-declarado (12 de 21 pares), 4 sítios tumorais e comparação entre domínios.
