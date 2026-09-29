@@ -1,0 +1,68 @@
+{
+  "total_microdado": 741313,
+  "desfechos": {
+    "total": {
+      "rotulo": "Neoplasias malignas",
+      "cid": null,
+      "obitos": 741313,
+      "sexo_ignorado": 19,
+      "idade_ignorada": 95,
+      "idade_ignorada_pct": 0.013,
+      "series": {
+        "masc": {
+          "obitos": 390776,
+          "pontos": 168,
+          "media_mensal": 2326.0,
+          "minimo_mensal": 1862,
+          "maximo_mensal": 2733,
+          "incluido": true,
+          "pontos_pre": 120,
+          "media_mensal_pre": 2262.7
+        },
+        "fem": {
+          "obitos": 350518,
+          "pontos": 168,
+          "media_mensal": 2086.4,
+          "minimo_mensal": 1634,
+          "maximo_mensal": 2610,
+          "incluido": true,
+          "pontos_pre": 120,
+          "media_mensal_pre": 1988.5
+        }
+      }
+    },
+    "pulmao": {
+      "rotulo": "Traqueia, brônquios e pulmão",
+      "cid": [
+        "C33",
+        "C34"
+      ],
+      "obitos": 92821,
+      "sexo_ignorado": 2,
+      "idade_ignorada": 20,
+      "idade_ignorada_pct": 0.022,
+      "series": {
+        "masc": {
+          "obitos": 53122,
+          "pontos": 168,
+          "media_mensal": 316.2,
+          "minimo_mensal": 251,
+          "maximo_mensal": 400,
+          "incluido": true,
+          "pontos_pre": 120,
+          "media_mensal_pre": 313.2
+        },
+        "fem": {
+          "obitos": 39697,
+          "pontos": 168,
+          "media_mensal": 236.3,
+          "minimo_mensal": 146,
+          "maximo_mensal": 325,
+          "incluido": true,
+          "pontos_pre": 120,
+          "media_mensal_pre": 220.2
+        }
+      }
+    }
+  }
+}

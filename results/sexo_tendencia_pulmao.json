@@ -1,0 +1,118 @@
+{
+  "desfecho": "pulmao",
+  "padronizacao": "direta, população mundial de Segi modificada por Doll, 17 faixas (80+)",
+  "denominador": "DataSUS/RIPSA, estimativas por município, idade e sexo 2000-2025",
+  "idade_ignorada_pct": 0.02,
+  "tendencias": [
+    {
+      "sexo": "fem",
+      "janela": "2010-2019",
+      "medida": "taxa_padronizada",
+      "n": 10,
+      "apc": 1.15,
+      "ic95": [
+        0.579,
+        1.723
+      ],
+      "rho": -0.011,
+      "sentido": "aumento"
+    },
+    {
+      "sexo": "fem",
+      "janela": "2010-2019",
+      "medida": "obitos",
+      "n": 10,
+      "apc": 4.6,
+      "ic95": [
+        4.052,
+        5.151
+      ],
+      "rho": -0.044,
+      "sentido": "aumento"
+    },
+    {
+      "sexo": "fem",
+      "janela": "2010-2023",
+      "medida": "taxa_padronizada",
+      "n": 14,
+      "apc": 0.517,
+      "ic95": [
+        -0.093,
+        1.13
+      ],
+      "rho": 0.383,
+      "sentido": "estavel"
+    },
+    {
+      "sexo": "fem",
+      "janela": "2010-2023",
+      "medida": "obitos",
+      "n": 14,
+      "apc": 3.924,
+      "ic95": [
+        3.302,
+        4.55
+      ],
+      "rho": 0.391,
+      "sentido": "aumento"
+    },
+    {
+      "sexo": "masc",
+      "janela": "2010-2019",
+      "medida": "taxa_padronizada",
+      "n": 10,
+      "apc": -0.99,
+      "ic95": [
+        -1.265,
+        -0.715
+      ],
+      "rho": -0.539,
+      "sentido": "queda"
+    },
+    {
+      "sexo": "masc",
+      "janela": "2010-2019",
+      "medida": "obitos",
+      "n": 10,
+      "apc": 2.339,
+      "ic95": [
+        2.057,
+        2.622
+      ],
+      "rho": -0.488,
+      "sentido": "aumento"
+    },
+    {
+      "sexo": "masc",
+      "janela": "2010-2023",
+      "medida": "taxa_padronizada",
+      "n": 14,
+      "apc": -1.983,
+      "ic95": [
+        -2.718,
+        -1.242
+      ],
+      "rho": 0.456,
+      "sentido": "queda"
+    },
+    {
+      "sexo": "masc",
+      "janela": "2010-2023",
+      "medida": "obitos",
+      "n": 14,
+      "apc": 1.214,
+      "ic95": [
+        0.356,
+        2.079
+      ],
+      "rho": 0.543,
+      "sentido": "aumento"
+    }
+  ],
+  "veredito": {
+    "hipotese": "apoiada",
+    "feminino_sobe": true,
+    "masculino_cai": true,
+    "regra": "LAB-182: janela 2010-2019, APC fem > 0 e APC masc < 0, ambos com IC95% excluindo zero"
+  }
+}

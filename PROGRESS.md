@@ -1,6 +1,6 @@
 # PROGRESS, OPT (Oncology Prediction Timeseries)
 
-Última atualização: 2026-09-28, fim da sessão. Commit de referência: `05d9690`.
+Última atualização: 2026-09-29. Estratificação por sexo (LAB-182) e achado de reprodutibilidade do XGBoost.
 
 Medir se modelos de forecasting preveem mortalidade mensal por neoplasia maligna (CID-10
 C00-C97) no Estado de São Paulo melhor que baselines triviais, com incerteza medida e
@@ -46,6 +46,22 @@ XGBoost, ingênuo sazonal), e dentro de cada grupo é empate.
 
 Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andamento.
 
+### Concluído em 2026-09-29
+
+- [x] **LAB-182, estratificação por sexo.** Plano registrado na issue antes de rodar.
+  Relatório em `docs/relatorio_sexo.md`, gerado por `make sex`.
+  - Hipótese do pulmão **apoiada** na taxa padronizada por idade (Segi-Doll), 2010-2019:
+    APC feminino +1,15% [0,58; 1,72], masculino −0,99% [−1,26; −0,71]. Em contagem bruta
+    os dois sobem (+4,60% e +2,34%): a diferença é envelhecimento.
+  - Previsão por sexo repete o agregado: SARIMA e Prophet batem o ingênuo sazonal nas 4
+    séries, boosting em nenhuma; nenhuma série é mais difícil do que a contagem explica.
+  - Denominador: `popsvs2024br` do DataSUS (2000-2025), por `fetch_population_tabnet.py`.
+- [x] **XGBoost muda um veredito em outra máquina** (PR #9). Reprodução num Apple M4:
+  tendência linear x XGBoost vai de não confirmado (DM 2/6) para confirmado (3/6). Decisão
+  do Fabiano: manter os números publicados e declarar nos Resultados e Limitações.
+  `run_benchmark.py --processo-por-modelo` contorna a queda do Python com torch e XGBoost
+  no mesmo processo no macOS.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
@@ -72,8 +88,6 @@ Nada pela metade. Git limpo e sincronizado com origin.
 
 ### Fora do manuscrito atual, sem prazo
 
-- [ ] **Estratificação por sexo.** Hipótese de pulmão subir em mulheres e cair em homens,
-  nunca testada. Reis 2026 (já citado) aponta na mesma direção.
 - [ ] **Sensibilidade com a série inteira 2010-2023** tratando o período da pandemia.
   Recomendada na LAB-114, nunca executada.
 - [ ] **Frase de robustez no manuscrito:** "exigir concordância com o MAE não muda nenhum
@@ -85,7 +99,11 @@ Nada pela metade. Git limpo e sincronizado com origin.
 
 ## INFRA
 
-- **`make paper` não roda nesta máquina (Mac) sem antes `make extract-sim`.**
+- **Extração feita neste Mac em 2026-09-29** (`data/raw/`, fora do git): `make paper` e
+  `make sex` rodam aqui agora. Modelos instalados de `requirements-optional.txt`.
+- **No macOS, rode o benchmark com `--processo-por-modelo`** sempre que TimesFM e XGBoost
+  estiverem juntos; sem isso o Python cai (código 139).
+- **`make paper` não roda numa máquina nova sem antes `make extract-sim`.**
   `build_paper_assets.py` lê `data/processed/sim_onco_extraction_metadata.json`, que não
   é versionado. O pacote da CSP roda sem ele, a partir do `verified_numbers.json`
   versionado. Qualquer número novo no manuscrito exige a extração, que baixa de novo o

@@ -114,3 +114,29 @@ crosscheck:
 
 intervals:
 	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_intervals.py
+
+# LAB-182: estratificacao por sexo. Previsao por sexo (cancer total e pulmao) no mesmo
+# protocolo e criterio, e tendencia da taxa padronizada de pulmao por sexo.
+SEX_SERIES ?= total_masc total_fem pulmao_masc pulmao_fem
+
+.PHONY: sex
+
+sex:
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/build_sex_series.py \
+		--raw-csv data/raw/sim_onco_$(UF)_$(YEARS).csv
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/fetch_population_tabnet.py
+	@for s in $(SEX_SERIES); do \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_benchmark.py \
+			--input-csv results/series/serie_onco_$(UF)_$${s}_2010-2019.csv \
+			--horizon 6 --min-train-size 60 --models $(MODELS_ALL) \
+			--output-prefix results/benchmark_onco_$(UF)_sexo_$${s}_2010_2019 --processo-por-modelo ; \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/run_uncertainty.py \
+			--predictions-csv results/benchmark_onco_$(UF)_sexo_$${s}_2010_2019_predictions.csv \
+			--models $(MODELS_ALL) --n-boot 10000 --seed 20260818 \
+			--output-prefix results/uncertainty_onco_$(UF)_sexo_$${s}_2010_2019 ; \
+		$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/apply_criterion.py \
+			--pairwise-csv results/uncertainty_onco_$(UF)_sexo_$${s}_2010_2019_pairwise_tests.csv \
+			--report-output results/criterion_verdict_sexo_$${s}_2010_2019.json ; \
+	done
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/sex_trend.py
+	$(ACTIVATE) && PYTHONPATH=src $(PYTHON) scripts/write_sex_report.py
