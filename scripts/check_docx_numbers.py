@@ -147,6 +147,11 @@ def main() -> None:
         if mudam == 0:
             esperar("criterio v2 nao muda veredito do agregado", f"none of the {len(vd['pares'])} verdicts")
 
+    si_path = ROOT / "results" / "serie_inteira_resumo.json"
+    if si_path.exists():
+        si = json.loads(si_path.read_text(encoding="utf-8"))
+        esperar("janelas da serie inteira", f"untreated ({si['janelas']} windows)")
+
     exigidos = [(r, x) for r, x, fora in checagens if fora is None]
     cortados = [(r, x, fora) for r, x, fora in checagens if fora is not None]
     faltando = [(r, x) for r, x in exigidos if x not in txt]

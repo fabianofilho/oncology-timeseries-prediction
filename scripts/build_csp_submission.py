@@ -410,6 +410,44 @@ def robustez_frase(vd: dict | None) -> str:
             f"{mudam} of the {len(pares)} verdicts and leaves {disc} discordant.")
 
 
+def serie_inteira_frase() -> str:
+    """Frase das Limitacoes sobre a sensibilidade com a serie inteira (LAB-204).
+
+    Lida de results/criterion_verdict_2010_2023_full.json. So cobre o resultado medido
+    (entre grupos todos confirmados, um modelo do grupo de cima se separando dos outros
+    dois, que seguem empatados); outro resultado derruba o build.
+    """
+    p = ROOT / "results" / "criterion_verdict_2010_2023_full.json"
+    if not p.exists():
+        return ""
+    cima = {"sarima", "timesfm", "prophet"}
+    pares = {frozenset(x["par"].split("_menos_")): x
+             for x in json.loads(p.read_text(encoding="utf-8"))["pares"]}
+    entre = [k for k in pares if len(k & cima) == 1]
+    dentro = [k for k in pares if k <= cima]
+    sep = [k for k in dentro if pares[k]["confirmado"]]
+    emp = [k for k in dentro if not pares[k]["confirmado"]]
+    isolado = set.intersection(*(set(k) for k in sep)) if len(sep) == 2 else set()
+    if not (all(pares[k]["confirmado"] for k in entre) and len(isolado) == 1 and len(emp) == 1):
+        raise ValueError("sensibilidade com a serie inteira mudou de padrao: reescrever a frase")
+    sozinho = LABEL[isolado.pop()]
+    a, b = sorted((LABEL[x] for x in emp[0]))
+    serie = pd_read_csv_len(ROOT / "results" / "benchmark_onco_SP_2010_2023_full_predictions.csv")
+    return (
+        f"Rerunning the same protocol on the whole 2010-2023 series with the pandemic left "
+        f"untreated ({serie} windows) kept every between-group comparison confirmed, but "
+        f"separated {sozinho} from {a} and {b}, which remained tied; the tie within the upper "
+        f"group holds for the stable regime only. "
+    )
+
+
+def pd_read_csv_len(caminho: Path) -> int:
+    """Numero de janelas distintas num CSV de previsoes, sem depender do pandas."""
+    import csv
+    with caminho.open(encoding="utf-8") as fh:
+        return len({linha["window"] for linha in csv.DictReader(fh)})
+
+
 def reproducao_frase(rp: dict) -> str:
     """Frase das Limitacoes sobre a reproducao em outra maquina, lida do JSON."""
     x = rp["modelos"]["xgboost"]
@@ -808,7 +846,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
         + (reproducao_frase(rp) if rp else "")
         + f"The regime-shift test rests on a single "
         f"origin and therefore has no uncertainty measure; it is descriptive and should not be "
-        f"read as evidence that the naive baseline is more robust in general. Stratification was "
+        f"read as evidence that the naive baseline is more robust in general. "
+        + serie_inteira_frase()
+        + f"Stratification was "
         f"by site only and covered {v['sitios_cobertura_pct']}% of deaths, so no statement is "
         f"made about sex-specific trends or about the remaining sites. Finally, sMAPE was the "
         f"pre-declared metric; on a series with a stable level this choice is benign, since mean "
