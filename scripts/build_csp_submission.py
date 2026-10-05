@@ -277,6 +277,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
     pct_acima = ext["_observacoes_acima_do_max_treino"]["pct"]
 
     # Portugues e espanhol usam ponto no milhar e virgula no decimal.
+    rp = carrega_reproducao()
     n_obitos_lat = n_obitos.replace(",", ".")
     erro_lat = f"{sa['point']:.2f}".replace(".", ",")
     acima_lat = str(pct_acima).replace(".", ",")
@@ -288,8 +289,8 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"do Sistema de Informações sobre Mortalidade todos os óbitos por neoplasia maligna "
         f"(CID-10 C00-C97) de residentes no Estado de São Paulo entre {co['anos'][0]} e "
         f"{co['anos'][1]}, num total de {n_obitos_lat} óbitos e {n_meses} observações mensais, "
-        f"que reproduziram os dados oficiais sem diferença. Como a pandemia representa uma "
-        f"ruptura estrutural, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. "
+        f"que reproduziram os dados oficiais sem diferença. Pela ruptura estrutural da "
+        f"pandemia, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. "
         f"Comparamos sete métodos sob um único protocolo de validação por origem móvel, com "
         f"{n_jan} janelas e {n_prev} previsões cada, medindo a incerteza por reamostragem de "
         f"janelas inteiras. Declaramos, antes de ver resultado, que uma diferença só contaria "
@@ -298,10 +299,10 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"{erro_lat}%. O critério confirmou {n_conf} das {n_par} comparações, e o padrão foi de "
         f"dois grupos e não de um ordenamento: os métodos que representam a série não se "
         f"distinguiram entre si, os que não a representam tampouco, e toda comparação entre "
-        f"grupos foi confirmada. As árvores potencializadas não superaram o comparador "
+        f"grupos foi confirmada.{ressalva_resumo(rp, 'pt')} As árvores potencializadas não "
+        f"superaram o comparador "
         f"trivial porque nunca preveem acima do máximo já observado, que {acima_lat}% das "
-        f"observações de teste superam. Nenhum modelo pode ser declarado o melhor: o que os "
-        f"dados sustentam é um degrau entre representar e não representar a série."
+        f"observações de teste superam. Nenhum modelo pode ser declarado o melhor."
     )
     en = (
         f"Forecasts of cancer mortality inform health service planning, yet forecasting studies "
@@ -320,30 +321,32 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"{sa['point']:.2f}%. The criterion confirmed {n_conf} of {n_par} comparisons, and the "
         f"pattern was two groups rather than a ranking: methods that represent the series were "
         f"indistinguishable from one another, as were those that do not, and every "
-        f"comparison across the two groups was confirmed. Boosted trees did not beat the trivial "
+        f"comparison across the two groups was confirmed.{ressalva_resumo(rp, 'en')} Boosted "
+        f"trees did not beat the trivial "
         f"comparator because they never forecast above the maximum already observed, while "
-        f"{pct_acima}% of test observations lie above it. No model can be declared best in this "
-        f"series: what the data support is a step between representing and not representing it."
+        f"{pct_acima}% of test observations lie above it. No model can be declared best: what "
+        f"the data support is a step between representing and not representing the series."
     )
     es = (
         f"Las proyecciones de mortalidad por cáncer orientan la planificación de servicios, "
         f"pero los estudios de predicción raramente comprueban si el modelo ajustado supera a "
-        f"un comparador trivial, y raramente informan si la diferencia observada entre modelos "
+        f"un comparador trivial, y raramente informan si la diferencia entre modelos "
         f"resiste una medida de incertidumbre. Extrajimos del Sistema de Información sobre "
         f"Mortalidad todas las muertes por neoplasia maligna (CIE-10 C00-C97) de residentes del "
         f"Estado de São Paulo entre {co['anos'][0]} y {co['anos'][1]}, un total de "
         f"{n_obitos_lat} muertes y {n_meses} observaciones mensuales, que reprodujeron las "
-        f"cifras oficiales sin diferencia alguna. Dado que la pandemia constituye una ruptura "
-        f"estructural, el ajuste se restringió a los {n_treino} meses de 2010 a 2019. "
-        f"Comparamos siete métodos de predicción bajo un único protocolo de validación de "
+        f"cifras oficiales exactamente. Por la ruptura estructural de la pandemia, el "
+        f"ajuste se restringió a los {n_treino} meses de 2010 a 2019. "
+        f"Comparamos siete métodos bajo un único protocolo de validación de "
         f"origen móvil, con {n_jan} ventanas y {n_prev} predicciones cada uno, y medimos la "
-        f"incertidumbre remuestreando ventanas completas. Declaramos, antes de ver resultado "
-        f"alguno, que una diferencia solo contaría como confirmada si el intervalo de confianza "
+        f"incertidumbre remuestreando ventanas completas. Declaramos de antemano que una "
+        f"diferencia solo contaría como confirmada si el intervalo de confianza "
         f"excluía el cero y la prueba por horizonte también la detectaba. El modelo estacional "
         f"clásico tuvo el menor error porcentual, {erro_lat}%. El criterio confirmó {n_conf} de "
         f"{n_par} comparaciones, y el patrón fue de dos grupos y no de un ordenamiento: los "
         f"métodos que representan la serie no se distinguieron entre sí, los que no la "
-        f"representan tampoco, y toda comparación entre ambos grupos fue confirmada. Los "
+        f"representan tampoco, y toda comparación entre ambos grupos fue "
+        f"confirmada.{ressalva_resumo(rp, 'es')} Los "
         f"árboles potenciados no superaron al comparador trivial porque nunca predicen por "
         f"encima del máximo ya observado, que {acima_lat}% de las observaciones de prueba "
         f"superan. Ningún modelo puede declararse el mejor."
@@ -358,6 +361,55 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
 
 
 # --------------------------------------------------------------------------- #
+GRUPO_DE_BAIXO = {"linear_trend", "catboost", "xgboost", "seasonal_naive"}
+
+
+def carrega_reproducao() -> dict | None:
+    """Reproducao em outra maquina (scripts/compare_reproduction.py), se existir."""
+    p = ROOT / "results" / "reproducao_benchmark.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+
+
+def carrega_veredito_v2() -> dict | None:
+    """Veredito do agregado com o criterio v2 (LAB-135), se ja tiver sido regerado."""
+    p = ROOT / "results" / "criterion_verdict_2010_2019_full.json"
+    d = json.loads(p.read_text(encoding="utf-8"))
+    return d if d["criterio"].get("versao") == 2 else None
+
+
+def ressalva_resumo(rp: dict | None, lingua: str) -> str:
+    """Frase dos resumos sobre a reproducao; vazia se nada muda ou o caso e outro.
+
+    So cobre o caso medido: um unico par, dentro do segundo grupo, mudando de veredito.
+    Outro caso derruba o build, para a frase nao ficar dizendo algo que nao e verdade.
+    """
+    if not rp or not rp["pares_que_mudam"]:
+        return ""
+    muda = rp["pares_que_mudam"]
+    if len(muda) != 1 or not set(muda[0]["par"]) <= GRUPO_DE_BAIXO:
+        raise ValueError("reproducao muda outro conjunto de vereditos: reescrever a ressalva")
+    return {
+        "pt": " Em outro computador, uma comparação do segundo grupo mudou de veredito.",
+        "en": " On another computer, one comparison within the second group changed verdict.",
+        "es": " En otro ordenador, una comparación del segundo grupo cambió de veredicto.",
+    }[lingua]
+
+
+def robustez_frase(vd: dict | None) -> str:
+    """Frase das Limitacoes: o criterio v2 muda quantos vereditos do agregado."""
+    if not vd:
+        return ""
+    pares = vd["pares"]
+    mudam = sum(p["confirmado"] != p["confirmado_v1"] for p in pares)
+    disc = sum(p["veredito"] == "discordante" for p in pares)
+    if mudam == 0 and disc == 0:
+        return (f" Requiring, in addition, that mean absolute error agree in direction, a "
+                f"stricter rule adopted later in this project for surge-driven series, changes "
+                f"none of the {len(pares)} verdicts.")
+    return (f" Requiring, in addition, that mean absolute error agree in direction changes "
+            f"{mudam} of the {len(pares)} verdicts and leaves {disc} discordant.")
+
+
 def reproducao_frase(rp: dict) -> str:
     """Frase das Limitacoes sobre a reproducao em outra maquina, lida do JSON."""
     x = rp["modelos"]["xgboost"]
@@ -761,7 +813,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"made about sex-specific trends or about the remaining sites. Finally, sMAPE was the "
         f"pre-declared metric; on a series with a stable level this choice is benign, since mean "
         f"absolute error agrees with it here, but it would not be benign on a surge-driven "
-        f"series.",
+        f"series." + robustez_frase(carrega_veredito_v2()),
     )
     body(
         doc,

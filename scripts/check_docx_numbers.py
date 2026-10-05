@@ -140,6 +140,13 @@ def main() -> None:
             a, b = p["dm_reproduzido"].split("/")
             esperar("DM do par que muda, reproduzido", f"{a} of {b}")
 
+    vd_path = ROOT / "results" / "criterion_verdict_2010_2019_full.json"
+    vd = json.loads(vd_path.read_text(encoding="utf-8"))
+    if vd["criterio"].get("versao") == 2:
+        mudam = sum(p["confirmado"] != p["confirmado_v1"] for p in vd["pares"])
+        if mudam == 0:
+            esperar("criterio v2 nao muda veredito do agregado", f"none of the {len(vd['pares'])} verdicts")
+
     exigidos = [(r, x) for r, x, fora in checagens if fora is None]
     cortados = [(r, x, fora) for r, x, fora in checagens if fora is not None]
     faltando = [(r, x) for r, x in exigidos if x not in txt]

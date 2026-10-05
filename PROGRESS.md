@@ -62,6 +62,16 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   `run_benchmark.py --processo-por-modelo` contorna a queda do Python com torch e XGBoost
   no mesmo processo no macOS.
 
+### Concluído em 2026-10-04
+
+- [x] **Varredura do histórico para tornar o repositório público:** nenhum segredo, dado
+  pessoal ou microdado em 42 commits.
+- [x] **`docs/registro_decisoes.md`** (PR #11): pré-registro exportado do Linear. Mostrou
+  que o corte em 2019 foi só proposto antes do benchmark; as duas frases do manuscrito foram
+  corrigidas (PR #12).
+- [x] **Ressalva do XGBoost nos três resumos e frase de robustez** nas Limitações ("changes
+  none of the 21 verdicts"), lidas de `results/`. Resumos com 243, 249 e 249 palavras.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
@@ -90,8 +100,6 @@ Nada pela metade. Git limpo e sincronizado com origin.
 
 - [ ] **Sensibilidade com a série inteira 2010-2023** tratando o período da pandemia.
   Recomendada na LAB-114, nunca executada.
-- [ ] **Frase de robustez no manuscrito:** "exigir concordância com o MAE não muda nenhum
-  dos 21 vereditos". Depende de regerar `verified_numbers.json` (ver INFRA).
 - [ ] **Publicação com dengue:** liberada pela LAB-135, mas o DM com pouco poder em série
   com surto precisa entrar como limitação.
 
