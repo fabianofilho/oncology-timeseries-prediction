@@ -104,6 +104,10 @@ Nada pela metade. Git limpo e sincronizado com origin.
 
 ### Fora do manuscrito atual, sem prazo
 
+- [ ] **Comunicação Breve sobre pulmão por sexo** (LAB-182), rascunho gerado em 2026-10-05
+  por `scripts/build_sexo_cb.py` em `build/csp_sexo/` (2.171 palavras, 1 tabela, 1 figura,
+  7 referências conferidas). Faltam autoria e a decisão de submeter, e se antes ou depois
+  do artigo principal.
 - [ ] **Publicação com dengue:** liberada pela LAB-135, mas o DM com pouco poder em série
   com surto precisa entrar como limitação.
 
