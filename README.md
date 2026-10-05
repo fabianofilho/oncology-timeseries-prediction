@@ -245,10 +245,9 @@ oncology-timeseries-prediction/
   tests/               testes das métricas e do bootstrap
 ```
 
-## Projeto no Linear
+## Registro das decisões
 
-[Oncology Prediction Timeseries (OPT)](https://linear.app/labdaps/project/oncology-prediction-timeseries-opt-dd6e9c8f37c7), time Labdaps.
-
-O board tem o pipeline em seis issues, da definição de desfecho (LAB-114) ao relatório
-comparativo entre os três projetos da linha (LAB-120). A ordem de dependência está
-declarada lá, não aqui.
+O projeto foi conduzido num rastreador de issues privado (Linear, time Labdaps). As issues
+que funcionaram como pré-registro, com o texto integral e os horários, estão copiadas em
+[`docs/registro_decisoes.md`](docs/registro_decisoes.md): o que foi declarado antes de
+rodar, o que foi decidido depois, e o limite do que a cópia prova.

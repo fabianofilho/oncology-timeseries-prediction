@@ -54,7 +54,7 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 | 17 Ética | OK | Fim dos Métodos: dispensa de CEP pela Res. CNS 510/2016 |
 | 18a Financiamento | **Falta** | `[PENDING]` |
 | 18b Conflitos | **Falta** | `[PENDING]` |
-| 18c Protocolo | OK | Fim dos Métodos: sem protocolo publicado; decisões registradas no issue tracker e no git antes do benchmark |
+| 18c Protocolo | OK, com a frase a corrigir | Fim dos Métodos: sem protocolo publicado. A frase dizia que o corte de treino foi registrado antes do benchmark, mas ele foi só recomendado antes; ver a correção abaixo e `docs/registro_decisoes.md` |
 | 18d Registro | OK | Mesma frase: estudo não registrado |
 | 18e Dados | OK | Série agregada no GitHub; microdado no DataSUS |
 | 18f Código | OK, trocar na submissão | O texto aponta o commit `81f5937`, que é antigo. Trocar pelo commit com tag da submissão |
@@ -74,16 +74,23 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 
 ## De onde vem a frase de protocolo
 
-"The training cutoff, the model set and the criterion for a confirmed difference were
-recorded in the project's issue tracker and version history before the benchmark was run."
-Conferido em 2026-09-28 pelos timestamps:
+**[CORREÇÃO] 2026-10-04.** Esta seção afirmava que a frase de protocolo ("The training
+cutoff, the model set and the criterion for a confirmed difference were recorded in the
+project's issue tracker and version history before the benchmark was run") tinha sido
+conferida contra os timestamps. A conferência de 2026-09-28 olhou só a **criação** das
+issues e deixou passar dois pontos:
 
-| Registro | Criado (UTC) |
-|---|---|
-| LAB-114, desfecho, recorte e período | 2026-08-18 09:33 |
-| LAB-117, TimesFM e boosting no mesmo protocolo | 2026-08-18 09:34 |
-| LAB-118, critério escrito por extenso (IC95% exclui zero E DM < 0,05 em 3 de 6 horizontes) | 2026-08-18 09:35 |
-| Primeiro commit do benchmark, `0e39333` | 2026-08-18 10:42 |
+- **O corte em 2019 não foi decidido antes de rodar.** A LAB-114, criada às 09:33, só
+  listava as opções. O corte foi recomendado às 10:11, antes do benchmark, mas a decisão
+  explícita foi registrada às 10:42:15, nove segundos depois do commit do primeiro
+  benchmark (`0e39333`, 10:42:06), que já usava esse corte.
+- **O argumento do `updatedAt` não prova nada sobre edição.** Ele dizia que a LAB-118
+  teve a última alteração no mesmo instante da criação da LAB-135, e portanto não foi
+  editada. Mas o `updatedAt` só mostra a alteração mais recente: uma edição anterior teria
+  sido sobrescrita por ela. A API não expõe o histórico de edição da descrição; ele só
+  aparece na interface do Linear.
 
-A LAB-118 tem `updatedAt` em 2026-08-19 15:26:30.642Z, o mesmo instante da criação da
-LAB-135: é o vínculo entre as duas, não edição do critério.
+Cronologia completa, com o texto integral das issues, em `docs/registro_decisoes.md`.
+Conjunto de modelos e critério: declarados antes do benchmark. Corte em 2019: recomendado
+antes, decidido depois. Os itens 18c e 18d continuam reportados, mas a frase do manuscrito
+precisa dizer isso com precisão.
