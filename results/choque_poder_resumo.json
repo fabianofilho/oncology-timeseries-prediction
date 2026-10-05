@@ -1,0 +1,95 @@
+{
+  "janelas": {
+    "estaveis": 55,
+    "choque": 48
+  },
+  "controle": "reproduz criterion_verdict_mac10 par a par",
+  "pares": {
+    "sarima": {
+      "estavel": {
+        "veredito": "nao_confirmado",
+        "dm": "1/6"
+      },
+      "choque": {
+        "veredito": "nao_confirmado",
+        "dm": "2/6",
+        "prophet_pior": true
+      },
+      "dif_em_dif": {
+        "smape": {
+          "choque": 0.5620496255242021,
+          "estavel": 0.18742462905684457,
+          "did": 0.3746249964673576,
+          "ic95": [
+            0.08868818913587861,
+            0.6530747012104273
+          ]
+        },
+        "ae": {
+          "choque": 27.874134662749345,
+          "estavel": 8.154525541288299,
+          "did": 19.719609121461048,
+          "ic95": [
+            6.398531551370632,
+            32.83405597162847
+          ]
+        }
+      },
+      "veredito": "indeterminado"
+    },
+    "timesfm": {
+      "estavel": {
+        "veredito": "nao_confirmado",
+        "dm": "0/6"
+      },
+      "choque": {
+        "veredito": "confirmado",
+        "dm": "6/6",
+        "prophet_pior": true
+      },
+      "dif_em_dif": {
+        "smape": {
+          "choque": 0.8590185403160913,
+          "estavel": 0.0340748338710138,
+          "did": 0.8249437064450774,
+          "ic95": [
+            0.5125791681267698,
+            1.1684221763054725
+          ]
+        },
+        "ae": {
+          "choque": 41.85809762438877,
+          "estavel": 1.5347824153186282,
+          "did": 40.32331520907014,
+          "ic95": [
+            25.78545184814809,
+            56.45856599529912
+          ]
+        }
+      },
+      "veredito": "choque"
+    }
+  },
+  "descritivo": {
+    "treino_pre_2020": {
+      "janelas": 6,
+      "previsoes": 36,
+      "previsoes_em_2020_ou_depois": 21,
+      "smape": {
+        "prophet": 3.4272071103002664,
+        "sarima": 3.700808984729014,
+        "timesfm": 3.2012863215043543
+      }
+    },
+    "treino_com_pandemia": {
+      "janelas": 42,
+      "previsoes": 252,
+      "previsoes_em_2020_ou_depois": 252,
+      "smape": {
+        "prophet": 4.073801708418863,
+        "sarima": 3.392373297187097,
+        "timesfm": 3.124340632171317
+      }
+    }
+  }
+}

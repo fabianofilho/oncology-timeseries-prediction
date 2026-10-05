@@ -90,6 +90,13 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   Figura 1, 7 referências conferidas no texto de origem). Também no Drive, com prefixo
   `CB_pulmao_sexo_`.
 
+- [x] **Choque contra poder na série inteira** (LAB-204, exploratório, registrado antes de
+  rodar). Relatório em `docs/relatorio_choque_poder.md`, gerado por
+  `scripts/choque_poder.py`. Controle: as 55 janelas estáveis reproduzem a análise principal
+  par a par. Prophet x TimesFM: **choque** (confirmado com só 48 janelas, DM 6/6, diferença
+  em diferenças positiva em sMAPE e MAE). Prophet x SARIMA: **indeterminado** (DM 2/6). O
+  descritivo por data de treino não separa as explicações e não sustenta conclusão.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
@@ -129,8 +136,7 @@ Nada pela metade. Git limpo e sincronizado com origin.
   de previsão. Regerar com `python scripts/build_sexo_cb.py`.
 - [ ] **Publicação com dengue:** liberada pela LAB-135, mas o DM com pouco poder em série
   com surto precisa entrar como limitação.
-- [ ] **Separar choque de poder na LAB-204** (exploratório, fora do plano registrado):
-  aplicar o critério só às 48 janelas de 2020-2023 e comparar com as 55 estáveis.
+
 
 ---
 
