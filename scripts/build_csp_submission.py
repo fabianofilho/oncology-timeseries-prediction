@@ -519,7 +519,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"cancer from deaths displaced by interrupted diagnosis, and because the effect had not "
         f"resolved by the end of the series, we chose not to model the break: model fitting and "
         f"all backtesting were restricted to 2010-2019, and 2020-2023 was used only as an "
-        f"out-of-regime test. This decision was recorded before the benchmark was run (Figure 1).",
+        f"out-of-regime test. This choice was based on the annual trend alone (Figure 1); it "
+        f"was proposed in the project's issue tracker before the benchmark was run and logged "
+        f"as a decision immediately after the first run.",
     )
     body(
         doc,
@@ -602,9 +604,11 @@ def build_texto(v: dict) -> tuple[Document, int]:
     )
     body(
         doc,
-        "No formal protocol was published and the study was not registered. The training "
-        "cutoff, the model set and the criterion for a confirmed difference were recorded in "
-        "the project's issue tracker and version history before the benchmark was run.",
+        "No formal protocol was published and the study was not registered. The model set and "
+        "the criterion for a confirmed difference were recorded in the project's issue tracker "
+        "before the benchmark was run; the training cutoff was proposed there beforehand and "
+        "logged as a decision immediately after the first run. A timestamped copy of these "
+        "records is in the repository.",
     )
 
     h(doc, "Results")

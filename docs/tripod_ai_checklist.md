@@ -54,7 +54,7 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 | 17 Ética | OK | Fim dos Métodos: dispensa de CEP pela Res. CNS 510/2016 |
 | 18a Financiamento | **Falta** | `[PENDING]` |
 | 18b Conflitos | **Falta** | `[PENDING]` |
-| 18c Protocolo | OK, com a frase a corrigir | Fim dos Métodos: sem protocolo publicado. A frase dizia que o corte de treino foi registrado antes do benchmark, mas ele foi só recomendado antes; ver a correção abaixo e `docs/registro_decisoes.md` |
+| 18c Protocolo | OK | Fim dos Métodos: sem protocolo publicado; modelos e critério registrados antes do benchmark, corte de treino proposto antes e decidido logo depois da primeira rodada (frase corrigida em 2026-10-04); cópia datada em `docs/registro_decisoes.md` |
 | 18d Registro | OK | Mesma frase: estudo não registrado |
 | 18e Dados | OK | Série agregada no GitHub; microdado no DataSUS |
 | 18f Código | OK, trocar na submissão | O texto aponta o commit `81f5937`, que é antigo. Trocar pelo commit com tag da submissão |
@@ -92,5 +92,5 @@ issues e deixou passar dois pontos:
 
 Cronologia completa, com o texto integral das issues, em `docs/registro_decisoes.md`.
 Conjunto de modelos e critério: declarados antes do benchmark. Corte em 2019: recomendado
-antes, decidido depois. Os itens 18c e 18d continuam reportados, mas a frase do manuscrito
-precisa dizer isso com precisão.
+antes, decidido depois. Os itens 18c e 18d continuam reportados. As duas frases do manuscrito foram corrigidas
+em 2026-10-04, com aprovação do Fabiano, para dizer exatamente isso.
