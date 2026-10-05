@@ -1,6 +1,6 @@
 # PROGRESS, OPT (Oncology Prediction Timeseries)
 
-Última atualização: 2026-09-29. Estratificação por sexo (LAB-182) e achado de reprodutibilidade do XGBoost.
+Última atualização: 2026-10-05, fim da sessão. Commit de referência: `db841d5`.
 
 Medir se modelos de forecasting preveem mortalidade mensal por neoplasia maligna (CID-10
 C00-C97) no Estado de São Paulo melhor que baselines triviais, com incerteza medida e
@@ -75,14 +75,31 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
 - [x] **LAB-204, sensibilidade com a série inteira 2010-2023** (103 janelas, critério v2).
   Pela regra registrada, a conclusão **não sobrevive**: o degrau entre os grupos se mantém
   (12 de 12 pares), mas o Prophet se separa de SARIMA e TimesFM, que seguem empatados.
-  Relatório em `docs/relatorio_serie_inteira.md`. Entrar ou não no manuscrito: decisão
-  pendente do Fabiano.
+  Relatório em `docs/relatorio_serie_inteira.md`.
+
+### Concluído em 2026-10-05
+
+- [x] **Série inteira nas Limitações** (PR #15, `889ff15`), aprovado pelo Fabiano: a frase
+  sai de `criterion_verdict_2010_2023_full.json` e para o build se o padrão mudar.
+- [x] **Pacote da CSP no Google Drive** (Labs › Oncology Time Series), como Google Docs para
+  revisão de coautor: texto, tabelas, legendas e suplementar com sufixo `_2026-10-05`, e as
+  três figuras em PNG. Os Docs foram conferidos pelo conector; as PNG foram copiadas pelo
+  Drive para desktop, mas a confirmação na nuvem foi bloqueada (ver próximos passos).
+- [x] **Comunicação Breve sobre pulmão por sexo** (PR #16, `db841d5`, LAB-182):
+  `scripts/build_sexo_cb.py` gera `build/csp_sexo/` (2.171 de 2.500 palavras, Tabela 1 e
+  Figura 1, 7 referências conferidas no texto de origem). Também no Drive, com prefixo
+  `CB_pulmao_sexo_`.
 
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
 
 ### PRÓXIMOS PASSOS NA ORDEM
+
+- [ ] **0. Confirmar as 4 figuras no Drive** (as 3 do artigo e a da Comunicação Breve). Abrir
+  https://drive.google.com/drive/folders/1y4mFK7OqUGugn7pmdXksb3K1HEAtldbR e conferir
+  `CSP_Figure1..3_2026-10-05.png` (236.497, 108.227 e 176.816 bytes) e
+  `CB_pulmao_sexo_Figure1_2026-10-05.png` (140.434 bytes).
 
 - [ ] **1. Os 5 `[PENDING]` de autoria** (LAB-169, só o Fabiano resolve)
   - Autores, afiliações e ORCID; contribuições (CRediT); financiamento; conflitos;
@@ -92,24 +109,28 @@ Nada pela metade. Git limpo e sincronizado com origin.
     tem de sair com 0 PENDING.
 - [ ] **2. Revisões humanas antes de submeter**
   - Tradução do Resumo (PT) e do Resumen (ES): eu só corrigi acentos e formato numérico.
-  - Leitura de pelo menos um coautor.
+  - Leitura de pelo menos um coautor, que já pode ser feita nos Google Docs da pasta.
+  - Revisão das Limitações, que ganharam três ressalvas: XGBoost entre máquinas, critério
+    v2 e série inteira.
 - [ ] **3. Submissão** (LAB-169)
   - Tag no commit submetido: `git tag -a csp-submissao-v1 -m "Submissão à CSP" && git push --tags`
-  - Trocar o commit `81f5937` citado no texto pelo commit com tag. Ele vem de
-    `_commit` no `paper/verified_numbers.json`, gravado por `build_paper_assets.py`, que
-    neste Mac exige `make extract-sim` antes (ver INFRA). Sem a extração, a alternativa é
-    editar só esse campo do JSON, num commit próprio que diga isso.
-  - Cópia de `build/csp/` fora da máquina; seção Questões Metodológicas no formulário;
-    número de submissão registrado na LAB-169.
+  - Trocar o commit `81f5937` citado no texto pelo commit com tag. Ele vem de `_commit` no
+    `paper/verified_numbers.json`, gravado por `build_paper_assets.py`. A extração já existe
+    neste Mac, então `make paper` regrava sozinho.
+  - Tornar o repositório público (varredura de 2026-10-04 sem achados) e fazer a release
+    com DOI no Zenodo.
+  - Subir a versão final para o Drive; seção Questões Metodológicas no formulário; número
+    de submissão registrado na LAB-169.
 
 ### Fora do manuscrito atual, sem prazo
 
-- [ ] **Comunicação Breve sobre pulmão por sexo** (LAB-182), rascunho gerado em 2026-10-05
-  por `scripts/build_sexo_cb.py` em `build/csp_sexo/` (2.171 palavras, 1 tabela, 1 figura,
-  7 referências conferidas). Faltam autoria e a decisão de submeter, e se antes ou depois
-  do artigo principal.
+- [ ] **Submeter a Comunicação Breve** (LAB-182): faltam os mesmos 5 PENDING de autoria e a
+  decisão. Recomendação: depois do artigo principal, porque ela descreve o mesmo desenho
+  de previsão. Regerar com `python scripts/build_sexo_cb.py`.
 - [ ] **Publicação com dengue:** liberada pela LAB-135, mas o DM com pouco poder em série
   com surto precisa entrar como limitação.
+- [ ] **Separar choque de poder na LAB-204** (exploratório, fora do plano registrado):
+  aplicar o critério só às 48 janelas de 2020-2023 e comparar com as 55 estáveis.
 
 ---
 
