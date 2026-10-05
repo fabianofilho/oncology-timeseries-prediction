@@ -97,6 +97,13 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   em diferenças positiva em sMAPE e MAE). Prophet x SARIMA: **indeterminado** (DM 2/6). O
   descritivo por data de treino não separa as explicações e não sustenta conclusão.
 
+- [x] **Pacote compartilhado com Carine Savalli** (apoio estatístico à publicação). Pasta do
+  Drive compartilhada como editora com [e-mail institucional da Carine]; entraram
+  `00_LEIA_PRIMEIRO_2026-10-05` na raiz e a subpasta `Relatórios de apoio` com os 8
+  relatórios de `docs/` (6 como Google Docs, `registro_decisoes` e `relatorio_dominios` como
+  .docx). Mensagem enviada pelo WhatsApp (Fermes) em 05/10, 07:27. Ela também usa
+  [e-mail pessoal da Carine], que ainda não tem acesso. Aguardando resposta.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
