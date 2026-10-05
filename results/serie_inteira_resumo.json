@@ -1,0 +1,69 @@
+{
+  "janelas": 103,
+  "janelas_estaveis": 55,
+  "janelas_choque": 48,
+  "max_dif_previsao_estaveis": {
+    "catboost": 0.0,
+    "linear_trend": 0.0,
+    "prophet": 0.0,
+    "sarima": 0.0,
+    "seasonal_naive": 0.0,
+    "timesfm": 0.0,
+    "xgboost": 0.0
+  },
+  "smape_total": {
+    "catboost": 3.8143,
+    "linear_trend": 3.373,
+    "prophet": 2.7698,
+    "sarima": 2.4078,
+    "seasonal_naive": 4.1659,
+    "timesfm": 2.3513,
+    "xgboost": 3.9426
+  },
+  "smape_choque": {
+    "catboost": 4.7146,
+    "linear_trend": 4.0784,
+    "prophet": 3.993,
+    "sarima": 3.4309,
+    "seasonal_naive": 5.2432,
+    "timesfm": 3.134,
+    "xgboost": 4.8479
+  },
+  "smape_estavel": {
+    "catboost": 3.0285,
+    "linear_trend": 2.7575,
+    "prophet": 1.7023,
+    "sarima": 1.5148,
+    "seasonal_naive": 3.2257,
+    "timesfm": 1.6682,
+    "xgboost": 3.1526
+  },
+  "confirmados": 15,
+  "pares": 21,
+  "discordantes": 1,
+  "condicao_a_entre_grupos": true,
+  "condicao_b_dentro_cima": false,
+  "conclusao_sobrevive": false,
+  "pares_que_mudam_vs_principal_mesma_maquina": [
+    [
+      "catboost",
+      "xgboost"
+    ],
+    [
+      "linear_trend",
+      "seasonal_naive"
+    ],
+    [
+      "linear_trend",
+      "xgboost"
+    ],
+    [
+      "prophet",
+      "sarima"
+    ],
+    [
+      "prophet",
+      "timesfm"
+    ]
+  ]
+}

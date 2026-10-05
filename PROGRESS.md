@@ -72,6 +72,12 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
 - [x] **Ressalva do XGBoost nos três resumos e frase de robustez** nas Limitações ("changes
   none of the 21 verdicts"), lidas de `results/`. Resumos com 243, 249 e 249 palavras.
 
+- [x] **LAB-204, sensibilidade com a série inteira 2010-2023** (103 janelas, critério v2).
+  Pela regra registrada, a conclusão **não sobrevive**: o degrau entre os grupos se mantém
+  (12 de 12 pares), mas o Prophet se separa de SARIMA e TimesFM, que seguem empatados.
+  Relatório em `docs/relatorio_serie_inteira.md`. Entrar ou não no manuscrito: decisão
+  pendente do Fabiano.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
@@ -98,8 +104,6 @@ Nada pela metade. Git limpo e sincronizado com origin.
 
 ### Fora do manuscrito atual, sem prazo
 
-- [ ] **Sensibilidade com a série inteira 2010-2023** tratando o período da pandemia.
-  Recomendada na LAB-114, nunca executada.
 - [ ] **Publicação com dengue:** liberada pela LAB-135, mas o DM com pouco poder em série
   com surto precisa entrar como limitação.
 
