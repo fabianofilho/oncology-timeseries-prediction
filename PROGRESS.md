@@ -111,6 +111,12 @@ Nada pela metade. Git limpo e sincronizado com origin.
 
 ## INFRA
 
+- **Google Drive:** Meu Drive › Labs › Oncology Time Series
+  (https://drive.google.com/drive/folders/1y4mFK7OqUGugn7pmdXksb3K1HEAtldbR). Nomes no
+  padrão `CSP_texto_AAAA-MM-DD`; versões antigas nunca são apagadas. Em 2026-10-05 entrou
+  `CSP_texto_2026-10-05` como Google Doc para revisão de coautor; o arquivo de submissão
+  continua sendo o `.docx` gerado em `build/csp/`, que tem numeração de linha e de página.
+
 - **Extração feita neste Mac em 2026-09-29** (`data/raw/`, fora do git): `make paper` e
   `make sex` rodam aqui agora. Modelos instalados de `requirements-optional.txt`.
 - **No macOS, rode o benchmark com `--processo-por-modelo`** sempre que TimesFM e XGBoost
