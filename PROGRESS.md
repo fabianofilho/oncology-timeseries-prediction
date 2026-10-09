@@ -156,6 +156,10 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
     `CSP_material_suplementar.docx` (`figS1_sitios` em `build_paper_assets.py`). Continua em 5
     ilustrações de painel único; a faixa das razões já estava no texto.
 
+- [x] **Versão 2026-10-09_v2 no Drive**: `CSP_texto`, `CSP_legendas_figuras`,
+  `CSP_material_suplementar` (com a Figura S1) e `CSP_Figure3`, com sufixo `_2026-10-09_v2`.
+  As tabelas não mudaram desde a `_2026-10-09`; nada foi apagado.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
