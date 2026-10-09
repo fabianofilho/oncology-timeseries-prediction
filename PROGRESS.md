@@ -119,6 +119,12 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   Em aberto, decisão do Fabiano: ela acha que a Comunicação Breve foge do contexto do artigo
   (comparar métodos); não entendeu o "choque" (a análise exploratória da LAB-204, fora do
   manuscrito); ofereceu um meet; costuma passar séries temporais a uma colega especialista.
+- [x] **Resposta à Carine** (WhatsApp, 09/10 20:11): siglas e figura corrigidas, Comunicação
+  Breve vai separada e depois, "choque" explicado como análise extra fora do artigo; pedida a
+  ponte com a colega de séries temporais e aceito o meet. Aguardando.
+- [x] **Versão 2026-10-09 no Drive** (pasta Oncology Time Series): os 4 `.docx` do pacote
+  (`CSP_*_2026-10-09.docx`) e `CSP_Figure3_2026-10-09.png`, pelo Drive para desktop. Os
+  Google Docs de 05/10 ficaram como estavam.
 
 ### EM PROGRESSO
 
