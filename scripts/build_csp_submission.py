@@ -287,7 +287,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"raramente testam se o modelo ajustado supera um comparador trivial, e raramente "
         f"informam se a diferença entre modelos resiste a uma medida de incerteza. Extraímos "
         f"do Sistema de Informações sobre Mortalidade todos os óbitos por neoplasia maligna "
-        f"(CID-10 C00-C97) de residentes no Estado de São Paulo entre {co['anos'][0]} e "
+        f"de residentes no Estado de São Paulo entre {co['anos'][0]} e "
         f"{co['anos'][1]}, num total de {n_obitos_lat} óbitos e {n_meses} observações mensais, "
         f"que reproduziram os dados oficiais sem diferença. Pela ruptura estrutural da "
         f"pandemia, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. "
@@ -309,7 +309,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"rarely test whether a fitted model outperforms a trivial comparator, and rarely report "
         f"whether an observed difference between models survives a measure of uncertainty. We "
         f"extracted from the Mortality Information System all deaths from malignant neoplasms "
-        f"(ICD-10 C00-C97) among residents of São Paulo State between {co['anos'][0]} and "
+        f"among residents of São Paulo State between {co['anos'][0]} and "
         f"{co['anos'][1]}, totalling {n_obitos} deaths and {n_meses} monthly observations, which "
         f"matched the official figures exactly. Because the pandemic is a "
         f"structural break, model fitting was restricted to the {n_treino} months from 2010 to "
@@ -332,7 +332,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"pero los estudios de predicción raramente comprueban si el modelo ajustado supera a "
         f"un comparador trivial, y raramente informan si la diferencia entre modelos "
         f"resiste una medida de incertidumbre. Extrajimos del Sistema de Información sobre "
-        f"Mortalidad todas las muertes por neoplasia maligna (CIE-10 C00-C97) de residentes del "
+        f"Mortalidad todas las muertes por neoplasia maligna de residentes del "
         f"Estado de São Paulo entre {co['anos'][0]} y {co['anos'][1]}, un total de "
         f"{n_obitos_lat} muertes y {n_meses} observaciones mensuales, que reprodujeron las "
         f"cifras oficiales exactamente. Por la ruptura estructural de la pandemia, el "
@@ -527,15 +527,16 @@ def build_texto(v: dict) -> tuple[Document, int]:
     p = body(
         doc,
         "The Mortality Information System records every registered death with an underlying "
-        "cause coded in ICD-10. Its completeness exceeded 95% nationally in 2000-2010 and is "
+        "cause coded in the International Classification of Diseases, 10th revision (ICD-10). "
+        "Its completeness exceeded 95% nationally in 2000-2010 and is "
         "highest in the South and Southeast, which include São Paulo State [@lima2014], so an "
         "aggregate monthly series is available there over more than a decade.",
     )
 
     body(
         doc,
-        "Forecasting such series has become methodologically crowded. Seasonal ARIMA remains "
-        "the reference; decomposition approaches such as Prophet are widely deployed [@taylor2018]; "
+        "Forecasting such series has become methodologically crowded. The seasonal "
+        "autoregressive integrated moving average model (SARIMA) remains the reference; decomposition approaches such as Prophet are widely deployed [@taylor2018]; "
         "gradient boosting over lagged features is a common default; and time-series foundation "
         "models now offer zero-shot forecasts without any fitting on the target series [@das2023]. "
         "Large-scale forecasting competitions have repeatedly found that method complexity and "
@@ -548,7 +549,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
         "whether the fitted model contributes anything beyond repeating last year. Second, "
         "differences are reported as point estimates, without uncertainty and without a rule, "
         "fixed in advance, for what magnitude counts as real. A difference of a few tenths of a "
-        "percentage point in symmetric mean absolute percentage error can easily be presented as "
+        "percentage point in symmetric mean absolute percentage error (sMAPE) can easily be presented as "
         "a win when it is merely noise [@hyndman2006].",
     )
     body(
@@ -564,7 +565,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
     h(doc, "Methods")
     body(
         doc,
-        "Reporting follows TRIPOD+AI [@collins2024] where applicable. TRIPOD+AI was designed for "
+        "Reporting follows the TRIPOD+AI statement (transparent reporting of multivariable "
+        "prediction models for individual prognosis or diagnosis, updated for artificial "
+        "intelligence) [@collins2024] where applicable. TRIPOD+AI was designed for "
         "individual-level clinical prediction models, whereas the outcome here is an aggregate "
         "monthly count, so items concerning participants, individually measured predictors, "
         "events per variable and calibration of individual risks do not apply and are not "
@@ -572,7 +575,9 @@ def build_texto(v: dict) -> tuple[Document, int]:
     )
     body(
         doc,
-        f"We used the Mortality Information System (SIM/DataSUS), by state of residence, "
+        f"We used the Mortality Information System, distributed by the Department of "
+        f"Informatics of the Brazilian Unified National Health System (DataSUS), by state of "
+        f"residence, "
         f"restricted to São Paulo State for {co['anos'][0]} to {co['anos'][1]}. Annual files "
         f"were downloaded from the DataSUS "
         f"public server and decoded locally. The outcome was the monthly count of deaths whose "
@@ -588,7 +593,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"{co['anos'][1]}). An automated plausibility check passed "
         f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions. "
         f"We cross-checked the annual counts against the figures published by the Ministry of "
-        f"Health through TabNet for the same selection (São Paulo, ICD-10 groups covering "
+        f"Health through TabNet, the DataSUS online tabulation tool, for the same selection (São Paulo, ICD-10 groups covering "
         f"C00-C97): our series reproduced the official deaths-by-residence figures exactly in "
         f"all {cross['anos_conferidos']} years, with a difference of zero and a total of "
         f"{n(cross['total_tabnet_residencia'])} in both. The deaths-by-occurrence view of the "
@@ -648,7 +653,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
         f"within each replicate. We additionally applied the Diebold-Mariano test [@diebold1995] at each horizon with "
         f"the Harvey small-sample correction [@harvey1997]. We declared, before running the benchmark and "
         f"before any result was inspected, that an improvement counts as confirmed only if the "
-        f"95% confidence interval of the sMAPE difference excludes zero AND the "
+        f"95% confidence interval (95%CI) of the sMAPE difference excludes zero AND the "
         f"Diebold-Mariano p value falls below {crit['alpha']} in at least "
         f"{crit['min_horizontes']} of the {ba['horizonte']} horizons. The two conditions test "
         f"different things: the bootstrap asks whether the average difference is "
@@ -960,7 +965,8 @@ def build_tabelas(v: dict) -> Document:
                  "DM below alpha"], rows)
     p = doc.add_paragraph()
     p.add_run(
-        f"DM: Diebold-Mariano test with the Harvey small-sample correction, applied separately "
+        f"sMAPE: symmetric mean absolute percentage error; 95%CI: 95% confidence interval from "
+        f"the block bootstrap; DM: Diebold-Mariano test with the Harvey small-sample correction, applied separately "
         f"at each of the {ba['horizonte']} forecast horizons; alpha = {crit['alpha']}. A "
         f"difference was pre-declared as confirmed only if the 95%CI excluded zero and DM fell "
         f"below alpha in at least {crit['min_horizontes']} of {ba['horizonte']} horizons. The "
@@ -997,7 +1003,7 @@ def build_legendas(v: dict) -> Document:
          f"in fact lie above that maximum. A recursive tree ensemble predicts an average of "
          f"leaves fitted in training and is therefore bounded by the observed range."),
         ("Figure 3",
-         "Left: sMAPE of the best model against mean monthly deaths for the aggregate series and "
+         "Left: symmetric mean absolute percentage error (sMAPE) of the best model against mean monthly deaths for the aggregate series and "
          "the four highest-volume tumour sites, with the curve expected if error were driven by "
          "counting noise alone. Right: observed sMAPE ratio divided by the Poisson-expected "
          "ratio, by site. Values near 1 indicate no difficulty beyond that implied by count size."),
@@ -1026,7 +1032,7 @@ def build_suplementar(v: dict) -> Document:
     r.font.size = Pt(10)
     par = doc.add_paragraph()
     par.add_run(
-        f"Empirical coverage, mean interval width and weighted interval score of conformal "
+        f"Empirical coverage, mean interval width and weighted interval score (WIS) of conformal "
         f"prediction intervals, by model, over {itv['n_avaliado_por_modelo']} forecasts per "
         f"model within the stable regime (2010-2019)."
     ).font.size = Pt(9)

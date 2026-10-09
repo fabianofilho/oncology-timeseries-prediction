@@ -104,6 +104,22 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   .docx). Mensagem enviada pelo WhatsApp (Fermes) em 05/10, 07:27. Ela também usa
   [e-mail pessoal da Carine], que ainda não tem acesso. Aguardando resposta.
 
+### Concluído em 2026-10-09
+
+- [x] **Revisão da Carine Savalli** (WhatsApp, 09/10). Ela trabalha com modelos lineares
+  generalizados mistos, não com séries temporais, e achou tudo "corretamente aplicado".
+  Aplicado no gerador:
+  - siglas definidas no primeiro uso (ICD-10, SARIMA, sMAPE, TRIPOD+AI, DataSUS, 95%CI,
+    TabNet) no corpo, nas notas das tabelas, na legenda da Figura 3 e no suplementar (WIS);
+    os três resumos ficaram sem sigla (o código CID saiu, continua nos Métodos);
+  - Figura 3, painel esquerdo (a "Figura 4" dela, numeração antiga): eixo log com marcas
+    regulares (200, 500, 1 000, 2 000, 5 000) em vez do valor de cada ponto. Só essa figura
+    foi regerada, chamando `fig4_sitios` direto, para não regravar o `_commit` do
+    `verified_numbers.json` antes da submissão.
+  Em aberto, decisão do Fabiano: ela acha que a Comunicação Breve foge do contexto do artigo
+  (comparar métodos); não entendeu o "choque" (a análise exploratória da LAB-204, fora do
+  manuscrito); ofereceu um meet; costuma passar séries temporais a uma colega especialista.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.

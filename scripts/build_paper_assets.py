@@ -307,11 +307,14 @@ def fig4_sitios(v: dict) -> str:
         ax1.annotate(r.split(" (")[0], (mm, ss), textcoords="offset points",
                      xytext=(7, 5), fontsize=8.0, color=C_OBS)
     ax1.set_xscale("log")
-    # Ticks explicitos: no log a formatacao automatica emite rotulos de minor tick
-    # que se sobrepoem e deixam o eixo ilegivel.
-    ax1.set_xticks(media)
-    ax1.set_xticklabels([f"{int(x):,}".replace(",", " ") for x in media],
-                        fontsize=8.2, rotation=45, ha="right")
+    # Escala de verdade no eixo log (revisao da Carine Savalli, 2026-10-09): marcas
+    # regulares em vez dos valores de cada ponto, que pareciam um eixo sem escala.
+    # A formatacao automatica do log sobrepoe rotulos de minor tick; por isso as
+    # marcas sao fixas e os minor ticks ficam desligados.
+    marcas = [m for m in (100, 200, 500, 1000, 2000, 5000, 10000)
+              if xs.min() <= m <= xs.max()]
+    ax1.set_xticks(marcas)
+    ax1.set_xticklabels([f"{m:,}".replace(",", " ") for m in marcas], fontsize=8.2)
     ax1.minorticks_off()
     ax1.set_xlabel("Mean monthly deaths (log scale)")
     ax1.set_ylabel("sMAPE (%) of the best model")
