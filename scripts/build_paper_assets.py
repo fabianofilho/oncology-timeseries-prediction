@@ -296,7 +296,9 @@ def fig4_sitios(v: dict) -> str:
     media = [e[n]["media_mensal"] for n in nomes]
     sm = [e[n]["smape_melhor"] for n in nomes]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.8, 4.0))
+    # Painel unico desde 2026-10-09: a CSP conta figura composta painel a painel, entao a
+    # razao observado/Poisson saiu para a Figura Suplementar S1 (figS1_sitios).
+    fig, ax1 = plt.subplots(figsize=(5.6, 4.0))
 
     _base_ax(ax1)
     xs = np.linspace(min(media) * 0.8, max(media) * 1.25, 200)
@@ -323,6 +325,17 @@ def fig4_sitios(v: dict) -> str:
                                label="Poisson expectation (1/sqrt(N))")],
                frameon=False, fontsize=8.2, loc="upper right")
 
+    fig.tight_layout()
+    out = FIGURES / "fig4_sites.png"
+    fig.savefig(out, dpi=DPI)
+    plt.close(fig)
+    return out.name
+
+
+def figS1_sitios(v: dict) -> str:
+    """Razao entre o sMAPE observado e o esperado por Poisson, por sitio (suplementar)."""
+    e = v["sitios"]
+    fig, ax2 = plt.subplots(figsize=(5.6, 4.0))
     _base_ax(ax2)
     sitios = list(SITES)
     razoes = [e[s]["obs_sobre_poisson"] for s in sitios]
@@ -341,7 +354,7 @@ def fig4_sitios(v: dict) -> str:
     ax2.set_ylim(0, 1.42)
 
     fig.tight_layout()
-    out = FIGURES / "fig4_sites.png"
+    out = FIGURES / "figS1_sites_ratio.png"
     fig.savefig(out, dpi=DPI)
     plt.close(fig)
     return out.name
@@ -578,7 +591,8 @@ def main() -> None:
         },
     }
 
-    figs = [fig1_serie(v), fig2_smape(v), fig3_extrapolacao(v), fig4_sitios(v), fig5_regime(v)]
+    figs = [fig1_serie(v), fig2_smape(v), fig3_extrapolacao(v), fig4_sitios(v), figS1_sitios(v),
+            fig5_regime(v)]
     v["_figuras"] = figs
 
     PAPER.mkdir(parents=True, exist_ok=True)

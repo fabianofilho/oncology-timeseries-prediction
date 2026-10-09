@@ -146,6 +146,16 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
     métodos e está descrito: a frase de uso de IA precisa cobrir as tabelas e figuras
     geradas por código escrito com o assistente.
 
+- [x] **Uso de IA e Figura 3 dividida** (decisões do Fabiano, 09/10):
+  - a frase de uso de IA (`paper/autoria.json`, campo `uso_ia`) agora diz que o assistente
+    escreveu o código que produz todas as tabelas e figuras, que nenhuma foi criada ou editada
+    direto pela ferramenta e que tudo é regenerado do resultado bruto; os Métodos ganharam uma
+    frase remetendo a ela, porque a CSP exige o uso descrito no manuscrito;
+  - a Figura 3 ficou só com o erro contra o volume (painel esquerdo); a razão
+    observado/Poisson por sítio virou a Figura Suplementar S1, embutida em
+    `CSP_material_suplementar.docx` (`figS1_sitios` em `build_paper_assets.py`). Continua em 5
+    ilustrações de painel único; a faixa das razões já estava no texto.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.

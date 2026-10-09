@@ -15,14 +15,13 @@
   "financiamento": "",
   "conflitos": "",
   "agradecimentos": "",
-  "uso_ia": "The authors used an AI coding assistant (Claude, Anthropic) to implement analysis code and to draft manuscript text. The tool is not an author. The authors reviewed all output, verified every reported number against the analysis code, and take full responsibility for the content.",
+  "uso_ia": "The authors used an AI coding assistant (Claude, Anthropic) to write the analysis code, including the scripts that produce every table and figure from the forecast files, and to draft manuscript text. The tool did not create or edit any table or figure directly: each one is the output of that code, run by the authors, and is regenerated from the raw results whenever they change, as described in Methods. The tool is not an author. The authors reviewed all output, verified every reported number against the analysis code, and take full responsibility for the content.",
   "disponibilidade_dados": "Data, code and results are available in a repository: https://github.com/fabianofilho/oncology-timeseries-prediction",
   "preprint": "",
   "tese_dissertacao": "",
   "_confirmar": [
     "orcid do Fabiano: veio da memoria do projeto CPT",
-    "nome em ingles do LABDAPS na afiliacao: inferido, conferir com o site do laboratorio",
-    "uso_ia: a CSP proibe IA para criar ou modificar tabelas e figuras, salvo quando faz parte dos metodos e esta descrito; aqui as tabelas e figuras saem de codigo escrito com o assistente"
+    "nome em ingles do LABDAPS na afiliacao: inferido, conferir com o site do laboratorio"
   ],
   "_modelos": {
     "financiamento_sem_recurso": "This study received no specific funding.",
