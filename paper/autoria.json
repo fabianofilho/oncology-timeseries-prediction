@@ -1,0 +1,32 @@
+{
+  "_leia": "Fonte unica da autoria e das declaracoes do manuscrito da CSP. Campo vazio vira [PENDING] no texto e na ficha do formulario (build/csp/CSP_formulario_submissao.md). E-mail e endereco postal de cada autor NAO entram aqui, porque o repositorio fica publico na submissao: vao em paper/autoria_privado.json (fora do git; modelo em paper/autoria_privado.exemplo.json). Itens em _confirmar foram preenchidos a partir de memoria de outro projeto e precisam de conferencia.",
+  "lista_fechada": false,
+  "autores": [
+    {
+      "nome": "Fabiano",
+      "sobrenome": "Novaes Barcellos Filho",
+      "afiliacao": "Laboratory of Big Data and Predictive Analysis in Healthcare (LABDAPS), School of Public Health, University of São Paulo, São Paulo, Brazil",
+      "pais": "Brazil",
+      "orcid": "0000-0002-1491-2700",
+      "correspondente": true,
+      "contribuicao": ""
+    }
+  ],
+  "financiamento": "",
+  "conflitos": "",
+  "agradecimentos": "",
+  "uso_ia": "The authors used an AI coding assistant (Claude, Anthropic) to implement analysis code and to draft manuscript text. The tool is not an author. The authors reviewed all output, verified every reported number against the analysis code, and take full responsibility for the content.",
+  "disponibilidade_dados": "Data, code and results are available in a repository: https://github.com/fabianofilho/oncology-timeseries-prediction",
+  "preprint": "",
+  "tese_dissertacao": "",
+  "_confirmar": [
+    "orcid do Fabiano: veio da memoria do projeto CPT",
+    "nome em ingles do LABDAPS na afiliacao: inferido, conferir com o site do laboratorio",
+    "uso_ia: a CSP proibe IA para criar ou modificar tabelas e figuras, salvo quando faz parte dos metodos e esta descrito; aqui as tabelas e figuras saem de codigo escrito com o assistente"
+  ],
+  "_modelos": {
+    "financiamento_sem_recurso": "This study received no specific funding.",
+    "conflitos_nenhum": "The authors declare no conflict of interest.",
+    "criterios_icmje_csp": "Autoria exige as quatro condicoes: (1) concepcao e projeto ou analise e interpretacao dos dados; (2) redacao ou revisao critica relevante; (3) aprovacao da versao final; (4) responsabilidade por todos os aspectos do trabalho. Quem nao cumpre as quatro entra nos agradecimentos."
+  }
+}

@@ -32,3 +32,4 @@ build/
 build/pages/
 build/*.pdf
 build/csp/
+paper/autoria_privado.json

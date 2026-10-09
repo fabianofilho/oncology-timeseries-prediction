@@ -48,6 +48,8 @@ FIGURES = PAPER / "figures"
 # A secao nao vai no manuscrito, e escolhida no formulario de submissao. Fica aqui para
 # o build lembrar na hora de preencher.
 SECAO = "Questões Metodológicas"
+TITULO = ("Forecasting monthly cancer mortality in São Paulo State, Brazil: a pre-specified "
+          "comparison of seven models against trivial baselines")
 LIMITE_PALAVRAS = 6000
 LIMITE_ILUSTRACOES = 5
 # "O Resumo pode ter ate 250 palavras", e a CSP nao adota resumo estruturado.
@@ -224,6 +226,171 @@ def flag_par(doc, text):
     r.bold = True
     r.font.color.rgb = RGBColor(0xC0, 0x00, 0x00)
     return p
+
+
+# Autoria e declaracoes: uma fonte so, paper/autoria.json. Campo vazio vira [PENDING]
+# no texto e na ficha do formulario. E-mail e endereco postal ficam em
+# paper/autoria_privado.json, fora do git, e so a ficha usa.
+AUTORIA = PAPER / "autoria.json"
+AUTORIA_PRIVADO = PAPER / "autoria_privado.json"
+CAMPOS_AUTOR = ("nome", "sobrenome", "afiliacao", "pais", "orcid")
+
+
+def carrega_autoria(caminho: Path = AUTORIA) -> dict:
+    return json.loads(caminho.read_text(encoding="utf-8"))
+
+
+def faltas_autores(a: dict) -> list[str]:
+    faltas = [] if a.get("lista_fechada") else ["author list not closed"]
+    for i, au in enumerate(a.get("autores", []), start=1):
+        vazios = [c for c in CAMPOS_AUTOR if not str(au.get(c, "")).strip()]
+        if vazios:
+            faltas.append(f"author {i}: {', '.join(vazios)}")
+    if not a.get("autores"):
+        faltas.append("no author listed")
+    return faltas
+
+
+def nome_completo(au: dict) -> str:
+    return f"{au.get('nome', '')} {au.get('sobrenome', '')}".strip()
+
+
+def afiliacoes(a: dict) -> list[str]:
+    vistas: list[str] = []
+    for au in a.get("autores", []):
+        af = au.get("afiliacao", "").strip()
+        if af and af not in vistas:
+            vistas.append(af)
+    return vistas
+
+
+def bloco_autores(doc, a: dict) -> None:
+    afs = afiliacoes(a)
+    nomes = [au for au in a.get("autores", []) if nome_completo(au)]
+    if nomes:
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        for i, au in enumerate(nomes):
+            if i:
+                p.add_run(", ")
+            p.add_run(nome_completo(au))
+            af = au.get("afiliacao", "").strip()
+            if af:
+                p.add_run(str(afs.index(af) + 1)).font.superscript = True
+        for k, af in enumerate(afs, start=1):
+            q = doc.add_paragraph()
+            q.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            q.add_run(str(k)).font.superscript = True
+            q.add_run(f" {af}").font.size = Pt(10)
+    faltas = faltas_autores(a)
+    if faltas:
+        flag_par(doc, "authorship: " + "; ".join(faltas))
+
+
+def declaracoes(doc, a: dict) -> None:
+    if a.get("uso_ia", "").strip():
+        body(doc, a["uso_ia"].strip(), lead="Use of artificial intelligence. ")
+    else:
+        p = doc.add_paragraph()
+        p.add_run("Use of artificial intelligence. ").bold = True
+        flag(p, "use of artificial intelligence")
+    body(doc, "There was no patient or public involvement in this study.",
+         lead="Patient and public involvement. ")
+
+    p = doc.add_paragraph()
+    p.add_run("Contributors. ").bold = True
+    contrib = [(nome_completo(au), au.get("contribuicao", "").strip())
+               for au in a.get("autores", [])]
+    if a.get("lista_fechada") and contrib and all(c for _, c in contrib):
+        p.add_run(" ".join(f"{n}: {c.rstrip('.')}." for n, c in contrib))
+    else:
+        flag(p, "contributors")
+
+    for titulo, chave in (("Funding. ", "financiamento"), ("Conflict of interests. ", "conflitos"),
+                          ("Acknowledgments. ", "agradecimentos")):
+        p = doc.add_paragraph()
+        p.add_run(titulo).bold = True
+        if a.get(chave, "").strip():
+            p.add_run(a[chave].strip())
+        else:
+            flag(p, titulo.strip().rstrip(".").lower())
+
+
+def pend(texto: str) -> str:
+    return f"[PENDING: {texto}]"
+
+
+def ficha_formulario(a: dict, privado: dict | None, titulo: str, abstract: str,
+                     palavras_chave: str, etica: str) -> str:
+    """Espelha os passos 1, 3 e 4 do formulario da CSP (passo-passo-ojs)."""
+    priv = (privado or {}).get("autores", [])
+    linhas = [
+        "# Ficha do formulário de submissão da CSP",
+        "",
+        "Gerada por `scripts/build_csp_submission.py` a partir de `paper/autoria.json` "
+        "(e `paper/autoria_privado.json`, fora do git). Não editar à mão.",
+        "",
+        "Fonte das regras: https://cadernos.ensp.fiocruz.br/ojs/index.php/csp/passo-passo-ojs "
+        "e /instrucoes-autores-ojs, lidas em 2026-10-09.",
+        "",
+        f"## Passo 1, Detalhes (seção: {SECAO})",
+        "",
+        f"- **Título** ({len(titulo)} de 150 caracteres): {titulo}",
+        f"- **Palavras-chave** (3 a 5, do DeCS, uma por vez): {palavras_chave}",
+        f"- **Resumo**, só no idioma de submissão, {len(abstract.split())} de 250 palavras "
+        "(a CSP traduz o dos artigos aprovados):",
+        "",
+        f"> {abstract}",
+        "",
+        "## Passo 3, Colaboradores",
+        "",
+        "Quem submete vira autor de correspondência. A ordem é a da publicação. ORCID é "
+        "obrigatório para todos.",
+        "",
+    ]
+    if not a.get("lista_fechada"):
+        linhas += [pend("lista de autores ainda não fechada (lista_fechada = false)"), ""]
+    for i, au in enumerate(a.get("autores", [])):
+        pv = priv[i] if i < len(priv) else {}
+        def campo(rotulo, valor):
+            return f"- {rotulo}: {valor.strip() if str(valor).strip() else pend(rotulo)}"
+        linhas += [
+            f"### Autor {i + 1}" + (" (correspondência)" if au.get("correspondente") else ""),
+            campo("nome", au.get("nome", "")),
+            campo("sobrenome", au.get("sobrenome", "")),
+            campo("e-mail", pv.get("email", "")),
+            campo("país", au.get("pais", "")),
+            campo("ORCID", au.get("orcid", "")),
+            campo("instituição/afiliação", au.get("afiliacao", "")),
+            campo("endereço postal completo", pv.get("endereco_postal", "")),
+            campo("contribuição (em inglês, idioma de submissão)", au.get("contribuicao", "")),
+            "",
+        ]
+
+    def item(rotulo, valor, obrigatorio=True):
+        v = str(valor).strip()
+        return f"- **{rotulo}**: {v if v else (pend(rotulo) if obrigatorio else 'não se aplica')}"
+
+    agradecimentos = " ".join(x for x in (a.get("agradecimentos", "").strip(),
+                                          a.get("financiamento", "").strip()) if x)
+    linhas += [
+        "## Passo 4, Para os Editores",
+        "",
+        item("preprint", a.get("preprint", "")),
+        item("monografia, dissertação ou tese", a.get("tese_dissertacao", "")),
+        item("disponibilidade de dados", a.get("disponibilidade_dados", "")),
+        item("conflito de interesses", a.get("conflitos", "")),
+        item("considerações éticas e legais", etica),
+        item("uso de IA generativa no manuscrito", a.get("uso_ia", "")),
+        item("financiamento (a CSP inclui nos agradecimentos; se não houve, declarar)",
+             a.get("financiamento", "")),
+        item("agradecimentos", agradecimentos),
+        "",
+    ]
+    conf = a.get("_confirmar") or []
+    if conf:
+        linhas += ["## Conferir antes de submeter", ""] + [f"- {c}" for c in conf] + [""]
+    return "\n".join(linhas)
 
 
 def n(x, dec=0):
@@ -474,7 +641,8 @@ def reproducao_frase(rp: dict) -> str:
     raise ValueError("mais de um veredito muda na reproducao: reescrever a frase a mao")
 
 
-def build_texto(v: dict) -> tuple[Document, int]:
+def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
+    autoria = autoria if autoria is not None else carrega_autoria()
     co, ba = v["coorte"], v["benchmark_agregado"]
     ci, met, crit = ba["ci_smape"], ba["metricas"], ba["criterio"]
     ext, tend, sit, reg = v["extrapolacao"], v["tendencia_pre_pandemia"], v["sitios"], v["teste_regime"]
@@ -494,14 +662,11 @@ def build_texto(v: dict) -> tuple[Document, int]:
 
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run(
-        "Forecasting monthly cancer mortality in São Paulo State, Brazil: a pre-specified "
-        "comparison of seven models against trivial baselines"
-    )
+    r = p.add_run(TITULO)
     r.bold = True
     r.font.size = Pt(14)
 
-    flag_par(doc, "author list, affiliations, ORCID, corresponding author and author contributions")
+    bloco_autores(doc, autoria)
 
     # Tres resumos de ate 250 palavras cada, nao estruturados, como a CSP pede.
     for titulo, corpo, chaves, rot in resumos(v):
@@ -877,23 +1042,7 @@ def build_texto(v: dict) -> tuple[Document, int]:
     )
 
     h(doc, "Additional information")
-    body(
-        doc,
-        "The authors used an AI coding assistant (Claude, Anthropic) to implement analysis code "
-        "and to draft manuscript text. The tool is not an author. The authors reviewed all "
-        "output, verified every reported number against the analysis code, and take full "
-        "responsibility for the content.",
-        lead="Use of artificial intelligence. ",
-    )
-    body(
-        doc,
-        "There was no patient or public involvement in this study.",
-        lead="Patient and public involvement. ",
-    )
-    for titulo in ("Contributors. ", "Funding. ", "Conflict of interests. ", "Acknowledgments. "):
-        p = doc.add_paragraph()
-        p.add_run(titulo).bold = True
-        flag(p, titulo.strip().rstrip(".").lower())
+    declaracoes(doc, autoria)
 
     h(doc, "References")
     sobra = set(REFERENCES) - set(CITADAS) - (set() if itv else {"bracher2021"})
@@ -1074,8 +1223,16 @@ def main() -> None:
     figs_out = out / "figures"
     figs_out.mkdir(parents=True, exist_ok=True)
 
-    doc_texto, palavras = build_texto(v)
+    autoria = carrega_autoria()
+    privado = (json.loads(AUTORIA_PRIVADO.read_text(encoding="utf-8"))
+               if AUTORIA_PRIVADO.exists() else None)
+    doc_texto, palavras = build_texto(v, autoria)
     doc_texto.save(str(out / "CSP_texto.docx"))
+    _, abstract, kw, _ = next(r for r in resumos(v) if r[0] == "Abstract")
+    etica = next(par.text for par in doc_texto.paragraphs if "Resolution 510/2016" in par.text)
+    etica = etica[etica.find("In accordance with"):]
+    ficha = ficha_formulario(autoria, privado, TITULO, abstract, kw, etica)
+    (out / "CSP_formulario_submissao.md").write_text(ficha, encoding="utf-8")
     build_tabelas(v).save(str(out / "CSP_tabelas.docx"))
     build_legendas(v).save(str(out / "CSP_legendas_figuras.docx"))
     if v.get("intervalos"):

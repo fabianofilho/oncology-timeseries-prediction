@@ -126,6 +126,26 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   (`CSP_*_2026-10-09.docx`) e `CSP_Figure3_2026-10-09.png`, pelo Drive para desktop. Os
   Google Docs de 05/10 ficaram como estavam.
 
+- [x] **Bloco de autoria** (`paper/autoria.json`, fonte única). O build preenche o texto
+  (autores e afiliação abaixo do título; Contributors, Funding, Conflict of interests,
+  Acknowledgments e uso de IA em Additional information) e gera
+  `build/csp/CSP_formulario_submissao.md`, que espelha os passos 1, 3 e 4 do formulário
+  da CSP. Campo vazio vira `[PENDING]` nos dois; o conferidor conta os dois. E-mail e
+  endereço postal ficam em `paper/autoria_privado.json` (fora do git; modelo em
+  `autoria_privado.exemplo.json`). Pré-preenchido só o verificado: Fabiano, afiliação
+  LABDAPS (nome em inglês inferido), ORCID vindo da memória do CPT (conferir).
+  Achados nas instruções da CSP, lidas em 09/10:
+  - o resumo vai **só no idioma de submissão** e a CSP traduz o dos aprovados: a revisão da
+    tradução do Resumo e do Resumen deixa de ser pré-requisito (decidir se tira os dois);
+  - o passo 2 diz que o arquivo de texto deve ter **só texto e referências**; autoria,
+    conflito, agradecimentos e uso de IA vão no formulário. O texto ainda carrega o bloco
+    de declarações, por decisão anterior; decidir no dia da submissão se sai;
+  - "figuras compostas são contabilizadas separadamente": a Figura 3 tem dois painéis e
+    pode contar como 2, o que daria 6 ilustrações para um limite de 5;
+  - a CSP proíbe IA para criar ou modificar tabelas e figuras, salvo quando faz parte dos
+    métodos e está descrito: a frase de uso de IA precisa cobrir as tabelas e figuras
+    geradas por código escrito com o assistente.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.

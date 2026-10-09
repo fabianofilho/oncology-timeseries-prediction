@@ -1,0 +1,9 @@
+{
+  "_leia": "Copie para paper/autoria_privado.json (fora do git) e preencha. Uma entrada por autor, na mesma ordem de paper/autoria.json. So a ficha do formulario usa estes dados; o manuscrito nunca.",
+  "autores": [
+    {
+      "email": "",
+      "endereco_postal": ""
+    }
+  ]
+}

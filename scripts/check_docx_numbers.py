@@ -191,11 +191,17 @@ def main() -> None:
     print(f"dpi das figuras (minimo {DPI_MINIMO}):              "
           + ", ".join(f"{k} {d:.0f}" for k, d in dpis.items()))
     print(f"marcadores [PENDING]:                       {pend}")
+    ficha = pasta / "CSP_formulario_submissao.md"
+    pend_ficha = (len(re.findall(r"\[PENDING:", ficha.read_text(encoding="utf-8")))
+                  if ficha.exists() else None)
+    print(f"ficha do formulario (PENDING):              "
+          + ("AUSENTE" if pend_ficha is None else str(pend_ficha)))
 
     ok = (not faltando and not faltam_arquivos and tem_ln and tem_pg and embutidas == 0
           and tabs == N_TABELAS and len(figs) == N_FIGURAS and dpi_ok)
     print("\nVEREDITO: " + ("estrutura e numeros OK" if ok else "REVISAR os itens acima")
-          + (f" ({pend} PENDING a resolver antes de submeter)" if pend else ""))
+          + (f" ({pend} PENDING a resolver antes de submeter)" if pend else "")
+          + (f" (ficha do formulario: {pend_ficha} PENDING)" if pend_ficha else ""))
     raise SystemExit(0 if ok else 1)
 
 
