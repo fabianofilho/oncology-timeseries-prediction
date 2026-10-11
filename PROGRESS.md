@@ -160,6 +160,15 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   `CSP_material_suplementar` (com a Figura S1) e `CSP_Figure3`, com sufixo `_2026-10-09_v2`.
   As tabelas não mudaram desde a `_2026-10-09`; nada foi apagado.
 
+### 2026-10-11
+
+- [x] **Meet com a Carine marcado** para quarta, 14/10, das 15h às 16h (Google Meet
+  https://meet.google.com/mzs-zbug-cer). Ela propôs o horário pelo WhatsApp em 10/10;
+  confirmação e link enviados pelo Fermes em 11/10, convite no e-mail da Unifesp (resposta
+  pendente). Ela também vai procurar a colega de séries temporais para a revisão dos métodos.
+  Pauta sugerida: o que ela leu, se a colega topa revisar a validação e os testes, e autoria
+  ou agradecimento dela.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
