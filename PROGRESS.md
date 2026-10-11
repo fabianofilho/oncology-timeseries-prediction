@@ -174,6 +174,9 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   (247 palavras). A revisão da tradução sai da lista de pendências. Os textos em português e
   espanhol estão no histórico do git (antes deste commit), se a CSP pedir.
 
+- [x] **Versão 2026-10-11 no Drive**: só `CSP_texto_2026-10-11.docx` (sem Resumo e Resumen);
+  tabelas (`_2026-10-09`), legendas, suplementar e Figura 3 (`_2026-10-09_v2`) não mudaram.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
