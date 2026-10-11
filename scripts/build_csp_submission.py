@@ -428,10 +428,12 @@ def tabela(doc, header, rows, bold_cells=None):
 
 
 def resumos(v: dict) -> list[tuple[str, str, str, str]]:
-    """Resumo, Abstract e Resumen, cada um com no maximo 250 palavras.
+    """Abstract, ate 250 palavras, so no idioma de submissao.
 
-    A CSP nao adota resumo estruturado e recomenda evitar siglas. Os numeros vem
-    do JSON como em todo o resto: nenhum valor e digitado aqui.
+    A CSP pede o resumo apenas no idioma original e traduz o dos artigos aprovados
+    (passo-passo-ojs, lido em 2026-10-09); o Resumo e o Resumen sairam do texto nessa
+    data e estao no historico do git. Sem estrutura e sem siglas. Os numeros vem do
+    JSON como em todo o resto: nenhum valor e digitado aqui.
     """
     co, ba = v["coorte"], v["benchmark_agregado"]
     ci, crit = ba["ci_smape"], ba["criterio"]
@@ -443,34 +445,8 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
     n_conf, n_par = crit["pares_confirmados"], crit["pares_total"]
     pct_acima = ext["_observacoes_acima_do_max_treino"]["pct"]
 
-    # Portugues e espanhol usam ponto no milhar e virgula no decimal.
     rp = carrega_reproducao()
-    n_obitos_lat = n_obitos.replace(",", ".")
-    erro_lat = f"{sa['point']:.2f}".replace(".", ",")
-    acima_lat = str(pct_acima).replace(".", ",")
 
-    pt = (
-        f"Previsões de mortalidade por câncer orientam o planejamento de serviços, mas "
-        f"raramente testam se o modelo ajustado supera um comparador trivial, e raramente "
-        f"informam se a diferença entre modelos resiste a uma medida de incerteza. Extraímos "
-        f"do Sistema de Informações sobre Mortalidade todos os óbitos por neoplasia maligna "
-        f"de residentes no Estado de São Paulo entre {co['anos'][0]} e "
-        f"{co['anos'][1]}, num total de {n_obitos_lat} óbitos e {n_meses} observações mensais, "
-        f"que reproduziram os dados oficiais sem diferença. Pela ruptura estrutural da "
-        f"pandemia, o ajuste ficou restrito aos {n_treino} meses de 2010 a 2019. "
-        f"Comparamos sete métodos sob um único protocolo de validação por origem móvel, com "
-        f"{n_jan} janelas e {n_prev} previsões cada, medindo a incerteza por reamostragem de "
-        f"janelas inteiras. Declaramos, antes de ver resultado, que uma diferença só contaria "
-        f"como confirmada se o intervalo de confiança excluísse o zero e o teste por horizonte "
-        f"também a detectasse. O modelo sazonal clássico teve o menor erro percentual, de "
-        f"{erro_lat}%. O critério confirmou {n_conf} das {n_par} comparações, e o padrão foi de "
-        f"dois grupos e não de um ordenamento: os métodos que representam a série não se "
-        f"distinguiram entre si, os que não a representam tampouco, e toda comparação entre "
-        f"grupos foi confirmada.{ressalva_resumo(rp, 'pt')} As árvores potencializadas não "
-        f"superaram o comparador "
-        f"trivial porque nunca preveem acima do máximo já observado, que {acima_lat}% das "
-        f"observações de teste superam. Nenhum modelo pode ser declarado o melhor."
-    )
     en = (
         f"Forecasts of cancer mortality inform health service planning, yet forecasting studies "
         f"rarely test whether a fitted model outperforms a trivial comparator, and rarely report "
@@ -494,36 +470,8 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"{pct_acima}% of test observations lie above it. No model can be declared best: what "
         f"the data support is a step between representing and not representing the series."
     )
-    es = (
-        f"Las proyecciones de mortalidad por cáncer orientan la planificación de servicios, "
-        f"pero los estudios de predicción raramente comprueban si el modelo ajustado supera a "
-        f"un comparador trivial, y raramente informan si la diferencia entre modelos "
-        f"resiste una medida de incertidumbre. Extrajimos del Sistema de Información sobre "
-        f"Mortalidad todas las muertes por neoplasia maligna de residentes del "
-        f"Estado de São Paulo entre {co['anos'][0]} y {co['anos'][1]}, un total de "
-        f"{n_obitos_lat} muertes y {n_meses} observaciones mensuales, que reprodujeron las "
-        f"cifras oficiales exactamente. Por la ruptura estructural de la pandemia, el "
-        f"ajuste se restringió a los {n_treino} meses de 2010 a 2019. "
-        f"Comparamos siete métodos bajo un único protocolo de validación de "
-        f"origen móvil, con {n_jan} ventanas y {n_prev} predicciones cada uno, y medimos la "
-        f"incertidumbre remuestreando ventanas completas. Declaramos de antemano que una "
-        f"diferencia solo contaría como confirmada si el intervalo de confianza "
-        f"excluía el cero y la prueba por horizonte también la detectaba. El modelo estacional "
-        f"clásico tuvo el menor error porcentual, {erro_lat}%. El criterio confirmó {n_conf} de "
-        f"{n_par} comparaciones, y el patrón fue de dos grupos y no de un ordenamiento: los "
-        f"métodos que representan la serie no se distinguieron entre sí, los que no la "
-        f"representan tampoco, y toda comparación entre ambos grupos fue "
-        f"confirmada.{ressalva_resumo(rp, 'es')} Los "
-        f"árboles potenciados no superaron al comparador trivial porque nunca predicen por "
-        f"encima del máximo ya observado, que {acima_lat}% de las observaciones de prueba "
-        f"superan. Ningún modelo puede declararse el mejor."
-    )
     return [
-        ("Resumo", pt, "Neoplasias; Mortalidade; Previsões; Sistemas de Informação",
-         "Palavras-chave: "),
         ("Abstract", en, "Neoplasms; Mortality; Forecasting; Information Systems", "Keywords: "),
-        ("Resumen", es, "Neoplasias; Mortalidad; Predicciones; Sistemas de Información",
-         "Palabras clave: "),
     ]
 
 
@@ -556,9 +504,7 @@ def ressalva_resumo(rp: dict | None, lingua: str) -> str:
     if len(muda) != 1 or not set(muda[0]["par"]) <= GRUPO_DE_BAIXO:
         raise ValueError("reproducao muda outro conjunto de vereditos: reescrever a ressalva")
     return {
-        "pt": " Em outro computador, uma comparação do segundo grupo mudou de veredito.",
         "en": " On another computer, one comparison within the second group changed verdict.",
-        "es": " En otro ordenador, una comparación del segundo grupo cambió de veredicto.",
     }[lingua]
 
 
@@ -668,7 +614,7 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
 
     bloco_autores(doc, autoria)
 
-    # Tres resumos de ate 250 palavras cada, nao estruturados, como a CSP pede.
+    # Um resumo so, em ingles, ate 250 palavras, nao estruturado, como a CSP pede.
     for titulo, corpo, chaves, rot in resumos(v):
         h(doc, titulo)
         body(doc, corpo)

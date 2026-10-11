@@ -169,6 +169,11 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   Pauta sugerida: o que ela leu, se a colega topa revisar a validação e os testes, e autoria
   ou agradecimento dela.
 
+- [x] **Resumo e Resumen fora do texto** (decisão do Fabiano, 11/10). A CSP só pede o resumo
+  no idioma de submissão e traduz o dos aprovados; `resumos()` agora devolve só o Abstract
+  (247 palavras). A revisão da tradução sai da lista de pendências. Os textos em português e
+  espanhol estão no histórico do git (antes deste commit), se a CSP pedir.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
@@ -187,7 +192,7 @@ Nada pela metade. Git limpo e sincronizado com origin.
   - Depois: `python scripts/build_csp_submission.py && python scripts/check_docx_numbers.py`
     tem de sair com 0 PENDING.
 - [ ] **2. Revisões humanas antes de submeter**
-  - Tradução do Resumo (PT) e do Resumen (ES): eu só corrigi acentos e formato numérico.
+  - ~~Tradução do Resumo e do Resumen~~: não se aplica desde 2026-10-11 (só Abstract).
   - Leitura de pelo menos um coautor, que já pode ser feita nos Google Docs da pasta.
   - Revisão das Limitações, que ganharam três ressalvas: XGBoost entre máquinas, critério
     v2 e série inteira.
