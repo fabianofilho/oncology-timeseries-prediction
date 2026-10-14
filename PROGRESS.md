@@ -195,6 +195,14 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   - colega de séries temporais: convidada, sem confirmação;
   - não discutidos: autoria, Comunicação Breve, "choque".
 
+- [x] **Título e resumo de estudo de método** (combinado com a Carine, decisão do Fabiano em
+  14/10): título "Comparing forecasting models against trivial baselines: a methodological
+  study of monthly cancer mortality in São Paulo State, Brazil" (133 caracteres); o resumo
+  ganhou a frase de objetivo ("This methodological study proposes a pre-specified protocol for
+  such comparisons, with cancer mortality as the test case") e fecha em "No model can be
+  declared best." Resumo com 250 de 250 palavras: qualquer frase nova exige cortar outra.
+  Versão `CSP_texto_2026-10-14.docx` no Drive.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.

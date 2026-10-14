@@ -22,7 +22,7 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 
 | Item | Situação | Onde está, ou o que falta |
 |---|---|---|
-| 1 Título | OK | Identifica avaliação de modelos, população (SP) e desfecho. "Pre-registered" virou "pre-specified" em 2026-09-28, porque não há registro em repositório de protocolos |
+| 1 Título | OK | Identifica avaliação de modelos, população (SP) e desfecho. "Pre-registered" virou "pre-specified" em 2026-09-28, porque não há registro em repositório de protocolos. Em 2026-10-14 o título passou a dizer "methodological study" (pedido da Carine Savalli); "pre-specified" ficou no resumo |
 | 2 Resumo | OK | Um resumo não estruturado, em inglês (idioma de submissão); desde 2026-10-11 o Resumo e o Resumen saíram, porque a CSP traduz o resumo dos aprovados |
 | 3a Contexto e modelos existentes | OK | Introdução, parágrafo 1: carga (ref. 1) e projeções publicadas na CSP (refs. 2 e 3) |
 | 3b População-alvo e usuários | Parcial | O uso (planejamento) aparece; o usuário (gestor, vigilância) fica implícito na Discussão |

@@ -48,8 +48,10 @@ FIGURES = PAPER / "figures"
 # A secao nao vai no manuscrito, e escolhida no formulario de submissao. Fica aqui para
 # o build lembrar na hora de preencher.
 SECAO = "Questões Metodológicas"
-TITULO = ("Forecasting monthly cancer mortality in São Paulo State, Brazil: a pre-specified "
-          "comparison of seven models against trivial baselines")
+# Titulo metodologico desde 2026-10-14, a pedido da Carine Savalli (meet de 14/10):
+# o metodo primeiro, o cancer como caso de teste.
+TITULO = ("Comparing forecasting models against trivial baselines: a methodological study of "
+          "monthly cancer mortality in São Paulo State, Brazil")
 LIMITE_PALAVRAS = 6000
 LIMITE_ILUSTRACOES = 5
 # "O Resumo pode ter ate 250 palavras", e a CSP nao adota resumo estruturado.
@@ -450,7 +452,9 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
     en = (
         f"Forecasts of cancer mortality inform health service planning, yet forecasting studies "
         f"rarely test whether a fitted model outperforms a trivial comparator, and rarely report "
-        f"whether an observed difference between models survives a measure of uncertainty. We "
+        f"whether an observed difference between models survives a measure of uncertainty. This "
+        f"methodological study proposes a pre-specified protocol for such comparisons, with "
+        f"cancer mortality as the test case. We "
         f"extracted from the Mortality Information System all deaths from malignant neoplasms "
         f"among residents of São Paulo State between {co['anos'][0]} and "
         f"{co['anos'][1]}, totalling {n_obitos} deaths and {n_meses} monthly observations, which "
@@ -467,8 +471,7 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"comparison across the two groups was confirmed.{ressalva_resumo(rp, 'en')} Boosted "
         f"trees did not beat the trivial "
         f"comparator because they never forecast above the maximum already observed, while "
-        f"{pct_acima}% of test observations lie above it. No model can be declared best: what "
-        f"the data support is a step between representing and not representing the series."
+        f"{pct_acima}% of test observations lie above it. No model can be declared best."
     )
     return [
         ("Abstract", en, "Neoplasms; Mortality; Forecasting; Information Systems", "Keywords: "),
