@@ -177,6 +177,24 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
 - [x] **Versão 2026-10-11 no Drive**: só `CSP_texto_2026-10-11.docx` (sem Resumo e Resumen);
   tabelas (`_2026-10-09`), legendas, suplementar e Figura 3 (`_2026-10-09_v2`) não mudaram.
 
+### 2026-10-14
+
+- [x] **Meet com a Carine** (15h01, 20 min; gravação no Plaud, id
+  `of_ee6a528d089386aca8f9dbf57575c87f`; lastro com os minutos na página do Notion
+  "Revisão · OPT · 14/10/2026"). Conferido na transcrição, não no resumo automático do Plaud,
+  que inventou prazos e misturou temas do doutorado:
+  - avaliação: tudo bem feito e bem aplicado; gostou das janelas e da origem móvel; vê
+    potencial de publicação;
+  - **pedido**: deixar explícito no título e no resumo que é um estudo de método. Combinado:
+    nova versão no Drive até sexta, 16/10;
+  - periódico: CSP ou Revista de Saúde Pública (revista brasileira de saúde pública); ela achou
+    que faz sentido; sem decisão de trocar;
+  - desfecho de uso prático (internação), regiões do Brasil, pipeline de séries temporais do
+    lab e caso em que os fundacionais superem os simples ficam como frentes futuras, fora deste
+    artigo;
+  - colega de séries temporais: convidada, sem confirmação;
+  - não discutidos: autoria, Comunicação Breve, "choque".
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
