@@ -207,7 +207,8 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   combinado com CPT/IJF e DFP/PLOS NTD, enquadrado como a frente de séries temporais combinada
   com ele no lab em 14/10). Anexos: os 4 `.docx` do pacote e as 3 figuras, com prefixo `OPT_`,
   em `~/Downloads/Email_Alexandre_2026-10-11/`. O email pede a ele que confirme se entra como
-  autor e com qual contribuição (lista não fechada, critérios ICMJE da CSP). Envio é do Fabiano.
+  autor e com qual contribuição (lista não fechada, critérios ICMJE da CSP). **Enviado em 14/10 às
+  20:53**; esperar a resposta dele para fechar `paper/autoria.json`.
 
 ### EM PROGRESSO
 
