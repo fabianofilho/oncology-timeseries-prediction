@@ -203,6 +203,12 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   declared best." Resumo com 250 de 250 palavras: qualquer frase nova exige cortar outra.
   Versão `CSP_texto_2026-10-14.docx` no Drive.
 
+- [x] **Pacote de 14/10 no rascunho ao Alexandre** (Superhuman, draft00558f1425b78245, email
+  combinado com CPT/IJF e DFP/PLOS NTD, enquadrado como a frente de séries temporais combinada
+  com ele no lab em 14/10). Anexos: os 4 `.docx` do pacote e as 3 figuras, com prefixo `OPT_`,
+  em `~/Downloads/Email_Alexandre_2026-10-11/`. O email pede a ele que confirme se entra como
+  autor e com qual contribuição (lista não fechada, critérios ICMJE da CSP). Envio é do Fabiano.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
