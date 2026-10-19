@@ -210,6 +210,16 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   autor e com qual contribuição (lista não fechada, critérios ICMJE da CSP). **Enviado em 14/10 às
   20:53**; esperar a resposta dele para fechar `paper/autoria.json`.
 
+### 2026-10-19
+
+- [x] **Sugestão de simulação da Carine** (WhatsApp, 14/10 18:42): a série é longa e bem
+  comportada; num estudo metodológico, simular com ela treino curto, faltantes, quebras e
+  níveis de piora para achar onde os modelos novos ganham. A colega de séries temporais não
+  respondeu (14/10). **Decisão do Fabiano (19/10):** o artigo da CSP segue como está; a simulação
+  vira artigo próprio da linha de séries temporais. Desenho em rascunho na **LAB-237**
+  (cenários, níveis, critério e piloto de R = 20); nada roda antes da aprovação na issue.
+  O e-mail ao Alexandre de 14/10 segue sem resposta em 19/10.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
