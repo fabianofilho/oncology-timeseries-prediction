@@ -33,3 +33,8 @@ build/pages/
 build/*.pdf
 build/csp/
 paper/autoria_privado.json
+
+# Simulacao (LAB-237): previsoes e criterio por replica sao regeraveis por
+# scripts/run_simulacao.py; versiona-se so o resumo de cada cenario e o controle.
+results/simulacao/**/r*/
+results/simulacao/**/pred_*.csv

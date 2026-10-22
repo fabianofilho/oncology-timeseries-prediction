@@ -1,0 +1,22 @@
+{
+  "tempos_s": {
+    "seasonal_naive": 5.7,
+    "linear_trend": 5.1,
+    "sarima": 17.6,
+    "prophet": 17.7,
+    "timesfm": 29.8,
+    "xgboost": 64.7,
+    "catboost": 32.6
+  },
+  "max_dif_previsao": {
+    "catboost": 0.0,
+    "linear_trend": 0.0,
+    "prophet": 0.0,
+    "sarima": 0.0,
+    "seasonal_naive": 0.0,
+    "timesfm": 0.0,
+    "xgboost": 0.0
+  },
+  "pares_divergentes": {},
+  "reproduz": true
+}
