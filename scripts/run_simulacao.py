@@ -89,11 +89,11 @@ def previsoes(cenario: str, nivel: float, replicas: list[int], modelo: str, said
                       "replicas": len(replicas), "falhas": len(falhas)}))
 
 
-def roda_modelos(cenario: str, nivel: float, replicas: list[int]) -> dict:
+def roda_modelos(cenario: str, nivel: float, replicas: list[int], sufixo: str = "") -> dict:
     """Um subprocesso por modelo (torch e XGBoost no mesmo processo derrubam o macOS)."""
     tempos = {}
     for m in MODELOS:
-        saida = pasta(cenario, nivel) / f"pred_{m}.csv"
+        saida = pasta(cenario, nivel) / f"pred_{m}{sufixo}.csv"
         cmd = [sys.executable, __file__, "previsoes", "--cenario", cenario, "--nivel", str(nivel),
                "--replicas", ",".join(map(str, replicas)), "--modelo", m, "--saida", str(saida)]
         t0 = time.time()
@@ -124,9 +124,13 @@ def criterio(pred: pd.DataFrame, modelos: list[str], destino: Path, b: int) -> d
 
 
 def le_previsoes(cenario: str, nivel: float) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Junta os lotes de previsao de cada modelo (o lote inicial e os acrescimos)."""
     p = pasta(cenario, nivel)
-    pred = pd.concat([pd.read_csv(p / f"pred_{m}.csv") for m in MODELOS], ignore_index=True)
-    falhas = pd.concat([pd.read_csv(p / f"pred_{m}_falhas.csv") for m in MODELOS], ignore_index=True)
+    arqs = [f for m in MODELOS for f in sorted(p.glob(f"pred_{m}*.csv")) if not f.stem.endswith("_falhas")]
+    pred = pd.concat([pd.read_csv(f) for f in arqs], ignore_index=True)
+    falhas = pd.concat([pd.read_csv(f.with_name(f.stem + "_falhas.csv")) for f in arqs], ignore_index=True)
+    if pred.duplicated(["replica", "model", "window", "horizon"]).any():
+        raise SystemExit(f"previsoes duplicadas em {p}: lote repetido")
     return pred, falhas
 
 
@@ -179,17 +183,61 @@ def cmd_rodada(args) -> None:
         raise SystemExit("rode o controle antes de qualquer cenario")
     if not json.loads((OUT / "controle" / "0" / "controle.json").read_text())["reproduz"]:
         raise SystemExit("controle nao reproduziu; nenhum cenario roda")
+    arq = pasta(cen, niv) / "resumo.json"
+    anterior = json.loads(arq.read_text(encoding="utf-8")) if arq.exists() else None
+    if anterior and cen in DETERMINISTICOS:
+        raise SystemExit(f"{cen} e deterministico e ja rodou")
+    ja = anterior["replicas"] if anterior else 0
     r_tot = 1 if cen in DETERMINISTICOS else args.replicas
-    replicas = list(range(1, r_tot + 1))
-    tempos = roda_modelos(cen, niv, replicas)
+    if r_tot <= ja:
+        raise SystemExit(f"{cen} {niv:g} ja tem {ja} replicas; pedir mais que isso")
+    # Acrescimo (regra de 22/10 na LAB-237): so replicas novas, as anteriores ficam.
+    replicas = list(range(ja + 1, r_tot + 1))
+    sufixo = f"_r{replicas[0]}-{replicas[-1]}" if anterior else ""
+    tempos = roda_modelos(cen, niv, replicas, sufixo)
     pred, falhas = le_previsoes(cen, niv)
     res = [resumo_replica(pred, falhas, r, pasta(cen, niv) / f"r{r}", B_SIM) for r in replicas]
-    out = {"cenario": cen, "nivel": niv, "replicas": len(replicas), "B": B_SIM,
+    out = {"cenario": cen, "nivel": niv, "replicas": r_tot, "B": B_SIM,
            "tempos_s": tempos, "falhas_por_modelo": falhas.groupby("model").size().to_dict(),
-           "por_replica": res}
+           "por_replica": (anterior["por_replica"] if anterior else []) + res}
+    if anterior:
+        out["tempos_s"] = {"inicial": anterior["tempos_s"], sufixo.lstrip("_"): tempos}
     (pasta(cen, niv) / "resumo.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(json.dumps({"cenario": cen, "nivel": niv, "tempos_s": tempos,
                       "falhas": out["falhas_por_modelo"]}))
+
+
+NOVOS = {"timesfm", "prophet", "xgboost", "catboost"}
+SIMPLES = {"seasonal_naive", "linear_trend", "sarima"}
+LIMITE = (0.35, 0.65)
+
+
+def proporcoes(resumo: dict) -> dict[str, float]:
+    """Fracao de replicas em que cada par novo x simples foi confirmado."""
+    cont: dict[str, list[bool]] = {}
+    for rep in resumo["por_replica"]:
+        for p in rep["pares"]:
+            a, b = p["par"].split("_menos_")
+            if {a, b} & NOVOS and {a, b} & SIMPLES:
+                cont.setdefault(p["par"], []).append(bool(p["confirmado"]))
+    return {k: sum(v) / resumo["replicas"] for k, v in cont.items()}
+
+
+def cmd_limite(_args) -> None:
+    """Aplica a regra registrada em 22/10: quais niveis precisam de mais replicas."""
+    repetir = []
+    for c, niveis in CENARIOS.items():
+        if c in DETERMINISTICOS:
+            continue
+        for n in niveis:
+            arq = pasta(c, n) / "resumo.json"
+            if not arq.exists():
+                continue
+            r = json.loads(arq.read_text(encoding="utf-8"))
+            no_limite = {k: v for k, v in proporcoes(r).items() if LIMITE[0] < v < LIMITE[1]}
+            if no_limite and r["replicas"] < 50:
+                repetir.append({"cenario": c, "nivel": n, "pares": no_limite})
+    print(json.dumps(repetir, indent=2))
 
 
 def main() -> None:
@@ -202,6 +250,7 @@ def main() -> None:
     p.add_argument("--modelo", required=True)
     p.add_argument("--saida", required=True)
     sub.add_parser("controle")
+    sub.add_parser("limite")
     p = sub.add_parser("rodada")
     p.add_argument("--cenario", required=True)
     p.add_argument("--nivel", required=True)
@@ -212,6 +261,8 @@ def main() -> None:
                   args.modelo, Path(args.saida))
     elif args.cmd == "controle":
         cmd_controle(args)
+    elif args.cmd == "limite":
+        cmd_limite(args)
     else:
         cmd_rodada(args)
 

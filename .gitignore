@@ -38,3 +38,4 @@ paper/autoria_privado.json
 # scripts/run_simulacao.py; versiona-se so o resumo de cada cenario e o controle.
 results/simulacao/**/r*/
 results/simulacao/**/pred_*.csv
+results/simulacao/fila.log
