@@ -1,6 +1,6 @@
 {
   "_leia": "Fonte unica da autoria e das declaracoes do manuscrito da CSP. Campo vazio vira [PENDING] no texto e na ficha do formulario (build/csp/CSP_formulario_submissao.md). E-mail e endereco postal de cada autor NAO entram aqui, porque o repositorio fica publico na submissao: vao em paper/autoria_privado.json (fora do git; modelo em paper/autoria_privado.exemplo.json). Itens em _confirmar foram preenchidos a partir de memoria de outro projeto e precisam de conferencia.",
-  "lista_fechada": false,
+  "lista_fechada": true,
   "autores": [
     {
       "nome": "Fabiano",
@@ -9,10 +9,28 @@
       "pais": "Brazil",
       "orcid": "0000-0002-1491-2700",
       "correspondente": true,
-      "contribuicao": ""
+      "contribuicao": "Conceived and designed the study, wrote the analysis code, ran the analyses, interpreted the results and drafted the manuscript."
+    },
+    {
+      "nome": "Carine",
+      "sobrenome": "Savalli",
+      "afiliacao": "Universidade Federal de São Paulo, São Paulo, Brazil",
+      "pais": "Brazil",
+      "orcid": "0000-0001-7388-7616",
+      "correspondente": false,
+      "contribuicao": "Critically reviewed the statistical methods and the manuscript and proposed the methodological framing of the title and abstract."
+    },
+    {
+      "nome": "Alexandre",
+      "sobrenome": "Chiavegatto Filho",
+      "afiliacao": "Laboratory of Big Data and Predictive Analysis in Healthcare (LABDAPS), School of Public Health, University of São Paulo, São Paulo, Brazil",
+      "pais": "Brazil",
+      "orcid": "0000-0003-3251-9600",
+      "correspondente": false,
+      "contribuicao": "Supervised the study and critically revised the manuscript."
     }
   ],
-  "financiamento": "",
+  "financiamento": "This study was financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior, Brasil (CAPES), Finance Code 001.",
   "conflitos": "",
   "agradecimentos": "",
   "uso_ia": "The authors used an AI coding assistant (Claude, Anthropic) to write the analysis code, including the scripts that produce every table and figure from the forecast files, and to draft manuscript text. The tool did not create or edit any table or figure directly: each one is the output of that code, run by the authors, and is regenerated from the raw results whenever they change, as described in Methods. The tool is not an author. The authors reviewed all output, verified every reported number against the analysis code, and take full responsibility for the content.",
@@ -21,7 +39,10 @@
   "tese_dissertacao": "",
   "_confirmar": [
     "orcid do Fabiano: veio da memoria do projeto CPT",
-    "nome em ingles do LABDAPS na afiliacao: inferido, conferir com o site do laboratorio"
+    "nome em ingles do LABDAPS na afiliacao: inferido, conferir com o site do laboratorio",
+    "Carine e Alexandre: confirmar que aceitam a coautoria, a contribuicao escrita e aprovam a versao final (ICMJE, condicoes 3 e 4); o Alexandre nao respondeu o e-mail de 14/10",
+    "afiliacao da Carine: departamento da Unifesp nao informado",
+    "ORCID da Carine (0000-0001-7388-7616) e do Alexandre (0000-0003-3251-9600) tirados do registro publico do ORCID em 23/10"
   ],
   "_modelos": {
     "financiamento_sem_recurso": "This study received no specific funding.",

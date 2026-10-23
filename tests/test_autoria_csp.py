@@ -20,11 +20,27 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import build_csp_submission as csp  # noqa: E402
 
 V = json.loads((ROOT / "paper" / "verified_numbers.json").read_text(encoding="utf-8"))
-MODELO = csp.carrega_autoria()
+# Modelo fixo, independente do paper/autoria.json real (que muda quando a autoria fecha).
+MODELO = {
+    "lista_fechada": False,
+    "autores": [{"nome": "Fabiano", "sobrenome": "Novaes Barcellos Filho",
+                 "afiliacao": "LABDAPS, University of São Paulo, Brazil", "pais": "Brazil",
+                 "orcid": "0000-0002-1491-2700", "correspondente": True, "contribuicao": ""}],
+    "financiamento": "", "conflitos": "", "agradecimentos": "",
+    "uso_ia": "The authors used an AI coding assistant.",
+    "disponibilidade_dados": "https://github.com/fabianofilho/oncology-timeseries-prediction",
+    "preprint": "", "tese_dissertacao": "",
+}
 
 
-def pendencias(autoria: dict) -> str:
-    doc, _ = csp.build_texto(V, autoria)
+def pendencias(autoria: dict, com_declaracoes: bool = True) -> str:
+    """Texto com o bloco de autoria ligado (o modo antigo), para testar o bloco em si."""
+    antes = csp.TEXTO_COM_DECLARACOES
+    csp.TEXTO_COM_DECLARACOES = com_declaracoes
+    try:
+        doc, _ = csp.build_texto(V, autoria)
+    finally:
+        csp.TEXTO_COM_DECLARACOES = antes
     return "\n".join(p.text for p in doc.paragraphs)
 
 
@@ -61,3 +77,10 @@ def test_ficha_nao_carrega_email_sem_o_arquivo_privado():
     ficha = csp.ficha_formulario(preenchida(), None, csp.TITULO, "abstract", "a; b; c", "ethics")
     assert "[PENDING: e-mail]" in ficha
     assert "@" not in ficha.split("## Passo 4")[0]
+
+
+def test_texto_de_submissao_sem_autoria_nem_declaracoes():
+    """Padrao desde 23/10: o arquivo de texto da CSP tem so corpo e referencias."""
+    txt = pendencias(preenchida(), com_declaracoes=False)
+    assert "Fabiano Novaes Barcellos Filho" not in txt
+    assert "Additional information" not in txt and "[PENDING:" not in txt

@@ -220,6 +220,20 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   (cenários, níveis, critério e piloto de R = 20); nada roda antes da aprovação na issue.
   O e-mail ao Alexandre de 14/10 segue sem resposta em 19/10.
 
+### 2026-10-23
+
+- [x] **Submissão à CSP decidida** (Fabiano, 23/10): Cadernos de Saúde Pública, Questões
+  Metodológicas. Autores, na ordem: Fabiano, Carine Savalli, Alexandre Chiavegatto Filho
+  (ORCIDs dos dois do registro público). Financiamento: CAPES, Finance Code 001. Arquivo de
+  texto só com corpo e referências (`TEXTO_COM_DECLARACOES = False`); autoria e declarações
+  vão no formulário pela ficha. A descrição do uso de IA passou inteira para os Métodos.
+  Repositório público com DOI no Zenodo autorizado. **Antes de submeter:** Carine e Alexandre
+  precisam aceitar a coautoria e aprovar a versão final (o Alexandre não respondeu o e-mail de
+  14/10).
+- [x] **Simulação (LAB-237):** piloto de 20 réplicas terminou em 22/10 às 21h21 (14 cenários,
+  sem erro). A regra do limite pegou os 11 níveis com sorteio; a extensão para 50 réplicas
+  começou em 23/10 às 16h22 (`results/simulacao/fila50.log`). Nenhum resultado lido ainda.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.

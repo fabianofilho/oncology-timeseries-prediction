@@ -58,7 +58,7 @@ Legenda: **OK** reportado · **Parcial** reportado em parte · **Falta** ausente
 | 18d Registro | OK | Mesma frase: estudo não registrado |
 | 18e Dados | OK | Série agregada no GitHub; microdado no DataSUS |
 | 18f Código | OK, trocar na submissão | O texto aponta o commit `81f5937`, que é antigo. Trocar pelo commit com tag da submissão |
-| 19 Envolvimento do público | OK | Additional information |
+| 19 Envolvimento do público | OK | Formulário de submissão (passo 4); desde 2026-10-23 o arquivo de texto leva só corpo e referências, e autoria, financiamento, conflitos e envolvimento do público vão no formulário pela ficha `CSP_formulario_submissao.md` |
 | 20a Fluxo | OK | 4.317.224 registros, 741.313 elegíveis |
 | 20b Características | OK | Média, faixa e total por ano |
 | 20c Comparação com o desenvolvimento | N/A | Mesma base |
