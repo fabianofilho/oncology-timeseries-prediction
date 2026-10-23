@@ -234,6 +234,15 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   sem erro). A regra do limite pegou os 11 níveis com sorteio; a extensão para 50 réplicas
   começou em 23/10 às 16h22 (`results/simulacao/fila50.log`). Nenhum resultado lido ainda.
 
+- [x] **Rascunho da submissão na CSP** (OJS, submissão **15610**, conta fabiano.filho@usp.br,
+  23/10, salvo para depois, NÃO enviado): Questões metodológicas, inglês; título, 4
+  palavras-chave do DeCS, Abstract (250/250); colaboradores Fabiano (correspondente) e
+  Alexandre; passo 4 inteiro (preprint não, dados em repositório com o link do GitHub, tese
+  não, sem conflito, ética = Helsinki e legislação do país, uso de IA sim com a frase do
+  autoria.json, agradecimentos = CAPES 001). **Falta:** a Carine (endereço postal
+  obrigatório), ordem dos autores (Carine em 2º), arquivos (depois da tag e do `make paper`),
+  aceite dos dois coautores e a finalização. O texto da Carine e do Alexandre foi enviado/rascunhado em 23/10.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.
