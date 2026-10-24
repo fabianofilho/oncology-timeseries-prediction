@@ -243,6 +243,18 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   obrigatório), ordem dos autores (Carine em 2º), arquivos (depois da tag e do `make paper`),
   aceite dos dois coautores e a finalização. O texto da Carine e do Alexandre foi enviado/rascunhado em 23/10.
 
+### 2026-10-24
+
+- [x] **Segunda revisão da Carine** (13 comentários no `CSP_texto_2026-10-23.docx` do Drive,
+  sem edição do texto; "nada essencial"). Todos aceitos pelo Fabiano: resumo sem a frase do
+  outro computador (a ressalva fica nos Resultados e Limitações; `ressalva_resumo` removida),
+  "difference between two models", "12 of the 21 pairwise comparisons", frase dos dois grupos
+  reescrita; Métodos com a leitura dos parâmetros do SARIMA e do boosting recursivo, sigla sMAPE
+  repetida, tamanho das janelas reamostradas, R2 como OLS das contagens anuais no ano; frase
+  das 9 checagens retirada (eram checagens de integridade do arquivo, a validação é o TabNet);
+  sítios nomeados; "no difference was confirmed"; "benign" vira "inconsequential". Abstract com
+  249 palavras. Afiliação e endereço da Carine (Unifesp, Santos) recebidos em 23/10.
+
 ### EM PROGRESSO
 
 Nada pela metade. Git limpo e sincronizado com origin.

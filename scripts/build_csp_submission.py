@@ -448,8 +448,6 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
     n_conf, n_par = crit["pares_confirmados"], crit["pares_total"]
     pct_acima = ext["_observacoes_acima_do_max_treino"]["pct"]
 
-    rp = carrega_reproducao()
-
     en = (
         f"Forecasts of cancer mortality inform health service planning, yet forecasting studies "
         f"rarely test whether a fitted model outperforms a trivial comparator, and rarely report "
@@ -460,16 +458,17 @@ def resumos(v: dict) -> list[tuple[str, str, str, str]]:
         f"among residents of São Paulo State between {co['anos'][0]} and "
         f"{co['anos'][1]}, totalling {n_obitos} deaths and {n_meses} monthly observations, which "
         f"matched the official figures exactly. Because the pandemic is a "
-        f"structural break, model fitting was restricted to the {n_treino} months from 2010 to "
-        f"2019. We compared seven forecasting methods under one rolling-origin protocol, with "
+        f"structural break, model fitting was restricted to the {n_treino} months of "
+        f"2010-2019. We compared seven forecasting methods under one rolling-origin protocol, with "
         f"{n_jan} windows and {n_prev} forecasts each, and measured uncertainty by resampling "
-        f"whole windows. We declared, before seeing any result, that a difference would count as "
-        f"confirmed only if the confidence interval excluded zero and the horizon-wise test also "
+        f"whole windows. We declared, before seeing any result, that a difference between two models "
+        f"would count as confirmed only if the confidence interval excluded zero and the horizon-wise test also "
         f"detected it. The classical seasonal model had the lowest percentage error, "
-        f"{sa['point']:.2f}%. The criterion confirmed {n_conf} of {n_par} comparisons, and the "
-        f"pattern was two groups rather than a ranking: methods that represent the series were "
-        f"indistinguishable from one another, as were those that do not, and every "
-        f"comparison across the two groups was confirmed.{ressalva_resumo(rp, 'en')} Boosted "
+        f"{sa['point']:.2f}%. Based on the criterion, {n_conf} of the {n_par} pairwise comparisons "
+        f"between models were confirmed, forming two groups rather than a ranking: "
+        f"no difference was confirmed within the group that captures the structure of the series "
+        f"or within the group that does not, while every comparison between the two groups was "
+        f"confirmed. Boosted "
         f"trees did not beat the trivial "
         f"comparator because they never forecast above the maximum already observed, while "
         f"{pct_acima}% of test observations lie above it. No model can be declared best."
@@ -494,22 +493,6 @@ def carrega_veredito_v2() -> dict | None:
     p = ROOT / "results" / "criterion_verdict_2010_2019_full.json"
     d = json.loads(p.read_text(encoding="utf-8"))
     return d if d["criterio"].get("versao") == 2 else None
-
-
-def ressalva_resumo(rp: dict | None, lingua: str) -> str:
-    """Frase dos resumos sobre a reproducao; vazia se nada muda ou o caso e outro.
-
-    So cobre o caso medido: um unico par, dentro do segundo grupo, mudando de veredito.
-    Outro caso derruba o build, para a frase nao ficar dizendo algo que nao e verdade.
-    """
-    if not rp or not rp["pares_que_mudam"]:
-        return ""
-    muda = rp["pares_que_mudam"]
-    if len(muda) != 1 or not set(muda[0]["par"]) <= GRUPO_DE_BAIXO:
-        raise ValueError("reproducao muda outro conjunto de vereditos: reescrever a ressalva")
-    return {
-        "en": " On another computer, one comparison within the second group changed verdict.",
-    }[lingua]
 
 
 def robustez_frase(vd: dict | None) -> str:
@@ -709,8 +692,7 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
         f"with no missing month (mean {n(co['media_mensal'])} deaths per month, range "
         f"{n(co['minimo_mensal'])} to {n(co['maximo_mensal'])}; {n(co['obitos_por_ano']['2010'])} "
         f"deaths in {co['anos'][0]} rising to {n(co['obitos_por_ano']['2023'])} in "
-        f"{co['anos'][1]}). An automated plausibility check passed "
-        f"{co['checagens_validacao_aprovadas']} of {co['checagens_validacao_total']} assertions. "
+        f"{co['anos'][1]}). "
         f"We cross-checked the annual counts against the figures published by the Ministry of "
         f"Health through TabNet, the DataSUS online tabulation tool, for the same selection (São Paulo, ICD-10 groups covering "
         f"C00-C97): our series reproduced the official deaths-by-residence figures exactly in "
@@ -724,7 +706,8 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
     body(
         doc,
         f"Annual cancer deaths from {co['anos'][0]} to 2019 follow a near-linear trend of "
-        f"{n(tend['slope_obitos_por_ano'])} additional deaths per year (R2 = {tend['r2']}). "
+        f"{n(tend['slope_obitos_por_ano'])} additional deaths per year (R2 = {tend['r2']}, from an ordinary least squares fit of "
+        f"annual counts on calendar year). "
         f"Against that line extrapolated forward, 2020 fell "
         f"{abs(tend['projecao']['2020']['dif_pct'])}% below "
         f"expectation and 2023 was still {abs(tend['projecao']['2023']['dif_pct'])}% below it; "
@@ -745,10 +728,14 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
         "window and extrapolated. Mortality from cancer is dominated by a secular trend, so a "
         "fitted line is expected to be competitive, and a model that cannot beat it has not "
         "shown that the series has structure worth modelling. The remaining five were SARIMA "
-        "with multiplicative seasonality (order (1,1,1), seasonal order (0,1,1,12)), Prophet "
+        "with multiplicative seasonality (order (1,1,1), that is, one autoregressive term, one "
+        "non-seasonal difference and one moving-average term; seasonal order (0,1,1,12), that "
+        "is, no seasonal autoregressive term, one seasonal difference and one seasonal "
+        "moving-average term, with a 12-month period), Prophet "
         "with yearly seasonality only [@taylor2018], TimesFM 2.5 (200M parameters) applied zero-shot with "
         "no fitting on the target series [@das2023], and XGBoost and CatBoost as recursive multi-step "
-        "forecasters over 12 lagged values. All seven were univariate: they used only past "
+        "forecasters: the 12 most recent monthly values were the predictors, and each forecast "
+        "was fed back as an input to produce the forecast for the following month. All seven were univariate: they used only past "
         "values of the series, with no covariates. Hyperparameters were fixed a priori and not "
         "tuned, "
         "so the comparison is between reasonable default configurations.",
@@ -762,13 +749,14 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
         f"and produced the same number of forecasts, so the comparison is paired, and no model "
         f"had access to any observation after the end of its training window. Accuracy was "
         f"summarised with mean absolute error, root mean squared error and symmetric mean "
-        f"absolute percentage error, whose limitations are well documented [@hyndman2006].",
+        f"absolute percentage error (sMAPE), whose limitations are well documented [@hyndman2006].",
     )
     body(
         doc,
         f"Forecasts from the same origin are dependent across horizons, so we resampled whole "
-        f"windows rather than individual forecasts, drawing B = {int(ci['sarima']['B']):,} "
-        f"bootstrap replicates with a fixed seed and the same resampled windows for every model "
+        f"windows rather than individual forecasts: each replicate drew, with replacement, "
+        f"{ba['n_janelas']} windows of {ba['horizonte']} monthly forecasts each. We drew "
+        f"B = {int(ci['sarima']['B']):,} bootstrap replicates with a fixed seed and the same resampled windows for every model "
         f"within each replicate. We additionally applied the Diebold-Mariano test [@diebold1995] at each horizon with "
         f"the Harvey small-sample correction [@harvey1997]. We declared, before running the benchmark and "
         f"before any result was inspected, that an improvement counts as confirmed only if the "
@@ -794,7 +782,8 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
         )
     body(
         doc,
-        f"We repeated the identical protocol on the four highest-volume tumour sites, excluding "
+        f"We repeated the identical protocol on the four highest-volume tumour sites (lung, "
+        f"colorectal, breast and prostate), excluding "
         f"in advance any site averaging fewer than 30 deaths per month; no site was "
         f"excluded. Because symmetric percentage error falls with count size by construction, "
         f"we compared the observed ratio of site to aggregate sMAPE against the ratio expected "
@@ -846,13 +835,13 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
         doc,
         f"Of the {crit['pares_total']} pairwise comparisons, {crit['pares_confirmados']} met the "
         f"pre-declared criterion. The {crit['pares_total'] - crit['pares_confirmados']} that "
-        f"failed are not scattered at random (Table 2): no comparison among SARIMA, TimesFM and "
-        f"Prophet was confirmed, no comparison among linear trend, CatBoost, XGBoost and "
-        f"seasonal naive was confirmed"
+        f"failed are not scattered at random (Table 2): no difference was confirmed among "
+        f"SARIMA, TimesFM and Prophet, none among linear trend, CatBoost, XGBoost and "
+        f"seasonal naive"
         + (" (one of these, linear trend against XGBoost, depends on the machine; see "
            "Discussion)" if rp and rp["pares_que_mudam"] else "")
         + f", and every comparison between a member of the first set "
-        f"and a member of the second was. Five of the unconfirmed comparisons have a confidence "
+        f"and a member of the second was confirmed. Five of the unconfirmed comparisons have a confidence "
         f"interval excluding zero and fail only the horizon-wise condition, so a report based on "
         f"the aggregate bootstrap alone would have presented a seven-way ranking instead of two "
         f"groups.",
@@ -979,8 +968,8 @@ def build_texto(v: dict, autoria: dict | None = None) -> tuple[Document, int]:
         + f"Stratification was "
         f"by site only and covered {v['sitios_cobertura_pct']}% of deaths, so no statement is "
         f"made about sex-specific trends or about the remaining sites. Finally, sMAPE was the "
-        f"pre-declared metric; on a series with a stable level this choice is benign, since mean "
-        f"absolute error agrees with it here, but it would not be benign on a surge-driven "
+        f"pre-declared metric; on a series with a stable level this choice is inconsequential, "
+        f"since mean absolute error agrees with it here, but it would matter on a surge-driven "
         f"series." + robustez_frase(carrega_veredito_v2()),
     )
     body(
