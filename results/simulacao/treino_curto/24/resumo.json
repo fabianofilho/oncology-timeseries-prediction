@@ -1,0 +1,222 @@
+{
+  "cenario": "treino_curto",
+  "nivel": 24.0,
+  "replicas": 1,
+  "B": 2000,
+  "tempos_s": {
+    "seasonal_naive": 4.6,
+    "linear_trend": 3.4,
+    "sarima": 45.2,
+    "prophet": 775.7,
+    "timesfm": 16.2,
+    "xgboost": 21.0,
+    "catboost": 4.4
+  },
+  "falhas_por_modelo": {},
+  "por_replica": [
+    {
+      "replica": 1,
+      "modelos_com_falha": [],
+      "erro": {
+        "seasonal_naive": {
+          "smape": 3.225716728899281,
+          "mae": 143.38181818181818
+        },
+        "linear_trend": {
+          "smape": 3.11752179409967,
+          "mae": 140.55359332454987
+        },
+        "sarima": {
+          "smape": 2.166999340569507,
+          "mae": 96.61373138194003
+        },
+        "prophet": {
+          "smape": 5.548221342920868,
+          "mae": 245.8250600808001
+        },
+        "timesfm": {
+          "smape": 2.8673134249747743,
+          "mae": 128.86707282788825
+        },
+        "xgboost": {
+          "smape": 3.4548388114565323,
+          "mae": 154.34456232244318
+        },
+        "catboost": {
+          "smape": 2.9548471602288564,
+          "mae": 132.82563324745504
+        }
+      },
+      "pares": [
+        {
+          "par": "seasonal_naive_menos_linear_trend",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": 0.108,
+          "diferenca_mae": 2.828,
+          "dm_abaixo_alpha": "0/6"
+        },
+        {
+          "par": "seasonal_naive_menos_sarima",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": 1.059,
+          "diferenca_mae": 46.768,
+          "dm_abaixo_alpha": "6/6"
+        },
+        {
+          "par": "seasonal_naive_menos_prophet",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": -2.323,
+          "diferenca_mae": -102.443,
+          "dm_abaixo_alpha": "2/6"
+        },
+        {
+          "par": "seasonal_naive_menos_timesfm",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": 0.358,
+          "diferenca_mae": 14.515,
+          "dm_abaixo_alpha": "0/6"
+        },
+        {
+          "par": "seasonal_naive_menos_xgboost",
+          "veredito": "discordante",
+          "confirmado": false,
+          "diferenca": -0.229,
+          "diferenca_mae": -10.963,
+          "dm_abaixo_alpha": "1/6"
+        },
+        {
+          "par": "seasonal_naive_menos_catboost",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": 0.271,
+          "diferenca_mae": 10.556,
+          "dm_abaixo_alpha": "0/6"
+        },
+        {
+          "par": "linear_trend_menos_sarima",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": 0.951,
+          "diferenca_mae": 43.94,
+          "dm_abaixo_alpha": "6/6"
+        },
+        {
+          "par": "linear_trend_menos_prophet",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": -2.431,
+          "diferenca_mae": -105.271,
+          "dm_abaixo_alpha": "4/6"
+        },
+        {
+          "par": "linear_trend_menos_timesfm",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": 0.25,
+          "diferenca_mae": 11.687,
+          "dm_abaixo_alpha": "3/6"
+        },
+        {
+          "par": "linear_trend_menos_xgboost",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": -0.337,
+          "diferenca_mae": -13.791,
+          "dm_abaixo_alpha": "0/6"
+        },
+        {
+          "par": "linear_trend_menos_catboost",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": 0.163,
+          "diferenca_mae": 7.728,
+          "dm_abaixo_alpha": "0/6"
+        },
+        {
+          "par": "sarima_menos_prophet",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": -3.381,
+          "diferenca_mae": -149.211,
+          "dm_abaixo_alpha": "6/6"
+        },
+        {
+          "par": "sarima_menos_timesfm",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": -0.7,
+          "diferenca_mae": -32.253,
+          "dm_abaixo_alpha": "3/6"
+        },
+        {
+          "par": "sarima_menos_xgboost",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": -1.288,
+          "diferenca_mae": -57.731,
+          "dm_abaixo_alpha": "6/6"
+        },
+        {
+          "par": "sarima_menos_catboost",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": -0.788,
+          "diferenca_mae": -36.212,
+          "dm_abaixo_alpha": "4/6"
+        },
+        {
+          "par": "prophet_menos_timesfm",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": 2.681,
+          "diferenca_mae": 116.958,
+          "dm_abaixo_alpha": "4/6"
+        },
+        {
+          "par": "prophet_menos_xgboost",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": 2.093,
+          "diferenca_mae": 91.48,
+          "dm_abaixo_alpha": "2/6"
+        },
+        {
+          "par": "prophet_menos_catboost",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": 2.593,
+          "diferenca_mae": 112.999,
+          "dm_abaixo_alpha": "3/6"
+        },
+        {
+          "par": "timesfm_menos_xgboost",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": -0.588,
+          "diferenca_mae": -25.477,
+          "dm_abaixo_alpha": "4/6"
+        },
+        {
+          "par": "timesfm_menos_catboost",
+          "veredito": "nao_confirmado",
+          "confirmado": false,
+          "diferenca": -0.088,
+          "diferenca_mae": -3.959,
+          "dm_abaixo_alpha": "1/6"
+        },
+        {
+          "par": "xgboost_menos_catboost",
+          "veredito": "confirmado",
+          "confirmado": true,
+          "diferenca": 0.5,
+          "diferenca_mae": 21.519,
+          "dm_abaixo_alpha": "5/6"
+        }
+      ]
+    }
+  ]
+}
