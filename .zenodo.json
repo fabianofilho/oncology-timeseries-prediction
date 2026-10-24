@@ -1,0 +1,30 @@
+{
+  "title": "Comparing forecasting models against trivial baselines: code and results for monthly cancer mortality in São Paulo State, Brazil",
+  "description": "Code, aggregated monthly series, forecasts and results for the methodological study submitted to Cadernos de Saúde Pública (Questões Metodológicas). Individual death records from the Mortality Information System (SIM/DataSUS) are public but not redistributed; the repository holds only aggregated monthly series.",
+  "upload_type": "software",
+  "license": "cc-by-4.0",
+  "creators": [
+    {
+      "name": "Novaes Barcellos Filho, Fabiano",
+      "affiliation": "Laboratory of Big Data and Predictive Analysis in Healthcare (LABDAPS), School of Public Health, University of São Paulo, São Paulo, Brazil",
+      "orcid": "0000-0002-1491-2700"
+    },
+    {
+      "name": "Savalli, Carine",
+      "affiliation": "Department of Public Policies and Collective Health, Universidade Federal de São Paulo, Santos, Brazil",
+      "orcid": "0000-0001-7388-7616"
+    },
+    {
+      "name": "Chiavegatto Filho, Alexandre",
+      "affiliation": "Laboratory of Big Data and Predictive Analysis in Healthcare (LABDAPS), School of Public Health, University of São Paulo, São Paulo, Brazil",
+      "orcid": "0000-0003-3251-9600"
+    }
+  ],
+  "keywords": [
+    "Neoplasms",
+    "Mortality",
+    "Forecasting",
+    "Information Systems",
+    "Time series"
+  ]
+}
