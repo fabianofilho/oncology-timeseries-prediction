@@ -2,7 +2,7 @@
   "title": "Comparing forecasting models against trivial baselines: code and results for monthly cancer mortality in São Paulo State, Brazil",
   "description": "Code, aggregated monthly series, forecasts and results for the methodological study submitted to Cadernos de Saúde Pública (Questões Metodológicas). Individual death records from the Mortality Information System (SIM/DataSUS) are public but not redistributed; the repository holds only aggregated monthly series.",
   "upload_type": "software",
-  "license": "cc-by-4.0",
+  "license": "mit",
   "creators": [
     {
       "name": "Novaes Barcellos Filho, Fabiano",
