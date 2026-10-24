@@ -272,15 +272,21 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   4 palavras-chave e abstract gravados em `en`. A tela de Avaliação mostra "Nenhum
   disponibilizado" porque exibe o idioma pt_BR da interface, não por falta de dado.
 
+- [x] **Submetido à CSP em 24/10/2026, 11h38** (OJS 15610, código **CSP 2707/26**, status "Em
+  fila"), com os 7 arquivos. A submissão saiu 10 minutos antes da reescrita do histórico, então
+  o `CSP_texto.docx` enviado cita o commit `19206cc`, que só existe no repositório privado
+  `-historico`. O equivalente público é `c944bd3` (tag `csp-submissao-v1`): mesmo código,
+  séries e resultados; muda só o texto do `PROGRESS.md`.
+- [x] **Repositório público** desde 24/10 (o `-historico` segue privado).
+
 ### EM PROGRESSO
 
-- [ ] **Submissão 15610 parada no passo 5.** Falta só marcar a declaração de direitos
-  autorais (CC-BY) e clicar em Submeter, ambos com o ok do Fabiano. Antes:
-  - trocar no OJS o `CSP_texto.docx` pelo que cita `c944bd3`;
-  - tornar o repositório público, o Fabiano ligar o repositório **novo** no Zenodo e criar o
-    release `csp-submissao-v1` para gerar o DOI (o DOI entra só no campo de dados do OJS);
-  - o Alexandre ainda não deu o ok na versão final (rascunho de e-mail no Superhuman
-    espera o anexo da versão de 24/10).
+- [ ] **DOI no Zenodo.** O Fabiano liga o repositório novo em
+  https://zenodo.org/account/settings/github/ e depois sai o release `csp-submissao-v1`
+  (`gh release create csp-submissao-v1`), com a nota de que o texto submetido cita `19206cc`
+  e o código idêntico está em `c944bd3`. O campo de dados do OJS já promete o DOI.
+- [ ] **Na primeira revisão da CSP:** rodar `make paper` de novo para o texto citar o commit
+  público e informar o DOI na carta de resposta.
 
 ### PRÓXIMOS PASSOS NA ORDEM
 
