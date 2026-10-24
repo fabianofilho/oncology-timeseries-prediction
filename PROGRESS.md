@@ -254,7 +254,16 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   das 9 checagens retirada (eram checagens de integridade do arquivo, a validação é o TabNet);
   sítios nomeados; "no difference was confirmed"; "benign" vira "inconsequential". Abstract com
   249 palavras. Afiliação e endereço da Carine (Unifesp, Santos) recebidos em 23/10.
-- [x] **`make paper` e tag** (PR #39): texto cita o commit `19206cc`, tag `csp-submissao-v1`.
+- [x] **Histórico reescrito e repositório novo** (24/10, decisão do Fabiano). O `PROGRESS.md`
+  tinha os e-mails da Carine desde 05/10, e as refs dos PRs no GitHub guardariam essa versão
+  mesmo depois de um force-push. O repositório antigo virou
+  `fabianofilho/oncology-timeseries-prediction-historico` (privado, com os PRs #1 a #40 e os
+  links do Linear); este nome passou a ser um repositório novo, só com a `main` reescrita por
+  `git filter-repo --replace-text` (e-mails trocados por "[e-mail ... da Carine]"; árvore de
+  arquivos idêntica). Backup espelho completo em `~/Backups/opt-antes-da-reescrita.git`. Os
+  SHAs anteriores a 24/10 mudaram; o `19206cc` citado antes só existe no histórico privado.
+- [x] **`make paper` na história nova**: texto cita o commit `c944bd3`, tag `csp-submissao-v1`
+  nele. Só o `CSP_texto.docx` mudou (as figuras saíram com os mesmos bytes).
 - [x] **Rascunho 15610 preenchido até o passo 5** (Avaliação): Carine incluída como coautora
   2 (ordem Fabiano, Carine, Alexandre); 7 arquivos enviados com tipo (texto, tabelas,
   legendas, material suplementar e Figuras 1 a 3, gerados às 11h28 de 24/10, conferidor com
@@ -267,10 +276,9 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
 
 - [ ] **Submissão 15610 parada no passo 5.** Falta só marcar a declaração de direitos
   autorais (CC-BY) e clicar em Submeter, ambos com o ok do Fabiano. Antes:
-  - o campo de disponibilidade de dados diz "public repository ... archived with a DOI on
-    Zenodo", e o repositório ainda é **privado** e sem DOI. O histórico do `PROGRESS.md`
-    tem e-mails pessoais; decidir entre reescrever o histórico ou outra saída antes de
-    tornar público;
+  - trocar no OJS o `CSP_texto.docx` pelo que cita `c944bd3`;
+  - tornar o repositório público, o Fabiano ligar o repositório **novo** no Zenodo e criar o
+    release `csp-submissao-v1` para gerar o DOI (o DOI entra só no campo de dados do OJS);
   - o Alexandre ainda não deu o ok na versão final (rascunho de e-mail no Superhuman
     espera o anexo da versão de 24/10).
 
