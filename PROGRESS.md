@@ -281,12 +281,15 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
 
 ### EM PROGRESSO
 
-- [ ] **DOI no Zenodo.** O Fabiano liga o repositório novo em
-  https://zenodo.org/account/settings/github/ e depois sai o release `csp-submissao-v1`
-  (`gh release create csp-submissao-v1`), com a nota de que o texto submetido cita `19206cc`
-  e o código idêntico está em `c944bd3`. O campo de dados do OJS já promete o DOI.
+- [x] **DOI no Zenodo** (24/10): release `csp-submissao-v1` arquivado como
+  **10.5281/zenodo.23621140** (DOI de todas as versões: 10.5281/zenodo.23621139),
+  https://zenodo.org/records/23621140, licença CC-BY-4.0. O registro saiu com um só autor
+  ("Fabiano Filho, MD", vindo do perfil do GitHub); Carine e Alexandre entram editando o
+  registro no Zenodo ou, nas próximas versões, por um `.zenodo.json`. Armadilha: a primeira
+  ligação no Zenodo não criou o webhook no repositório; conferir com
+  `gh api repos/fabianofilho/oncology-timeseries-prediction/hooks` antes de criar release.
 - [ ] **Na primeira revisão da CSP:** rodar `make paper` de novo para o texto citar o commit
-  público e informar o DOI na carta de resposta.
+  público e pôr o DOI 10.5281/zenodo.23621140 no texto e na carta de resposta.
 
 ### PRÓXIMOS PASSOS NA ORDEM
 
