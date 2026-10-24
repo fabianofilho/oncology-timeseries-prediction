@@ -254,10 +254,25 @@ Linear: LAB-135 e LAB-120 fechadas como Done; LAB-169 com comentários do andame
   das 9 checagens retirada (eram checagens de integridade do arquivo, a validação é o TabNet);
   sítios nomeados; "no difference was confirmed"; "benign" vira "inconsequential". Abstract com
   249 palavras. Afiliação e endereço da Carine (Unifesp, Santos) recebidos em 23/10.
+- [x] **`make paper` e tag** (PR #39): texto cita o commit `19206cc`, tag `csp-submissao-v1`.
+- [x] **Rascunho 15610 preenchido até o passo 5** (Avaliação): Carine incluída como coautora
+  2 (ordem Fabiano, Carine, Alexandre); 7 arquivos enviados com tipo (texto, tabelas,
+  legendas, material suplementar e Figuras 1 a 3, gerados às 11h28 de 24/10, conferidor com
+  0 PENDING); passo 4 completo (preprint Não, tese Não, dados em repositório, sem conflito,
+  ética Resolução 510, uso de IA, agradecimento CAPES). Conferido pela API do OJS: título,
+  4 palavras-chave e abstract gravados em `en`. A tela de Avaliação mostra "Nenhum
+  disponibilizado" porque exibe o idioma pt_BR da interface, não por falta de dado.
 
 ### EM PROGRESSO
 
-Nada pela metade. Git limpo e sincronizado com origin.
+- [ ] **Submissão 15610 parada no passo 5.** Falta só marcar a declaração de direitos
+  autorais (CC-BY) e clicar em Submeter, ambos com o ok do Fabiano. Antes:
+  - o campo de disponibilidade de dados diz "public repository ... archived with a DOI on
+    Zenodo", e o repositório ainda é **privado** e sem DOI. O histórico do `PROGRESS.md`
+    tem e-mails pessoais; decidir entre reescrever o histórico ou outra saída antes de
+    tornar público;
+  - o Alexandre ainda não deu o ok na versão final (rascunho de e-mail no Superhuman
+    espera o anexo da versão de 24/10).
 
 ### PRÓXIMOS PASSOS NA ORDEM
 
